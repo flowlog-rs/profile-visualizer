@@ -1,0 +1,12 @@
+{
+  "nodes": [
+    { "name": "[Row -> Row] V:(V0, V1)  [arc] (x, y)" },
+    { "name": "core" },
+    { "name": "post" }
+  ],
+  "edges": [
+    ["prepare", "core"],
+    ["core", "post"]
+  ],
+  "roots": ["prepare"]
+}

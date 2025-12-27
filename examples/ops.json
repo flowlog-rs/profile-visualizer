@@ -1,0 +1,38 @@
+{
+  "rule1": [
+    {
+      "name": "[Row -> Row] V:(V0, V1)  [arc] (x, y)",
+      "operators": [
+        { "addr": [0, 2] }
+      ]
+    }
+  ],
+  "rule2": [
+    {
+      "name": "[Row -> Row] V:(V0, V1)  [arc] (x, y)",
+      "operators": [
+        { "addr": [0, 6] },
+        { "addr": [0, 7] }
+      ]
+    },
+    {
+      "name": "[Row -> KV] K:(V1), V:(V0) [tc] (x, z)",
+      "operators" :[
+        { "addr": [0, 8, 2] },
+        { "addr": [0, 8, 3] },
+        { "addr": [0, 8, 4] },
+        { "addr": [0, 8, 5] }
+      ]
+    },
+    {
+      "name": "[Join -> Row] V:(LV0, RV0)",
+      "operators": [
+        { "addr": [0, 8, 6] },
+        { "addr": [0, 8, 7] },
+        { "addr": [0, 8, 8] },
+        { "addr": [0, 8, 9] },
+        { "addr": [0, 8, 10] }
+      ]
+    }
+  ]
+}

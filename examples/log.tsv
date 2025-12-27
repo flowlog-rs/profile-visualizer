@@ -1,0 +1,31 @@
+addr                 activations  total_active_ms  name
+[0]                  1061         6276.893         Dataflow
+[0, 1]               2            0.000            Input
+[0, 2]               3            0.937            FlatMap
+[0, 3]               3            1.411            FlatMap
+[0, 4]               11           0.275            Arrange: ThresholdTotal
+[0, 5]               4            0.063            ThresholdTotal
+[0, 6]               3            0.080            FlatMap
+[0, 7]               13           0.133            ArrangeByKey
+[0, 8]               913          5820.164         Iterative
+[0, 8, 1]            4            0.008            Enter
+[0, 8, 2]            4            0.007            FlatMap
+[0, 8, 3]            22           0.479            Feedback
+[0, 8, 4]            22           186.448          FlatMap
+[0, 8, 5]            79           516.500          ArrangeByKey
+[0, 8, 6]            38           630.075          Join
+[0, 8, 7]            30           1.712            Concatenate
+[0, 8, 8]            30           1400.517         FlatMap
+[0, 8, 9]            168          2207.621         Arrange: ThresholdTotal
+[0, 8, 10]           33           853.886          ThresholdTotal
+[0, 8, 11]           22           3.550            ResultsIn
+[0, 9]               43           2.893            Leave
+[0, 10]              22           98.959           FlatMap
+[0, 11]              55           242.537          Arrange: ThresholdTotal
+[0, 12]              4            74.464           ThresholdTotal
+[0, 13]              4            7.601            FlatMap
+[0, 14]              4            7.094            FlatMap
+[0, 15]              4            13.892           FlatMap
+[0, 16]              14           0.028            Consolidate
+[0, 17]              2            0.002            AsCollection
+[0, 18]              2            0.003            InspectBatch
