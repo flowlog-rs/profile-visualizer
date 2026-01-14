@@ -82,7 +82,7 @@ pub fn render_html_report(data: &ReportData) -> anyhow::Result<String> {
 
   <div class="main">
     <div class="tabs">
-      <button class="tab active" id="tabTree">Tree</button>
+      <button class="tab active" id="tabTree">Nodes</button>
       <button class="tab" id="tabGraph">Graph</button>
     </div>
 
@@ -96,7 +96,7 @@ pub fn render_html_report(data: &ReportData) -> anyhow::Result<String> {
             <th>addr</th>
             <th>operator</th>
             <th class="num">activations</th>
-            <th class="num">total_active_ms</th>
+            <th class="num">active time</th>
           </tr>
         </thead>
         <tbody id="opsBody"></tbody>
@@ -800,7 +800,7 @@ function selectNode(name) {
       : "";
 
   document.getElementById("meta").textContent =
-    `name: ${name} | self: ${fmtMs(node.self_total_active_ms)} ms | activations: ${node.self_activations}` +
+    `id: ${name} | time: ${fmtMs(node.self_total_active_ms)} ms | activations: ${node.self_activations}` +
     extra;
 
   const tbl = document.getElementById("opsTable");
