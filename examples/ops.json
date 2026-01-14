@@ -1,161 +1,332 @@
 {
-  "input": [
+  "nodes": [
     {
       "id": 0,
-      "label": "arc: input",
-      "operators": [
-        { "addr": [0, 1] }
+      "name": "arc: input",
+      "block": "input",
+      "tags": [
+        "Input"
       ],
-      "children": [1]
+      "rule": null,
+      "operators": [
+        [
+          0,
+          1
+        ]
+      ],
+      "children": [
+        1
+      ]
     },
     {
       "id": 1,
-      "label": "arc: distinct / dedup",
+      "name": "arc: distinct / dedup",
+      "block": "input",
+      "tags": [
+        "Input"
+      ],
+      "rule": null,
       "operators": [
-        { "addr": [0, 2] },
-        { "addr": [0, 3] },
-        { "addr": [0, 4] }
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
       ],
-      "children": [2, 6]
-    }
-  ],
-  "strata": [
-    {
-      "label": "Stratum 0",
-      "enter": [],
-      "rules": [
-        {
-          "rule": "tc(x, y) :- arc(x, y)",
-          "stages": [
-            {
-              "id": 2,
-              "label": "[Row → Row] V:(V0,V1)  [arc] (x,y)",
-              "operators": [{ "addr": [0, 5] }],
-              "children": [3]
-            }
-          ]
-        }
-      ],
-      "runtime": [
-        {
-          "id": 3,
-          "label": "tc: distinct / dedup",
-          "operators": [
-            { "addr": [0, 6] },
-            { "addr": [0, 7] },
-            { "addr": [0, 8] }
-          ],
-          "children": [5]
-        }
-      ],
-      "leave": []
+      "children": [
+        2,
+        6
+      ]
     },
     {
-      "label": "Stratum 1",
-      "enter": [
-        {
-          "id": 4,
-          "label": "arc: enter",
-          "operators": [
-            { "addr": [0, 11, 1] }
-          ],
-          "children": [8]
-        },
-        {
-          "id": 5,
-          "label": "tc: enter",
-          "operators": [
-            { "addr": [0, 11, 2] }
-          ],
-          "children": [7]
-        }
+      "id": 2,
+      "name": "[Row → Row] V:(V0,V1)  [arc] (x,y)",
+      "block": "stratum 0",
+      "tags": [
+        "Stage"
       ],
-      "rules": [
-        {
-          "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
-          "stages": [
-            {
-              "id": 6,
-              "label": "[Row → Row] V:(V0,V1)  [arc] (z,y)",
-              "operators": [
-                { "addr": [0, 9] },
-                { "addr": [0, 10] }
-              ],
-              "children": [4]
-            },
-            {
-              "id": 7,
-              "label": "[Row → KV] K:(V1), V:(V0)  [tc] (x,z)",
-              "operators": [
-                { "addr": [0, 11, 4] },
-                { "addr": [0, 11, 5] }
-              ],
-              "children": [8]
-            },
-            {
-              "id": 8,
-              "label": "[Join → Row] V:(LV0,RV0)",
-              "operators": [{ "addr": [0, 11, 6] }],
-              "children": [9]
-            }
-          ]
-        }
-      ],  
-      "runtime": [
-        {
-          "id": 9,
-          "label": "tc: distinct / dedup",
-          "operators": [
-            { "addr": [0, 11, 7] },
-            { "addr": [0, 11, 8] },
-            { "addr": [0, 11, 9] },
-            { "addr": [0, 11, 10] }
-          ],
-          "children": [10]
-        },
-        {
-          "id": 10,
-          "label": "tc: feedback",
-          "operators": [
-            { "addr": [0, 11, 3] }
-          ],
-          "children": [11]
-        },
-        {
-          "id": 11,
-          "label": "tc: resultsin",
-          "operators": [
-            { "addr": [0, 11, 11] }
-          ],
-          "children": [12]
-        }
+      "rule": "tc(x, y) :- arc(x, y)",
+      "operators": [
+        [
+          0,
+          5
+        ]
       ],
-      "leave": [
-        {
-          "id": 12,
-          "label": "tc: leave",
-          "operators": [
-            { "addr": [0, 12] }
-          ],
-          "children": [13]
-        }
+      "children": [
+        3
       ]
-    }
-  ],
-  "inspect": [
+    },
+    {
+      "id": 3,
+      "name": "tc: distinct / dedup",
+      "block": "stratum 0",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          0,
+          8
+        ]
+      ],
+      "children": [
+        5
+      ]
+    },
+    {
+      "id": 4,
+      "name": "arc: enter",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          11,
+          1
+        ]
+      ],
+      "children": [
+        8
+      ]
+    },
+    {
+      "id": 5,
+      "name": "tc: enter",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          11,
+          2
+        ]
+      ],
+      "children": [
+        7
+      ]
+    },
+    {
+      "id": 6,
+      "name": "[Row → Row] V:(V0,V1)  [arc] (z,y)",
+      "block": "stratum 1",
+      "tags": [
+        "Stage"
+      ],
+      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
+      "operators": [
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          10
+        ]
+      ],
+      "children": [
+        4
+      ]
+    },
+    {
+      "id": 7,
+      "name": "[Row → KV] K:(V1), V:(V0)  [tc] (x,z)",
+      "block": "stratum 1",
+      "tags": [
+        "Stage"
+      ],
+      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
+      "operators": [
+        [
+          0,
+          11,
+          4
+        ],
+        [
+          0,
+          11,
+          5
+        ]
+      ],
+      "children": [
+        8
+      ]
+    },
+    {
+      "id": 8,
+      "name": "[Join → Row] V:(LV0,RV0)",
+      "block": "stratum 1",
+      "tags": [
+        "Stage"
+      ],
+      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
+      "operators": [
+        [
+          0,
+          11,
+          6
+        ]
+      ],
+      "children": [
+        9
+      ]
+    },
+    {
+      "id": 9,
+      "name": "tc: distinct / dedup",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          11,
+          7
+        ],
+        [
+          0,
+          11,
+          8
+        ],
+        [
+          0,
+          11,
+          9
+        ],
+        [
+          0,
+          11,
+          10
+        ]
+      ],
+      "children": [
+        10
+      ]
+    },
+    {
+      "id": 10,
+      "name": "tc: feedback",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          11,
+          3
+        ]
+      ],
+      "children": [
+        11
+      ]
+    },
+    {
+      "id": 11,
+      "name": "tc: resultsin",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          11,
+          11
+        ]
+      ],
+      "children": [
+        12
+      ]
+    },
+    {
+      "id": 12,
+      "name": "tc: leave",
+      "block": "stratum 1",
+      "tags": [
+        "Runtime"
+      ],
+      "rule": null,
+      "operators": [
+        [
+          0,
+          12
+        ]
+      ],
+      "children": [
+        13
+      ]
+    },
     {
       "id": 13,
-      "label": "tc: inspection",
+      "name": "tc: inspection",
+      "block": "inspect",
+      "tags": [
+        "Inspect"
+      ],
+      "rule": null,
       "operators": [
-        { "addr": [0, 13] },
-        { "addr": [0, 14] },
-        { "addr": [0, 15] },
-        { "addr": [0, 16] },
-        { "addr": [0, 17] },
-        { "addr": [0, 18] },
-        { "addr": [0, 19] },
-        { "addr": [0, 20] },
-        { "addr": [0, 21] }
+        [
+          0,
+          13
+        ],
+        [
+          0,
+          14
+        ],
+        [
+          0,
+          15
+        ],
+        [
+          0,
+          16
+        ],
+        [
+          0,
+          17
+        ],
+        [
+          0,
+          18
+        ],
+        [
+          0,
+          19
+        ],
+        [
+          0,
+          20
+        ],
+        [
+          0,
+          21
+        ]
       ],
       "children": []
     }

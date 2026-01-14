@@ -17,6 +17,9 @@ pub struct OperatorView {
 pub struct NameNodeView {
     pub name: String,
     pub label: String,
+    pub block: String,
+    pub tags: Vec<String>,
+    pub rule: Option<String>,
 
     /// Primary tree children (spanning tree derived from DAG).
     pub children: Vec<String>,
@@ -184,6 +187,9 @@ pub fn build_report_data(
             NameNodeView {
                 name: name.clone(),
                 label: spec.label.clone(),
+                block: spec.block.clone(),
+                tags: spec.tags.clone(),
+                rule: spec.rule.clone(),
                 children: tree_children.get(name).cloned().unwrap_or_default(),
                 dag_children: spec.children.iter().map(|c| c.to_string()).collect(),
                 extra_parents: extra_parents.get(name).cloned().unwrap_or_default(),

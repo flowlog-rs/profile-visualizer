@@ -1,9 +1,23 @@
-//! Ops spec now contains both UI tree topology and operator addresses.
+//! Ops spec (ops.json) now provides a flat list of nodes plus edges.
 //!
-//! The JSON format (see examples/ops.json) provides several buckets
-//! (input / strata[*].enter|stages|runtime|leave / inspect). We flatten all
-//! node entries into a single map keyed by numeric id, then derive parents
-//! and roots from the declared children.
+//! JSON shape:
+//! {
+//!   "nodes": [
+//!     {
+//!       "id": 0,
+//!       "name": "foo",            // label rendered in UI
+//!       "block": "input",        // grouping bucket for graph blocks
+//!       "tags": ["Input"],        // optional, auxiliary
+//!       "rule": "...",            // optional, unused today
+//!       "operators": [[0,1,2]],    // list of Timely operator addresses
+//!       "children": [1, 2]         // edges in the DAG
+//!     },
+//!     ...
+//!   ]
+//! }
+//!
+//! We validate ids, turn operator address arrays into Addr, derive parents, and
+//! compute roots (nodes with no incoming edges).
 
 use crate::spec::Addr;
 use serde::Deserialize;
@@ -12,46 +26,25 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 #[derive(Debug, Clone, Deserialize)]
 pub struct OpsSpec {
     #[serde(default)]
-    pub input: Vec<RawNode>,
-
-    #[serde(default)]
-    pub strata: Vec<Stratum>,
-
-    #[serde(default)]
-    pub inspect: Vec<RawNode>,
+    pub nodes: Vec<RawNode>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct Stratum {
-    #[allow(dead_code)]
-    pub label: String,
-
-    #[serde(default)]
-    pub enter: Vec<RawNode>,
-
-    #[serde(default)]
-    pub rules: Vec<Rule>,
-
-    #[serde(default)]
-    pub runtime: Vec<RawNode>,
-
-    #[serde(default)]
-    pub leave: Vec<RawNode>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct Rule {
-    #[allow(dead_code)]
-    pub rule: String,
-    #[serde(default)]
-    pub stages: Vec<RawNode>,
-}
-
-/// Raw node shape as it appears in ops.json buckets.
+/// Raw node shape as it appears in ops.json.
 #[derive(Debug, Clone, Deserialize)]
 pub struct RawNode {
     pub id: u32,
-    pub label: String,
+
+    #[serde(default)]
+    pub name: String,
+
+    #[serde(default)]
+    pub block: Option<String>,
+
+    #[serde(default)]
+    pub tags: Vec<String>,
+
+    #[serde(default)]
+    pub rule: Option<String>,
 
     #[serde(default)]
     pub operators: Vec<OperatorRefSpec>,
@@ -65,6 +58,9 @@ pub struct RawNode {
 pub struct NodeSpec {
     pub id: u32,
     pub label: String,
+    pub block: String,
+    pub tags: Vec<String>,
+    pub rule: Option<String>,
     pub children: Vec<u32>,
     pub operators: BTreeSet<Addr>,
 }
@@ -73,26 +69,18 @@ pub struct NodeSpec {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(untagged)]
 pub enum OperatorRefSpec {
+    // New shape: operators: [[0,1,2]]
+    Addr(Vec<u32>),
+    // Backward compatibility: { "addr": [...] }
     Explicit { addr: Vec<u32> },
 }
 
 impl OpsSpec {
-    /// Flatten all buckets, ensure unique ids, and compute roots.
+    /// Flatten all nodes, ensure unique ids, and compute roots.
     pub fn validate_and_build(&self) -> anyhow::Result<ValidatedOps> {
         use anyhow::bail;
 
-        // Gather every RawNode from all buckets.
-        let mut raw_nodes: Vec<RawNode> = Vec::new();
-        raw_nodes.extend(self.input.clone());
-        for s in &self.strata {
-            raw_nodes.extend(s.enter.clone());
-            for r in &s.rules {
-                raw_nodes.extend(r.stages.clone());
-            }
-            raw_nodes.extend(s.runtime.clone());
-            raw_nodes.extend(s.leave.clone());
-        }
-        raw_nodes.extend(self.inspect.clone());
+        let raw_nodes = self.nodes.clone();
 
         // Build map keyed by id, check duplicates.
         let mut nodes: BTreeMap<u32, NodeSpec> = BTreeMap::new();
@@ -101,10 +89,15 @@ impl OpsSpec {
                 bail!("duplicate node id in ops.json: {}", raw.id);
             }
 
+            let block = raw
+                .block
+                .clone()
+                .unwrap_or_else(|| "other".to_string());
+
             let mut ops = BTreeSet::new();
             for op in raw.operators {
                 match op {
-                    OperatorRefSpec::Explicit { addr } => {
+                    OperatorRefSpec::Addr(addr) | OperatorRefSpec::Explicit { addr } => {
                         ops.insert(Addr::new(addr));
                     }
                 }
@@ -114,7 +107,10 @@ impl OpsSpec {
                 raw.id,
                 NodeSpec {
                     id: raw.id,
-                    label: raw.label,
+                    label: raw.name,
+                    block,
+                    tags: raw.tags,
+                    rule: raw.rule,
                     children: raw.children,
                     operators: ops,
                 },
