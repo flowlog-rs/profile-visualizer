@@ -1,9 +1,42 @@
 {
+  "rules": [
+    {
+      "text": "tc(x, y) :- arc(x, y)",
+      "plantree": [
+        {
+          "fingerprints": "0x8f826b86e6071a79",
+          "children": []
+        }
+      ]
+    },
+    {
+      "text": "tc(x, y) :- tc(x, z), arc(z, y)",
+      "plantree": [
+        {
+          "fingerprints": "0xb30de599bb2898bf",
+          "children": [
+            "0x710ec2cd2932502a"
+          ]
+        },
+        {
+          "fingerprints": "0xd3f02d243669cca0",
+          "children": [
+            "0x710ec2cd2932502a"
+          ]
+        },
+        {
+          "fingerprints": "0x710ec2cd2932502a",
+          "children": []
+        }
+      ]
+    }
+  ],
   "nodes": [
     {
       "id": 0,
       "name": "arc: input",
       "block": "input",
+      "fingerprint": null,
       "tags": [
         "Input"
       ],
@@ -22,6 +55,7 @@
       "id": 1,
       "name": "arc: distinct / dedup",
       "block": "input",
+      "fingerprint": null,
       "tags": [
         "Input"
       ],
@@ -49,6 +83,7 @@
       "id": 2,
       "name": "[Row → Row] V:(V0,V1)  [arc] (x,y)",
       "block": "stratum 0",
+      "fingerprint": "0x8f826b86e6071a79",
       "tags": [
         "Stage"
       ],
@@ -67,6 +102,7 @@
       "id": 3,
       "name": "tc: distinct / dedup",
       "block": "stratum 0",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -93,6 +129,7 @@
       "id": 4,
       "name": "arc: enter",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -112,6 +149,7 @@
       "id": 5,
       "name": "tc: enter",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -129,8 +167,9 @@
     },
     {
       "id": 6,
-      "name": "[Row → Row] V:(V0,V1)  [arc] (z,y)",
+      "name": "[Row -> KV] K:(V0), V:(V1)  [arc] (z,y)",
       "block": "stratum 1",
+      "fingerprint": "0xb30de599bb2898bf",
       "tags": [
         "Stage"
       ],
@@ -153,6 +192,7 @@
       "id": 7,
       "name": "[Row → KV] K:(V1), V:(V0)  [tc] (x,z)",
       "block": "stratum 1",
+      "fingerprint": "0xd3f02d243669cca0",
       "tags": [
         "Stage"
       ],
@@ -177,6 +217,7 @@
       "id": 8,
       "name": "[Join → Row] V:(LV0,RV0)",
       "block": "stratum 1",
+      "fingerprint": "0x710ec2cd2932502a",
       "tags": [
         "Stage"
       ],
@@ -196,6 +237,7 @@
       "id": 9,
       "name": "tc: distinct / dedup",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -230,6 +272,7 @@
       "id": 10,
       "name": "tc: feedback",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -249,6 +292,7 @@
       "id": 11,
       "name": "tc: resultsin",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -268,6 +312,7 @@
       "id": 12,
       "name": "tc: leave",
       "block": "stratum 1",
+      "fingerprint": null,
       "tags": [
         "Runtime"
       ],
@@ -286,6 +331,7 @@
       "id": 13,
       "name": "tc: inspection",
       "block": "inspect",
+      "fingerprint": null,
       "tags": [
         "Inspect"
       ],

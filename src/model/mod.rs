@@ -1,7 +1,7 @@
 //! Aggregation model: combine UI tree (from ops.json) + log rows.
 
 use crate::log::{LogIndex, LogRow};
-use crate::spec::{Addr, NodeSpec};
+use crate::spec::{Addr, NodeSpec, RuleSpec};
 use crate::Result;
 use anyhow::bail;
 use serde::Serialize;
@@ -20,6 +20,7 @@ pub struct NameNodeView {
     pub name: String,
     pub label: String,
     pub block: String,
+    pub fingerprint: Option<String>,
     pub tags: Vec<String>,
     pub rule: Option<String>,
 
@@ -41,9 +42,28 @@ pub struct NameNodeView {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct RulePlanNodeView {
+    pub fingerprint: String,
+    pub node: Option<String>,
+    pub label: Option<String>,
+    pub children: Vec<String>,
+    pub parents: Vec<String>,
+    pub shared: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct RuleView {
+    pub text: String,
+    pub root: String,
+    pub nodes: BTreeMap<String, RulePlanNodeView>,
+    pub extras: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct ReportData {
     pub roots: Vec<String>,
     pub nodes: BTreeMap<String, NameNodeView>,
+    pub rules: Vec<RuleView>,
     pub totals: TotalsView,
 }
 
@@ -62,6 +82,8 @@ pub struct TotalsView {
 pub fn build_report_data(
     nodes_spec: &BTreeMap<String, NodeSpec>,
     roots: &[String],
+    rules_spec: &[RuleSpec],
+    fingerprint_to_node: &BTreeMap<String, String>,
     log: &LogIndex,
 ) -> Result<ReportData> {
     // 1) Enforce: each operator addr belongs to at most one name (strict).
@@ -188,6 +210,7 @@ pub fn build_report_data(
                 name: name.clone(),
                 label: spec.label.clone(),
                 block: spec.block.clone(),
+                fingerprint: spec.fingerprint.clone(),
                 tags: spec.tags.clone(),
                 rule: spec.rule.clone(),
                 children: tree_children.get(name).cloned().unwrap_or_default(),
@@ -210,5 +233,78 @@ pub fn build_report_data(
             total_mapped_activations,
         },
         nodes: nodes_view,
+        rules: build_rule_views(rules_spec, nodes_spec, fingerprint_to_node),
     })
+}
+
+fn build_rule_views(
+    rules_spec: &[RuleSpec],
+    nodes_spec: &BTreeMap<String, NodeSpec>,
+    fingerprint_to_node: &BTreeMap<String, String>,
+) -> Vec<RuleView> {
+    let mut views = Vec::new();
+
+    for rule in rules_spec {
+        // Parent list for shared-node detection.
+        let mut parents: BTreeMap<String, Vec<String>> = BTreeMap::new();
+        for (fp, node) in &rule.nodes {
+            for child in &node.children {
+                parents.entry(child.clone()).or_default().push(fp.clone());
+            }
+        }
+
+        let mut nodes_view: BTreeMap<String, RulePlanNodeView> = BTreeMap::new();
+        for (fp, node) in &rule.nodes {
+            let node_name = fingerprint_to_node.get(fp).cloned();
+            let label = node_name
+                .as_ref()
+                .and_then(|n| nodes_spec.get(n))
+                .map(|s| s.label.clone());
+
+            let parent_list = parents.get(fp).cloned().unwrap_or_default();
+            let shared = parent_list.len() > 1;
+
+            nodes_view.insert(
+                fp.clone(),
+                RulePlanNodeView {
+                    fingerprint: fp.clone(),
+                    node: node_name,
+                    label,
+                    children: node.children.clone(),
+                    parents: parent_list,
+                    shared,
+                },
+            );
+        }
+
+        // Nodes that belong to this rule but are not part of the plan tree.
+        let mut extras: Vec<String> = nodes_spec
+            .iter()
+            .filter_map(|(name, spec)| match &spec.rule {
+                Some(rt) if rt == &rule.text => {
+                    let in_tree = spec
+                        .fingerprint
+                        .as_ref()
+                        .map(|fp| rule.nodes.contains_key(fp))
+                        .unwrap_or(false);
+                    if in_tree {
+                        None
+                    } else {
+                        Some(name.clone())
+                    }
+                }
+                _ => None,
+            })
+            .collect();
+        extras.sort();
+
+        views.push(RuleView {
+            text: rule.text.clone(),
+            root: rule.root.clone(),
+            nodes: nodes_view,
+            extras,
+        });
+    }
+
+    views
 }

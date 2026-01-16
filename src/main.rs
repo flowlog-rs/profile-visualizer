@@ -39,18 +39,37 @@ fn main() -> Result<()> {
             let ops_spec: spec::OpsSpec = serde_json::from_str(&std::fs::read_to_string(&ops)?)?;
             let validated = ops_spec.validate_and_build()?;
 
+            let spec::ValidatedOps {
+                nodes,
+                roots: root_ids,
+                rules,
+                fingerprint_to_node,
+            } = validated;
+
             // Prepare node map keyed by stringified id for downstream rendering.
             let mut nodes_by_name = std::collections::BTreeMap::new();
-            for (id, node) in validated.nodes {
+            for (id, node) in nodes {
                 nodes_by_name.insert(id.to_string(), node);
             }
-            let roots: Vec<String> = validated.roots.iter().map(|id| id.to_string()).collect();
+
+            let roots: Vec<String> = root_ids.iter().map(|id| id.to_string()).collect();
+
+            let fingerprint_to_node: std::collections::BTreeMap<String, String> = fingerprint_to_node
+                .into_iter()
+                .map(|(fp, id)| (fp, id.to_string()))
+                .collect();
 
             // 2) Parse log.
             let log_index = log::parse_log_file(&log)?;
 
             // 3) Aggregate.
-            let data = model::build_report_data(&nodes_by_name, &roots, &log_index)?;
+            let data = model::build_report_data(
+                &nodes_by_name,
+                &roots,
+                &rules,
+                &fingerprint_to_node,
+                &log_index,
+            )?;
 
             // 4) Render HTML.
             let html = render::render_html_report(&data)?;

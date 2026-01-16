@@ -122,7 +122,11 @@ const state = {
   search: "",
   view: "tree",
   graph: { tx: 0, ty: 0, scale: 1 }, // pan/zoom
+  defaultExpanded: false,
 };
+
+// Unique key for rule plan nodes (rule text + fingerprint).
+const planKey = (ruleText, fp) => `${ruleText}::${fp}`;
 
 const NODE = {
   padX: 12,
@@ -215,6 +219,10 @@ function renderTree() {
   root.innerHTML = "";
 
   const nodes = DATA.nodes;
+  const rules = DATA.rules || [];
+  const rulesByText = new Map(rules.map((r) => [r.text, r]));
+
+  const autoExpand = !state.defaultExpanded && state.expanded.size === 0;
 
   const idOf = (name) => {
     const n = parseInt(name, 10);
@@ -231,7 +239,6 @@ function renderTree() {
 
   const blocks = new Map(); // block -> [names]
   for (const [name, node] of Object.entries(nodes)) {
-    if (state.search && !nodeMatches(name, node)) continue;
     const blk = (node.block || "other").toString();
     if (!blocks.has(blk)) blocks.set(blk, []);
     blocks.get(blk).push(name);
@@ -254,12 +261,13 @@ function renderTree() {
     return a.localeCompare(b);
   });
 
-  function renderNodeRow(name) {
+  function renderNodeRow(name, depth = 0) {
     const node = nodes[name];
+    if (state.search && !nodeMatches(name, node)) return;
     const row = document.createElement("div");
     row.className = "tree-node" + (state.selected === name ? " selected" : "");
     row.dataset.name = name;
-    row.style.paddingLeft = "12px";
+    row.style.paddingLeft = `${12 + depth * 16}px`;
     row.onclick = () => selectNode(name);
     row.innerHTML = `${escapeHtml(node.label)} <span class="muted">(${fmtMs(
       node.self_total_active_ms
@@ -267,13 +275,116 @@ function renderTree() {
     root.appendChild(row);
   }
 
-  function renderRuleGroup(title, names) {
+  function renderRuleHeader(title) {
     const hdr = document.createElement("div");
     hdr.className = "muted";
     hdr.style.padding = "4px 0 2px 0";
     hdr.textContent = title;
     root.appendChild(hdr);
-    names.forEach(renderNodeRow);
+  }
+
+  const planMatchMemo = new Map();
+
+  function planNodeMatches(rule, fp, visiting = new Set()) {
+    const key = planKey(rule.text, fp);
+    if (planMatchMemo.has(key)) return planMatchMemo.get(key);
+    const pn = rule.nodes?.[fp];
+    if (!pn) {
+      planMatchMemo.set(key, false);
+      return false;
+    }
+    if (visiting.has(fp)) return false; // avoid cycles
+
+    const useParents = (rule.nodes?.[rule.root]?.children || []).length === 0;
+    const nextEdges = useParents ? pn.parents || [] : pn.children || [];
+
+    let matched = false;
+    const name = pn.node;
+    if (name && nodes[name] && nodeMatches(name, nodes[name])) {
+      matched = true;
+    }
+
+    if (!matched) {
+      visiting.add(fp);
+      for (const child of nextEdges) {
+        if (planNodeMatches(rule, child, visiting)) {
+          matched = true;
+          break;
+        }
+      }
+      visiting.delete(fp);
+    }
+
+    planMatchMemo.set(key, matched);
+    return matched;
+  }
+
+  function renderPlanNode(rule, fp, depth, visiting = new Set()) {
+    const pn = rule.nodes?.[fp];
+    if (!pn) return;
+
+    if (state.search && !planNodeMatches(rule, fp, new Set())) return;
+
+    const useParents = (rule.nodes?.[rule.root]?.children || []).length === 0;
+    const nextEdges = useParents ? pn.parents || [] : pn.children || [];
+
+    const key = planKey(rule.text, fp);
+    if (autoExpand && nextEdges.length) {
+      state.expanded.add(key);
+    }
+
+    const name = pn.node;
+    const node = name ? nodes[name] : null;
+    const hasChildren = nextEdges.length > 0;
+    const expanded = hasChildren && state.expanded.has(key);
+
+    const row = document.createElement("div");
+    row.className = "tree-node" + (state.selected === name ? " selected" : "");
+    row.dataset.name = name || fp;
+
+    const indent = '<span class="indent"></span>'.repeat(depth);
+    const toggle = hasChildren
+      ? `<span class="toggle" data-toggle="1">${expanded ? "▾" : "▸"}</span>`
+      : '<span class="toggle"></span>';
+
+    const labelText = node?.label || pn.label || name || pn.fingerprint || fp;
+    const shared = pn.shared ? ' <span class="muted">[shared]</span>' : "";
+    const meta = node
+      ? ` <span class="muted">(${fmtMs(node.self_total_active_ms)} ms, ${
+          node.self_activations
+        } act)</span>`
+      : "";
+
+    row.innerHTML = `${indent}${toggle}${escapeHtml(labelText)}${shared}${meta}`;
+
+    row.onclick = (e) => {
+      if (e.target?.dataset?.toggle === "1") {
+        if (expanded) state.expanded.delete(key);
+        else state.expanded.add(key);
+        renderTree();
+        return;
+      }
+      if (name) selectNode(name);
+    };
+
+    root.appendChild(row);
+
+    if (!hasChildren || !expanded) return;
+
+    const ordered = [...nextEdges].sort((a, b) => a.localeCompare(b));
+    for (const child of ordered) {
+      if (visiting.has(child)) {
+        const cyc = document.createElement("div");
+        cyc.className = "tree-node muted";
+        cyc.style.paddingLeft = `${12 + (depth + 1) * 16}px`;
+        cyc.textContent = `(cycle to ${child})`;
+        root.appendChild(cyc);
+        continue;
+      }
+      const next = new Set(visiting);
+      next.add(fp);
+      renderPlanNode(rule, child, depth + 1, next);
+    }
   }
 
   for (const blk of sortedBlocks) {
@@ -291,21 +402,46 @@ function renderTree() {
       for (const n of names) {
         const ruleRaw = nodes[n].rule;
         const ruleClean = ruleRaw && ruleRaw.trim().length ? ruleRaw.trim() : null;
-        const display = ruleClean ? `rule: ${ruleClean}` : "runtime";
+        const display = ruleClean || "runtime";
         if (!byRule.has(display)) byRule.set(display, []);
         byRule.get(display).push(n);
       }
       const sortedRules = Array.from(byRule.keys()).sort();
       for (const r of sortedRules) {
-        const ns = byRule
-          .get(r)
-          .sort(cmpById);
-        renderRuleGroup(r, ns);
+        const ruleNodes = byRule.get(r).sort(cmpById);
+        if (r === "runtime" || !r) {
+          renderRuleHeader("runtime");
+          ruleNodes.forEach((n) => renderNodeRow(n));
+          continue;
+        }
+
+        const ruleSpec = rulesByText.get(r);
+        renderRuleHeader(`rule: ${r}`);
+
+        if (ruleSpec && ruleSpec.root && ruleSpec.nodes?.[ruleSpec.root]) {
+          renderPlanNode(ruleSpec, ruleSpec.root, 0);
+
+          const extras = (ruleSpec.extras || []).filter(
+            (n) => nodes[n]?.block === blk
+          );
+          if (extras.length) {
+            const extraHdr = document.createElement("div");
+            extraHdr.className = "muted";
+            extraHdr.style.paddingLeft = "12px";
+            extraHdr.textContent = "(not in plan tree)";
+            root.appendChild(extraHdr);
+            extras.sort(cmpById).forEach((n) => renderNodeRow(n, 1));
+          }
+        } else {
+          ruleNodes.forEach((n) => renderNodeRow(n));
+        }
       }
     } else {
-      names.sort(cmpById).forEach(renderNodeRow);
+      names.sort(cmpById).forEach((n) => renderNodeRow(n));
     }
   }
+
+  if (autoExpand) state.defaultExpanded = true;
 }
 
 function renderGraph() {
@@ -831,15 +967,22 @@ function selectNode(name) {
 }
 
 function expandAll() {
-  for (const name of Object.keys(DATA.nodes)) {
-    const node = DATA.nodes[name];
-    if (node.children && node.children.length) state.expanded.add(name);
+  state.expanded.clear();
+  for (const rule of DATA.rules || []) {
+    if (!rule.nodes) continue;
+    for (const [fp, pn] of Object.entries(rule.nodes)) {
+      if (pn.children && pn.children.length) {
+        state.expanded.add(planKey(rule.text, fp));
+      }
+    }
   }
+  state.defaultExpanded = true;
   renderTree();
 }
 
 function collapseAll() {
   state.expanded.clear();
+  state.defaultExpanded = true;
   renderTree();
 }
 

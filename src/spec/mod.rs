@@ -9,4 +9,4 @@ pub mod addr;
 pub mod ops;
 
 pub use addr::Addr;
-pub use ops::{NodeSpec, OpsSpec};
+pub use ops::{NodeSpec, OpsSpec, RuleSpec, ValidatedOps};
