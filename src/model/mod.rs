@@ -1,8 +1,8 @@
 //! Aggregation model: combine UI tree (from ops.json) + log rows.
 
+use crate::Result;
 use crate::log::{LogIndex, LogRow};
 use crate::spec::{Addr, NodeSpec, RuleSpec};
-use crate::Result;
 use anyhow::bail;
 use serde::Serialize;
 use std::collections::BTreeMap;
@@ -22,7 +22,6 @@ pub struct NameNodeView {
     pub block: String,
     pub fingerprint: Option<String>,
     pub tags: Vec<String>,
-    pub rule: Option<String>,
 
     /// Primary tree children (spanning tree derived from DAG).
     pub children: Vec<String>,
@@ -56,7 +55,6 @@ pub struct RuleView {
     pub text: String,
     pub root: String,
     pub nodes: BTreeMap<String, RulePlanNodeView>,
-    pub extras: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -196,13 +194,8 @@ pub fn build_report_data(
             }
         }
 
-        // Sort operators by total_active_ms desc, then addr.
-        operators.sort_by(|a, b| {
-            b.total_active_ms
-                .partial_cmp(&a.total_active_ms)
-                .unwrap_or(std::cmp::Ordering::Equal)
-                .then_with(|| a.addr.cmp(&b.addr))
-        });
+        // Sort operators by addr only (stable, deterministic).
+        operators.sort_by(|a, b| a.addr.cmp(&b.addr));
 
         nodes_view.insert(
             name.clone(),
@@ -212,7 +205,6 @@ pub fn build_report_data(
                 block: spec.block.clone(),
                 fingerprint: spec.fingerprint.clone(),
                 tags: spec.tags.clone(),
-                rule: spec.rule.clone(),
                 children: tree_children.get(name).cloned().unwrap_or_default(),
                 dag_children: spec.children.iter().map(|c| c.to_string()).collect(),
                 extra_parents: extra_parents.get(name).cloned().unwrap_or_default(),
@@ -277,32 +269,10 @@ fn build_rule_views(
             );
         }
 
-        // Nodes that belong to this rule but are not part of the plan tree.
-        let mut extras: Vec<String> = nodes_spec
-            .iter()
-            .filter_map(|(name, spec)| match &spec.rule {
-                Some(rt) if rt == &rule.text => {
-                    let in_tree = spec
-                        .fingerprint
-                        .as_ref()
-                        .map(|fp| rule.nodes.contains_key(fp))
-                        .unwrap_or(false);
-                    if in_tree {
-                        None
-                    } else {
-                        Some(name.clone())
-                    }
-                }
-                _ => None,
-            })
-            .collect();
-        extras.sort();
-
         views.push(RuleView {
             text: rule.text.clone(),
             root: rule.root.clone(),
             nodes: nodes_view,
-            extras,
         });
     }
 

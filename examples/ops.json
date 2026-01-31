@@ -40,7 +40,6 @@
       "tags": [
         "Input"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -59,7 +58,6 @@
       "tags": [
         "Input"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -87,7 +85,6 @@
       "tags": [
         "Stage"
       ],
-      "rule": "tc(x, y) :- arc(x, y)",
       "operators": [
         [
           0,
@@ -106,7 +103,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -133,7 +129,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -153,7 +148,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -173,7 +167,6 @@
       "tags": [
         "Stage"
       ],
-      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
       "operators": [
         [
           0,
@@ -196,7 +189,6 @@
       "tags": [
         "Stage"
       ],
-      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
       "operators": [
         [
           0,
@@ -221,7 +213,6 @@
       "tags": [
         "Stage"
       ],
-      "rule": "tc(x, y) :- tc(x, z), arc(z, y)",
       "operators": [
         [
           0,
@@ -241,7 +232,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -276,7 +266,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -296,7 +285,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -316,7 +304,6 @@
       "tags": [
         "Runtime"
       ],
-      "rule": null,
       "operators": [
         [
           0,
@@ -335,7 +322,6 @@
       "tags": [
         "Inspect"
       ],
-      "rule": null,
       "operators": [
         [
           0,

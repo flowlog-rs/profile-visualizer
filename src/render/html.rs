@@ -1,5 +1,5 @@
-use crate::model::ReportData;
 use crate::Result;
+use crate::model::ReportData;
 use serde_json::to_string;
 
 /// Render a self-contained HTML report (data embedded as JSON).
@@ -416,43 +416,40 @@ function renderTree() {
     const isStratum = /^stratum\s+/i.test(blk);
 
     if (isStratum) {
-      const byRule = new Map();
+      const runtimeNodes = [];
+      const ruleNodesByText = new Map();
+
       for (const n of names) {
-        const ruleRaw = nodes[n].rule;
-        const ruleClean = ruleRaw && ruleRaw.trim().length ? ruleRaw.trim() : null;
-        const display = ruleClean || "runtime";
-        if (!byRule.has(display)) byRule.set(display, []);
-        byRule.get(display).push(n);
-      }
-      const sortedRules = Array.from(byRule.keys()).sort();
-      for (const r of sortedRules) {
-        const ruleNodes = byRule.get(r).sort(cmpById);
-        if (r === "runtime" || !r) {
-          renderRuleHeader("runtime");
-          ruleNodes.forEach((n) => renderNodeRow(n));
+        const fp = nodes[n]?.fingerprint || null;
+        const matches = fp ? rulesForFingerprint(fp) : [];
+        if (!matches.length) {
+          runtimeNodes.push(n);
           continue;
         }
+        for (const r of matches) {
+          if (!ruleNodesByText.has(r)) ruleNodesByText.set(r, new Set());
+          ruleNodesByText.get(r).add(n);
+        }
+      }
 
-        const ruleSpec = rulesByText.get(r);
+      // Render rules in spec order for stability.
+      for (const rule of rules) {
+        const r = rule.text;
+        const set = ruleNodesByText.get(r);
+        if (!set || set.size === 0) continue;
+
         renderRuleHeader(`rule: ${r}`);
 
-        if (ruleSpec && ruleSpec.root && ruleSpec.nodes?.[ruleSpec.root]) {
-          renderPlanNode(ruleSpec, ruleSpec.root, 0);
-
-          const extras = (ruleSpec.extras || []).filter(
-            (n) => nodes[n]?.block === blk
-          );
-          if (extras.length) {
-            const extraHdr = document.createElement("div");
-            extraHdr.className = "muted";
-            extraHdr.style.paddingLeft = "12px";
-            extraHdr.textContent = "(not in plan tree)";
-            root.appendChild(extraHdr);
-            extras.sort(cmpById).forEach((n) => renderNodeRow(n, 1));
-          }
+        if (rule.root && rule.nodes?.[rule.root]) {
+          renderPlanNode(rule, rule.root, 0);
         } else {
-          ruleNodes.forEach((n) => renderNodeRow(n));
+          Array.from(set).sort(cmpById).forEach((n) => renderNodeRow(n));
         }
+      }
+
+      if (runtimeNodes.length) {
+        renderRuleHeader("runtime");
+        runtimeNodes.sort(cmpById).forEach((n) => renderNodeRow(n));
       }
     } else {
       names.sort(cmpById).forEach((n) => renderNodeRow(n));

@@ -8,7 +8,6 @@
 //!       "name": "foo",            // label rendered in UI
 //!       "block": "input",        // grouping bucket for graph blocks
 //!       "tags": ["Input"],        // optional, auxiliary
-//!       "rule": "...",            // optional, unused today
 //!       "operators": [[0,1,2]],    // list of Timely operator addresses
 //!       "children": [1, 2]         // edges in the DAG
 //!     },
@@ -19,8 +18,8 @@
 //! We validate ids, turn operator address arrays into Addr, derive parents, and
 //! compute roots (nodes with no incoming edges).
 
-use crate::spec::Addr;
 use crate::Result;
+use crate::spec::Addr;
 use anyhow::bail;
 use serde::Deserialize;
 use serde::de::Deserializer;
@@ -51,9 +50,6 @@ pub struct RawNode {
 
     #[serde(default)]
     pub tags: Vec<String>,
-
-    #[serde(default)]
-    pub rule: Option<String>,
 
     #[serde(default)]
     pub operators: Vec<Addr>,
@@ -89,7 +85,6 @@ pub struct NodeSpec {
     pub block: String,
     pub fingerprint: Option<String>,
     pub tags: Vec<String>,
-    pub rule: Option<String>,
     pub children: Vec<u32>,
     pub operators: BTreeSet<Addr>,
 }
@@ -118,10 +113,7 @@ impl OpsSpec {
                 bail!("duplicate node id in ops.json: {}", raw.id);
             }
 
-            let block = raw
-                .block
-                .clone()
-                .unwrap_or_else(|| "other".to_string());
+            let block = raw.block.clone().unwrap_or_else(|| "other".to_string());
 
             let fingerprint = raw
                 .fingerprint
@@ -142,7 +134,6 @@ impl OpsSpec {
                     block,
                     fingerprint,
                     tags: raw.tags,
-                    rule: raw.rule,
                     children: raw.children,
                     operators: ops,
                 },
@@ -247,7 +238,13 @@ impl OpsSpec {
             // Compute sinks (nodes with no children) and ensure exactly one.
             let sinks: Vec<String> = nodes_map
                 .iter()
-                .filter_map(|(fp, node)| if node.children.is_empty() { Some(fp.clone()) } else { None })
+                .filter_map(|(fp, node)| {
+                    if node.children.is_empty() {
+                        Some(fp.clone())
+                    } else {
+                        None
+                    }
+                })
                 .collect();
 
             if sinks.len() != 1 {
@@ -273,6 +270,25 @@ impl OpsSpec {
                 root: root_fp,
                 nodes: nodes_map,
             });
+        }
+
+        // Enforce: every node with a fingerprint is recorded in rules.
+        let mut rule_fps: BTreeSet<String> = BTreeSet::new();
+        for rule in &rules_out {
+            for fp in rule.nodes.keys() {
+                rule_fps.insert(fp.clone());
+            }
+        }
+        for (id, node) in &nodes {
+            if let Some(fp) = &node.fingerprint {
+                if !rule_fps.contains(fp) {
+                    bail!(
+                        "node {} has fingerprint '{}' but it is not recorded in rules",
+                        id,
+                        fp
+                    );
+                }
+            }
         }
 
         Ok(ValidatedOps {
