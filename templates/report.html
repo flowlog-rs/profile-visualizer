@@ -978,9 +978,10 @@ function renderGraph() {
     lastX = e.clientX;
     lastY = e.clientY;
 
-    // Pan in screen-space so movement stays responsive at high zoom.
-    state.graph.tx += dx;
-    state.graph.ty += dy;
+    // Pan in screen-space with a boost at higher zoom levels.
+    const panBoost = Math.max(1, Math.sqrt(state.graph.scale));
+    state.graph.tx += dx * panBoost;
+    state.graph.ty += dy * panBoost;
     scheduleApplyTransform();
   });
 

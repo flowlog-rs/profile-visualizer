@@ -74,7 +74,7 @@ pub struct RawRule {
 #[derive(Debug, Clone, Deserialize)]
 pub struct RawPlanNode {
     #[serde(deserialize_with = "deserialize_fingerprint")]
-    pub fingerprints: String,
+    pub fingerprint: String,
 
     #[serde(default)]
     pub parents: Vec<String>,
@@ -210,7 +210,7 @@ impl OpsSpec {
             let mut nodes_map: BTreeMap<String, RulePlanNodeSpec> = BTreeMap::new();
 
             for pn in &raw_rule.plan_tree {
-                let fp = pn.fingerprints.trim();
+                let fp = pn.fingerprint.trim();
                 if fp.is_empty() {
                     bail!(
                         "{}",
