@@ -24,6 +24,11 @@
   .toggle { display: inline-block; width: 16px; text-align: center; color: #666; }
   .muted { color: #777; font-size: 12px; }
 
+  #rulePicker { margin: 8px 0 10px; font-size: 16px; line-height: 1.4; }
+  .rule-list { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+  .rule-item { text-align: left; padding: 6px 10px; border: 1px solid #ddd; background: #fafafa; border-radius: 6px; cursor: pointer; font-size: 15px; }
+  .rule-item.active { background: #e9f2ff; border-color: #cfe3ff; font-weight: 600; }
+
   .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
   .tab { padding: 6px 10px; border: 1px solid #ddd; background: #f8f8f8; border-radius: 6px; cursor: pointer; }
   .tab.active { background: #e9f2ff; border-color: #cfe3ff; }
@@ -83,7 +88,7 @@
     <div id="detailPane">
       <h2 id="title">Select a node</h2>
       <div id="meta" class="muted"></div>
-      <div id="rulePicker" style="margin:6px 0; font-size:13px;"></div>
+      <div id="rulePicker"></div>
 
       <table id="opsTable" style="display:none;">
         <thead>
@@ -1044,20 +1049,20 @@ function renderRulePicker(name, fp, matches, selectedRule) {
     return;
   }
   if (matches.length === 1) {
-    el.innerHTML = `rule: ${escapeHtml(matches[0])}`;
+    el.innerHTML = `<div class="rule-single">rule: ${escapeHtml(matches[0])}</div>`;
     return;
   }
 
   const buttons = matches
     .map((r) => {
       const active = r === selectedRule;
-      return `<button data-rule="${escapeHtml(r)}" style="margin-right:6px; padding:4px 8px;${
-        active ? " font-weight:600;" : ""
+      return `<button data-rule="${escapeHtml(r)}" class="rule-item${
+        active ? " active" : ""
       }">${escapeHtml(r)}</button>`;
     })
     .join("");
 
-  el.innerHTML = `Shared in ${matches.length} rules: ${buttons}`;
+  el.innerHTML = `Shared in ${matches.length} rules:<div class="rule-list">${buttons}</div>`;
   el.querySelectorAll("button[data-rule]").forEach((btn) => {
     btn.onclick = () => selectNode(name, btn.dataset.rule);
   });
