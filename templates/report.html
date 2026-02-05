@@ -1179,17 +1179,21 @@
       // Click-to-select still works.
       svg.addEventListener("click", (e) => {
         const g = e.target.closest(".g-node");
-        if (!g) {
-          state.selected = null;
-          state.selectedRule = null;
-          clearEdgeFocus();
-          renderTree();
-          renderTopNodes();
-          renderGraph();
-          return;
-        }
+        if (!g) return;
         const name = g.getAttribute("data-name");
         if (name) selectNode(name);
+      });
+
+      // Double-click on blank area resets selection.
+      svg.addEventListener("dblclick", (e) => {
+        const g = e.target.closest(".g-node");
+        if (g) return;
+        state.selected = null;
+        state.selectedRule = null;
+        clearEdgeFocus();
+        renderTree();
+        renderTopNodes();
+        renderGraph();
       });
 
       function focusEdges(name) {
