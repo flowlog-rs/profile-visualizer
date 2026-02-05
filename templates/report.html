@@ -689,7 +689,7 @@
             const set = ruleNodesByText.get(r);
             if (!set || set.size === 0) continue;
 
-            renderRuleHeader(`rule: ${r}`);
+            renderRuleHeader(`${r}`);
 
             if (rule.root && rule.nodes?.[rule.root]) {
               renderPlanNode(rule, rule.root, 0);
@@ -1300,7 +1300,7 @@
         return;
       }
       if (matches.length === 1) {
-        el.innerHTML = `<div class="rule-single">rule: ${escapeHtml(matches[0])}</div>`;
+        el.innerHTML = `<div class="rule-single">${escapeHtml(matches[0])}</div>`;
         return;
       }
 
