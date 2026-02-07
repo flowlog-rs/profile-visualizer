@@ -376,7 +376,7 @@
       search: "",
       view: "tree",
       graph: { tx: 0, ty: 0, scale: 1 }, // pan/zoom
-      defaultExpanded: false,
+      defaultExpanded: true,
     };
 
     // Unique key for rule plan nodes (rule text + fingerprint).
@@ -1139,7 +1139,7 @@
       <g class="g-node${isSel ? " selected" : ""}" data-name="${name}" transform="translate(${b.x0}, ${b.y0})">
         <rect width="${b.w}" height="${b.h}" fill="${color(ms)}"></rect>
         <text x="${b.w / 2}" y="${textY0}" text-anchor="middle">${tspans}</text>
-        <title>${labelEsc}\nself_ms: ${fmtMs(ms)}\nactivations: ${node.self_activations
+        <title>${labelEsc}\ntime: ${fmtMs(ms)}\nactivations: ${node.self_activations
           }</title>
       </g>`;
       }
