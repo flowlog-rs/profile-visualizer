@@ -76,6 +76,14 @@
       background: linear-gradient(90deg, rgb(233, 242, 255) 0%, rgb(91, 141, 239) 100%);
     }
 
+    .legend-swatch-red {
+      width: 160px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid #e0ccd0;
+      background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(220, 30, 30) 100%);
+    }
+
     .tree-node {
       cursor: pointer;
       user-select: none;
@@ -335,9 +343,16 @@
     </div>
 
     <div class="main">
-      <div class="tabs">
-        <button class="tab active" id="tabTree">Nodes</button>
-        <button class="tab" id="tabGraph">Graph</button>
+      <div class="tabs" style="justify-content:space-between;">
+        <div style="display:flex;gap:8px;">
+          <button class="tab active" id="tabTree">Nodes</button>
+          <button class="tab" id="tabGraph">Graph</button>
+        </div>
+        <div id="modeToggle" style="display:none;gap:4px;align-items:center;">
+          <span style="font-size:13px;color:#555;">Show:</span>
+          <button class="tab active" id="modeTime">Time</button>
+          <button class="tab" id="modeMemory">Memory</button>
+        </div>
       </div>
 
       <div id="detailPane">
@@ -346,7 +361,7 @@
         <div id="rulePicker"></div>
 
         <table id="opsTable" style="display:none;">
-          <thead>
+          <thead id="opsTableHead">
             <tr>
               <th>addr</th>
               <th>operator</th>
@@ -377,6 +392,7 @@
       view: "tree",
       graph: { tx: 0, ty: 0, scale: 1 }, // pan/zoom
       defaultExpanded: true,
+      displayMode: "time", // "time" or "memory"
     };
 
     // Unique key for rule plan nodes (rule text + fingerprint).
@@ -450,12 +466,14 @@
     function renderSummary() {
       const t = DATA.totals;
       const el = document.getElementById("summary");
+      const memPill = `<span class="pill">total batched_in: <b>${t.total_batched_in.toLocaleString()}</b></span>`;
       el.innerHTML = `
     <span class="pill">names: <b>${t.names}</b></span>
-    <span class="pill">operators in log: <b>${t.operators_in_log}</b></span>
+    <span class="pill">operators in time log: <b>${t.operators_in_time}</b></span>
     <span class="pill">operators mapped: <b>${t.operators_mapped}</b></span>
     <span class="pill">mapped ms: <b>${fmtMs(t.total_mapped_ms)}</b></span>
     <span class="pill">mapped activations: <b>${t.total_mapped_activations}</b></span>
+    ${memPill}
   `;
     }
 
@@ -529,6 +547,15 @@
         return a.localeCompare(b);
       });
 
+      const nodeMetaStr = (node) => {
+        if (state.displayMode === "memory") {
+          return node.has_memory_data
+            ? `batched_in: ${node.self_batched_in.toLocaleString()}, merges: ${node.self_merges.toLocaleString()}, merge_in: ${node.self_merge_in.toLocaleString()}, merge_out: ${node.self_merge_out.toLocaleString()}, dropped: ${node.self_dropped.toLocaleString()}`
+            : "no memory data";
+        }
+        return `${fmtMs(node.self_total_active_ms)} ms, ${node.self_activations} act`;
+      };
+
       function renderNodeRow(name, depth = 0) {
         const node = nodes[name];
         if (state.search && !nodeMatches(name, node)) return;
@@ -537,9 +564,7 @@
         row.dataset.name = name;
         row.style.paddingLeft = `${12 + depth * 16}px`;
         row.onclick = () => selectNode(name);
-        row.innerHTML = `${escapeHtml(node.label)} <span class="muted">(${fmtMs(
-          node.self_total_active_ms
-        )} ms, ${node.self_activations} act)</span>`;
+        row.innerHTML = `${escapeHtml(node.label)} <span class="muted">(${nodeMetaStr(node)})</span>`;
         root.appendChild(row);
       }
 
@@ -620,8 +645,7 @@
         const labelText = node?.label || pn.label || name || pn.fingerprint || fp;
         const shared = pn.shared ? ' <span class="muted">[shared]</span>' : "";
         const meta = node
-          ? ` <span class="muted">(${fmtMs(node.self_total_active_ms)} ms, ${node.self_activations
-          } act)</span>`
+          ? ` <span class="muted">(${nodeMetaStr(node)})</span>`
           : "";
 
         row.innerHTML = `${indent}${toggle}${escapeHtml(labelText)}${shared}${meta}`;
@@ -1006,14 +1030,26 @@
         blockBoxes.set(blk, bb);
       }
 
-      // Node color scale based on self time.
+      // Node color scale based on self time or memory (batched_in).
       const maxMs = Math.max(
         ...Object.values(nodes).map((n) => n.self_total_active_ms || 0),
         0.0001
       );
+      const maxBatchedIn = Math.max(
+        ...Object.values(nodes).map((n) => n.self_batched_in || 0),
+        1
+      );
 
-      function color(ms) {
-        const t = Math.min(1, (ms || 0) / maxMs);
+      function nodeColor(node) {
+        if (state.displayMode === "memory") {
+          if (!node.has_memory_data) return "rgb(255,255,255)";
+          const t = Math.min(1, (node.self_batched_in || 0) / maxBatchedIn);
+          const c1 = [255, 255, 255];
+          const c2 = [220, 30, 30];
+          const mix = c1.map((v, i) => Math.round(v + (c2[i] - v) * t));
+          return `rgb(${mix[0]},${mix[1]},${mix[2]})`;
+        }
+        const t = Math.min(1, (node.self_total_active_ms || 0) / maxMs);
         const c1 = [233, 242, 255];
         const c2 = [91, 141, 239];
         const mix = c1.map((v, i) => Math.round(v + (c2[i] - v) * t));
@@ -1090,12 +1126,16 @@
           blockRank(a) - blockRank(b) || String(a).localeCompare(String(b))
       );
 
-      // Legend: show self time color scale (light->dark blue).
+      // Legend: show color scale appropriate to display mode.
       const legendEl = document.getElementById("legend");
       if (legendEl) {
-        legendEl.innerHTML = `<span class="legend-item"><span class="legend-swatch"></span><span>time (ms): low → high (max ${fmtMs(
-          maxMs
-        )})</span></span>`;
+        if (state.displayMode === "memory") {
+          legendEl.innerHTML = `<span class="legend-item"><span class="legend-swatch-red"></span><span>memory (batched_in): none (white) → high (red, max ${maxBatchedIn.toLocaleString()})</span></span>`;
+        } else {
+          legendEl.innerHTML = `<span class="legend-item"><span class="legend-swatch"></span><span>time (ms): low → high (max ${fmtMs(
+            maxMs
+          )})</span></span>`;
+        }
       }
 
       blockNames.forEach((blk, idx) => {
@@ -1125,6 +1165,17 @@
         const ms = node.self_total_active_ms || 0;
         const labelEsc = escapeHtml(node.label || name);
 
+        let nodeTip;
+        if (state.displayMode === "memory") {
+          if (node.has_memory_data) {
+            nodeTip = `${labelEsc}\nbatched_in: ${node.self_batched_in.toLocaleString()}\nmerges: ${node.self_merges.toLocaleString()}\nmerge_in: ${node.self_merge_in.toLocaleString()}\nmerge_out: ${node.self_merge_out.toLocaleString()}\ndropped: ${node.self_dropped.toLocaleString()}`;
+          } else {
+            nodeTip = `${labelEsc}\n(no memory data)`;
+          }
+        } else {
+          nodeTip = `${labelEsc}\ntime: ${fmtMs(ms)}\nactivations: ${node.self_activations}`;
+        }
+
         const tspans = b.lines
           .map((ln, i) => {
             const safe = escapeHtml(ln);
@@ -1137,10 +1188,9 @@
 
         verts += `
       <g class="g-node${isSel ? " selected" : ""}" data-name="${name}" transform="translate(${b.x0}, ${b.y0})">
-        <rect width="${b.w}" height="${b.h}" fill="${color(ms)}"></rect>
+        <rect width="${b.w}" height="${b.h}" fill="${nodeColor(node)}"></rect>
         <text x="${b.w / 2}" y="${textY0}" text-anchor="middle">${tspans}</text>
-        <title>${labelEsc}\ntime: ${fmtMs(ms)}\nactivations: ${node.self_activations
-          }</title>
+        <title>${nodeTip}</title>
       </g>`;
       }
 
@@ -1324,6 +1374,42 @@
 
     function renderTopNodes() {
       const container = document.getElementById("topNodes");
+      const titleEl = document.querySelector(".toplist-title");
+
+      // Memory mode
+      if (state.displayMode === "memory") {
+        if (titleEl) titleEl.textContent = "Top 10 by Memory";
+        const memNodes = Object.entries(DATA.nodes || {})
+          .map(([name, node]) => ({ name, node }))
+          .filter((x) => x.node.has_memory_data)
+          .sort((a, b) => b.node.self_batched_in - a.node.self_batched_in)
+          .slice(0, 10);
+
+        if (!memNodes.length) {
+          container.innerHTML = "<div class=\"muted\">No memory data.</div>";
+          return;
+        }
+
+        container.innerHTML = memNodes
+          .map(({ name, node }) => {
+            const active = state.selected === name ? " active" : "";
+            const label = node.label || name;
+            return `
+        <div class="toplist-item${active}" data-name="${escapeHtml(name)}">
+          <div class="toplist-name" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
+          <div class="toplist-ms">${node.self_batched_in.toLocaleString()}</div>
+        </div>`;
+          })
+          .join("");
+
+        container.querySelectorAll(".toplist-item").forEach((row) => {
+          row.onclick = () => selectNode(row.dataset.name);
+        });
+        return;
+      }
+
+      // Time mode (default)
+      if (titleEl) titleEl.textContent = "Top 10 by Time";
       const nodes = Object.entries(DATA.nodes || {})
         .map(([name, node]) => ({ name, node }))
         .filter((x) => typeof x.node?.self_total_active_ms === "number")
@@ -1388,8 +1474,12 @@
           : "";
       const sharedLabel = matches.length > 1 ? ` | shared in ${matches.length} rules` : "";
 
+      const memInfo = node.has_memory_data
+        ? ` | batched_in: ${node.self_batched_in.toLocaleString()} | merges: ${node.self_merges.toLocaleString()} | merge_in: ${node.self_merge_in.toLocaleString()} | merge_out: ${node.self_merge_out.toLocaleString()} | dropped: ${node.self_dropped.toLocaleString()}`
+        : "";
+
       document.getElementById("meta").textContent =
-        `id: ${name} | time: ${fmtMs(node.self_total_active_ms)} ms | activations: ${node.self_activations}` +
+        `id: ${name} | time: ${fmtMs(node.self_total_active_ms)} ms | activations: ${node.self_activations}${memInfo}` +
         sharedLabel +
         extra;
 
@@ -1399,17 +1489,32 @@
       const body = document.getElementById("opsBody");
       body.innerHTML = "";
 
+      const head = document.getElementById("opsTableHead");
+      const showMemCol = true;
+      head.innerHTML = `<tr>
+        <th>addr</th>
+        <th>operator</th>
+        <th class="num">activations</th>
+        <th class="num">active time</th>
+        ${showMemCol ? '<th class="num">batched_in</th><th class="num">merges</th><th class="num">merge_in</th><th class="num">merge_out</th><th class="num">dropped</th>' : ""}
+      </tr>`;
+
       if (!node.operators || node.operators.length === 0) {
         tbl.style.display = "none";
       } else {
         tbl.style.display = "table";
         for (const op of node.operators) {
           const tr = document.createElement("tr");
+          const memFmt = (v) => (v !== null && v !== undefined ? v.toLocaleString() : "—");
+          const memCells = showMemCol
+            ? `<td class="num">${memFmt(op.batched_in)}</td><td class="num">${memFmt(op.merges)}</td><td class="num">${memFmt(op.merge_in)}</td><td class="num">${memFmt(op.merge_out)}</td><td class="num">${memFmt(op.dropped)}</td>`
+            : "";
           tr.innerHTML = `
         <td><code>[${op.addr.join(", ")}]</code></td>
         <td>${escapeHtml(op.op_name)}</td>
         <td class="num">${op.activations}</td>
         <td class="num">${fmtMs(op.total_active_ms)}</td>
+        ${memCells}
       `;
           body.appendChild(tr);
         }
@@ -1466,9 +1571,25 @@
       renderGraph();
     };
 
+    function setDisplayMode(mode) {
+      state.displayMode = mode;
+      document.getElementById("modeTime").classList.toggle("active", mode === "time");
+      document.getElementById("modeMemory").classList.toggle("active", mode === "memory");
+      renderTree();
+      renderTopNodes();
+      if (state.view === "graph") renderGraph();
+    }
+
+    document.getElementById("modeTime").onclick = () => setDisplayMode("time");
+    document.getElementById("modeMemory").onclick = () => setDisplayMode("memory");
+
     renderSummary();
     renderTree();
     renderTopNodes();
+
+    // Show mode toggle only when memory data is available.
+    document.getElementById("modeToggle").style.display = "flex";
+
     if (DATA.roots.length) selectNode(DATA.roots[0]);
   </script>
 </body>

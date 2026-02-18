@@ -1,8 +1,8 @@
-//! Aggregation model: combine UI tree (from ops.json) + log rows.
+//! Aggregation model: combine UI tree (from ops.json) with time and memory logs.
 
 use crate::addr::Addr;
 use crate::diagnostics;
-use crate::log::{LogIndex, LogRow};
+use crate::log::{TimeIndex, TimeRow, MemoryIndex};
 use crate::ops::{NodeSpec, RuleSpec};
 use crate::Result;
 
@@ -17,6 +17,12 @@ pub struct OperatorView {
     pub op_name: String,
     pub activations: u64,
     pub total_active_ms: f64,
+    /// None if this operator has no memory row in the memory log.
+    pub batched_in: Option<u64>,
+    pub merges: Option<u64>,
+    pub merge_in: Option<u64>,
+    pub merge_out: Option<u64>,
+    pub dropped: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -40,7 +46,16 @@ pub struct NameNodeView {
     pub self_activations: u64,
     pub self_total_active_ms: f64,
 
-    /// Operators owned by this name (sorted by total_active_ms desc).
+    /// Aggregated memory fields (summed over operators that have memory data).
+    pub self_batched_in: u64,
+    pub self_merges: u64,
+    pub self_merge_in: u64,
+    pub self_merge_out: u64,
+    pub self_dropped: u64,
+    /// True if at least one operator has memory row.
+    pub has_memory_data: bool,
+
+    /// Operators owned by this name (sorted by addr asc).
     pub operators: Vec<OperatorView>,
 }
 
@@ -72,22 +87,41 @@ pub struct ReportData {
 #[derive(Debug, Clone, Serialize)]
 pub struct TotalsView {
     pub names: usize,
-    pub operators_in_log: usize,
+    pub operators_in_time: usize,
     pub operators_mapped: usize,
     pub total_mapped_ms: f64,
     pub total_mapped_activations: u64,
+    /// Total batched_in across all mapped operators.
+    pub total_batched_in: u64,
 }
 
 /// Build report data. Performs:
 /// - detect operator addr assigned to multiple names (error)
-/// - warn (stderr) about mapped addrs missing from log
+/// - warn (stderr) about mapped addrs missing from time log
+/// - validate that wherever an addr appears in both logs, the op_name agrees
 pub fn build_report_data(
     nodes_spec: &BTreeMap<String, NodeSpec>,
     roots: &[String],
     rules_spec: &[RuleSpec],
     fingerprint_to_node: &BTreeMap<String, String>,
-    log: &LogIndex,
+    time: &TimeIndex,
+    memory: &MemoryIndex,
 ) -> Result<ReportData> {
+    // Phase 0: cross-validate op_name alignment between time log and memory log.
+    for (addr, mr) in memory {
+        if let Some(tr) = time.get(addr) {
+            if tr.op_name != mr.op_name {
+                bail!(
+                    "{}",
+                    diagnostics::error_message(format!(
+                        "op_name mismatch at addr {:?}: time log has {:?} but memory log has {:?}",
+                        addr.0, tr.op_name, mr.op_name
+                    ))
+                );
+            }
+        }
+    }
+
     // Phase 1: enforce each operator addr belongs to at most one name (strict).
     let mut owner: BTreeMap<&Addr, &str> = BTreeMap::new();
     for (name, spec) in nodes_spec {
@@ -161,38 +195,86 @@ pub fn build_report_data(
     let mut total_mapped_ms = 0.0f64;
     let mut total_mapped_activations = 0u64;
     let mut operators_mapped = 0usize;
+    let mut total_batched_in = 0u64;
 
     for (name, spec) in nodes_spec {
         let mut operators: Vec<OperatorView> = Vec::new();
         let mut self_ms = 0.0f64;
         let mut self_act = 0u64;
+        let mut self_batched_in = 0u64;
+        let mut self_merges = 0u64;
+        let mut self_merge_in = 0u64;
+        let mut self_merge_out = 0u64;
+        let mut self_dropped = 0u64;
+        let mut has_memory_data = false;
 
         for addr in &spec.operators {
-            match log.get(addr) {
-                Some(LogRow {
-                    addr,
+            // Look up time data.
+            let (activations, total_active_ms, op_name) = match time.get(addr) {
+                Some(TimeRow {
                     activations,
                     total_active_ms,
                     op_name,
+                    ..
                 }) => {
-                    operators.push(OperatorView {
-                        addr: addr.0.clone(),
-                        op_name: op_name.clone(),
-                        activations: *activations,
-                        total_active_ms: *total_active_ms,
-                    });
                     self_ms += *total_active_ms;
                     self_act += *activations;
-
                     total_mapped_ms += *total_active_ms;
                     total_mapped_activations += *activations;
                     operators_mapped += 1;
+                    (*activations, *total_active_ms, op_name.clone())
                 }
-                None => diagnostics::warn(format!(
-                    "ops.json maps name '{}' to addr {:?}, but addr not found in log",
-                    name, addr.0
-                )),
+                None => {
+                    diagnostics::warn(format!(
+                        "ops.json maps name '{}' to addr {:?}, but addr not found in time log",
+                        name, addr.0
+                    ));
+                    (0, 0.0, String::new())
+                }
+            };
+
+            // Look up memory data.
+            let mem_row = memory.get(addr);
+
+            // Cross-check: if the same addr appears in both logs, their op_name must agree.
+            if let Some(mr) = mem_row {
+                if !op_name.is_empty() && mr.op_name != op_name {
+                    bail!(
+                        "{}",
+                        diagnostics::error_message(format!(
+                            "op_name mismatch at addr {:?}: time log has {:?} but memory log has {:?}",
+                            addr.0, op_name, mr.op_name
+                        ))
+                    );
+                }
             }
+
+            let batched_in = mem_row.map(|mr| {
+                has_memory_data = true;
+                self_batched_in += mr.batched_in;
+                self_merges += mr.merges;
+                self_merge_in += mr.merge_in;
+                self_merge_out += mr.merge_out;
+                self_dropped += mr.dropped;
+                total_batched_in += mr.batched_in;
+                mr.batched_in
+            });
+            let merges = mem_row.map(|mr| mr.merges);
+            let merge_in = mem_row.map(|mr| mr.merge_in);
+            let merge_out = mem_row.map(|mr| mr.merge_out);
+            let dropped = mem_row.map(|mr| mr.dropped);
+
+            operators.push(OperatorView {
+                addr: addr.0.clone(),
+                op_name,
+                activations,
+                total_active_ms,
+                batched_in,
+                merges,
+                merge_in,
+                merge_out,
+                dropped,
+            });
         }
 
         // Sort operators by addr only (stable, deterministic).
@@ -211,6 +293,12 @@ pub fn build_report_data(
                 extra_parents: extra_parents.get(name).cloned().unwrap_or_default(),
                 self_activations: self_act,
                 self_total_active_ms: self_ms,
+                self_batched_in,
+                self_merges,
+                self_merge_in,
+                self_merge_out,
+                self_dropped,
+                has_memory_data,
                 operators,
             },
         );
@@ -220,10 +308,11 @@ pub fn build_report_data(
         roots,
         totals: TotalsView {
             names: nodes_spec.len(),
-            operators_in_log: log.len(),
+            operators_in_time: time.len(),
             operators_mapped,
             total_mapped_ms,
             total_mapped_activations,
+            total_batched_in,
         },
         nodes: nodes_view,
         rules: build_rule_views(rules_spec, nodes_spec, fingerprint_to_node),

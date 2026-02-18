@@ -16,13 +16,17 @@ pub type Result<T> = anyhow::Result<T>;
 #[command(name = "flowlog-profile-viz")]
 #[command(about = "FlowLog profile visualizer", long_about = None)]
 struct Cli {
-    /// Path to the Timely profile log.
-    #[arg(short = 'l', long)]
-    log: String,
-
     /// Path to the ops.json spec.
     #[arg(short = 'p', long)]
     ops: String,
+
+    /// Path to the Timely time log (time.tsv).
+    #[arg(short = 't', long)]
+    time: String,
+
+    /// Path to the memory log (memory.tsv).
+    #[arg(short = 'm', long)]
+    memory: String,
 
     /// Output HTML file.
     #[arg(short = 'o', long)]
@@ -30,7 +34,12 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
-    let Cli { log, ops, out } = Cli::parse();
+    let Cli {
+        ops,
+        time,
+        memory,
+        out,
+    } = Cli::parse();
 
     // 1) Parse + validate ops.json (contains both topology + operator mapping).
     let ops_text = fs::read_to_string(&ops)
@@ -59,19 +68,23 @@ fn main() -> Result<()> {
         .map(|(fp, id)| (fp, id.to_string()))
         .collect();
 
-    // 2) Parse log.
-    let log_index = log::parse_log_file(&log)?;
+    // 2) Parse time log.
+    let time_index = log::parse_time_file(&time)?;
 
-    // 3) Aggregate.
+    // 3) Parse memory log.
+    let memory_index = log::parse_memory_file(&memory)?;
+
+    // 4) Aggregate.
     let data = view::build_report_data(
         &nodes_by_name,
         &roots,
         &rules,
         &fingerprint_to_node,
-        &log_index,
+        &time_index,
+        &memory_index,
     )?;
 
-    // 4) Render HTML.
+    // 5) Render HTML.
     let html = render::render_html_report(&data)?;
     fs::write(&out, html)
         .with_context(|| diagnostics::error_message(format!("write output file {}", out)))?;
