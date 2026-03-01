@@ -262,6 +262,24 @@
       opacity: 1;
     }
 
+    /* Memory-mode colours (red tones) */
+    .memory-mode .g-edge {
+      stroke: #c78f8f;
+    }
+
+    .memory-mode .g-edge.highlight {
+      stroke: #d32f2f;
+    }
+
+    .memory-mode .g-block rect {
+      stroke: #ffc9c9;
+      fill: rgba(255, 248, 248, 0.6);
+    }
+
+    .memory-mode .g-node rect {
+      stroke: #d45555;
+    }
+
     .g-block rect {
       fill: rgba(248, 250, 255, 0.6);
       stroke: #c9d7ff;
@@ -1575,6 +1593,7 @@
       state.displayMode = mode;
       document.getElementById("modeTime").classList.toggle("active", mode === "time");
       document.getElementById("modeMemory").classList.toggle("active", mode === "memory");
+      document.getElementById("graphView").classList.toggle("memory-mode", mode === "memory");
       renderTree();
       renderTopNodes();
       if (state.view === "graph") renderGraph();
