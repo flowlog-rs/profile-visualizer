@@ -324,10 +324,18 @@ fn build_rule_views(
     nodes_spec: &BTreeMap<String, NodeSpec>,
     fingerprint_to_node: &BTreeMap<String, String>,
 ) -> Vec<RuleView> {
+    // Collect which rules each fingerprint appears in (by index).
+    let mut fp_to_rules: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    for (rule_idx, rule) in rules_spec.iter().enumerate() {
+        for fp in rule.nodes.keys() {
+            fp_to_rules.entry(fp.clone()).or_default().push(rule_idx);
+        }
+    }
+
     let mut views = Vec::new();
 
-    for rule in rules_spec {
-        // Parent list for shared-node detection.
+    for (rule_idx, rule) in rules_spec.iter().enumerate() {
+        // Parent list within this rule.
         let mut parents: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for (fp, node) in &rule.nodes {
             for child in &node.children {
@@ -344,7 +352,11 @@ fn build_rule_views(
                 .map(|s| s.label.clone());
 
             let parent_list = parents.get(fp).cloned().unwrap_or_default();
-            let shared = parent_list.len() > 1;
+            // Shared if this fingerprint appears in another rule (computation reused across rules).
+            let shared = fp_to_rules
+                .get(fp)
+                .map(|rules| rules.iter().any(|&idx| idx != rule_idx))
+                .unwrap_or(false);
 
             nodes_view.insert(
                 fp.clone(),

@@ -9,6 +9,7 @@
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       margin: 0;
+      background: #fff;
     }
 
     header {
@@ -23,9 +24,10 @@
 
     .sidebar {
       width: 450px;
-      border-right: 1px solid #ddd;
+      border-right: 1px solid #e8eaed;
       padding: 12px;
       overflow: auto;
+      background: #fff;
     }
 
     .main {
@@ -307,6 +309,34 @@
       stroke-width: 2;
     }
 
+    .g-node.dim {
+      opacity: 0.2;
+    }
+
+    .g-node-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #445;
+      box-sizing: border-box;
+    }
+
+    .rule-header {
+      padding: 6px 4px 3px 4px;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #0550ae;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .rule-header.active {
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
@@ -406,6 +436,7 @@
       expanded: new Set(),
       selected: null,
       selectedRule: null,
+      highlightedRule: null, // rule text clicked in left panel to highlight in graph
       search: "",
       view: "tree",
       graph: { tx: 0, ty: 0, scale: 1 }, // pan/zoom
@@ -440,6 +471,23 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
+    }
+
+    const KVF_COLORS = {
+      K: { bg: "#dbeafe", fg: "#1e40af" },  // blue
+      V: { bg: "#dcfce7", fg: "#166534" },  // green
+      F: { bg: "#fef3c7", fg: "#92400e" },  // amber
+    };
+
+    /** Colorize K, V, F letters with background + border, remove the ":" after them. */
+    function colorizeHtml(label) {
+      return escapeHtml(label).replace(
+        /\b([KVF]):\(/g,
+        (_, letter) => {
+          const c = KVF_COLORS[letter];
+          return `<span style="background:${c.bg};color:${c.fg};border:1px solid ${c.fg};border-radius:3px;padding:0 3px;font-size:0.8em">${letter}</span> (`;
+        }
+      );
     }
 
     function measureTextPx(s) {
@@ -518,8 +566,74 @@
       return (DATA.rules || []).find((r) => r.text === text) || null;
     }
 
+    // Cached DAG adjacency (built once, DATA is static).
+    let _dagChildren, _dagParents;
+    function dagAdj() {
+      if (_dagChildren) return { childrenOf: _dagChildren, parentsOf: _dagParents };
+      _dagChildren = new Map();
+      _dagParents = new Map();
+      const nodes = DATA.nodes || {};
+      for (const [name, node] of Object.entries(nodes)) {
+        for (const p of (node.dag_parents || [])) {
+          if (!nodes[p]) continue;
+          if (!_dagChildren.has(p)) _dagChildren.set(p, []);
+          _dagChildren.get(p).push(name);
+          if (!_dagParents.has(name)) _dagParents.set(name, []);
+          _dagParents.get(name).push(p);
+        }
+      }
+      return { childrenOf: _dagChildren, parentsOf: _dagParents };
+    }
+
+    const _nodesForRuleCache = new Map();
+
+    /** Return set of node names that belong to a rule (by fingerprint mapping),
+     *  plus any intermediary non-fingerprinted nodes (like "enter") that bridge
+     *  rule nodes in the DAG. */
+    function nodesForRule(ruleText) {
+      if (_nodesForRuleCache.has(ruleText)) return _nodesForRuleCache.get(ruleText);
+
+      const rule = findRuleByText(ruleText);
+      if (!rule || !rule.nodes) { _nodesForRuleCache.set(ruleText, new Set()); return _nodesForRuleCache.get(ruleText); }
+      const nodes = DATA.nodes || {};
+      const coreNodes = new Set();
+      for (const [fp, pn] of Object.entries(rule.nodes)) {
+        if (pn.node) coreNodes.add(pn.node);
+      }
+
+      const { childrenOf, parentsOf } = dagAdj();
+
+      // Two bulk BFS passes from core nodes through non-fingerprinted nodes.
+      function reachable(seeds, adjFn) {
+        const reached = new Set();
+        const q = [...seeds];
+        while (q.length) {
+          const n = q.pop();
+          if (reached.has(n)) continue;
+          reached.add(n);
+          for (const next of (adjFn(n) || [])) {
+            if (!reached.has(next) && !nodes[next]?.fingerprint) q.push(next);
+          }
+        }
+        return reached;
+      }
+
+      const reachDown = reachable(coreNodes, (n) => childrenOf.get(n));
+      const reachUp = reachable(coreNodes, (n) => parentsOf.get(n));
+
+      const result = new Set(coreNodes);
+      for (const [name, node] of Object.entries(nodes)) {
+        if (!coreNodes.has(name) && !node.fingerprint && reachDown.has(name) && reachUp.has(name)) {
+          result.add(name);
+        }
+      }
+
+      _nodesForRuleCache.set(ruleText, result);
+      return result;
+    }
+
     function renderTree() {
-      const root = document.getElementById("tree");
+      let root = document.getElementById("tree");
       root.innerHTML = "";
 
       const nodes = DATA.nodes;
@@ -582,15 +696,26 @@
         row.dataset.name = name;
         row.style.paddingLeft = `${12 + depth * 16}px`;
         row.onclick = () => selectNode(name);
-        row.innerHTML = `${escapeHtml(node.label)} <span class="muted">(${nodeMetaStr(node)})</span>`;
+        row.innerHTML = `${colorizeHtml(node.label)}`;
         root.appendChild(row);
       }
 
       function renderRuleHeader(title) {
         const hdr = document.createElement("div");
-        hdr.className = "muted";
-        hdr.style.padding = "4px 0 2px 0";
+        hdr.className = "rule-header" + (state.highlightedRule === title ? " active" : "");
         hdr.textContent = title;
+        hdr.onclick = (e) => {
+          e.stopPropagation();
+          if (state.highlightedRule === title) {
+            state.highlightedRule = null;
+          } else {
+            state.highlightedRule = title;
+          }
+          state.selected = null;
+          state.selectedRule = null;
+          renderTree();
+          renderGraph();
+        };
         root.appendChild(hdr);
       }
 
@@ -662,11 +787,8 @@
 
         const labelText = node?.label || pn.label || name || pn.fingerprint || fp;
         const shared = pn.shared ? ' <span class="muted">[shared]</span>' : "";
-        const meta = node
-          ? ` <span class="muted">(${nodeMetaStr(node)})</span>`
-          : "";
 
-        row.innerHTML = `${indent}${toggle}${escapeHtml(labelText)}${shared}${meta}`;
+        row.innerHTML = `${indent}${toggle}${colorizeHtml(labelText)}${shared}`;
 
         row.onclick = (e) => {
           if (e.target?.dataset?.toggle === "1") {
@@ -699,11 +821,22 @@
       }
 
       for (const blk of sortedBlocks) {
+        const card = document.createElement("div");
+        card.style.background = "#f8f9fb";
+        card.style.border = "1px solid #e8eaed";
+        card.style.borderRadius = "8px";
+        card.style.padding = "8px 10px";
+        card.style.marginBottom = "8px";
+
         const title = document.createElement("div");
         title.style.fontWeight = "600";
-        title.style.padding = "6px 0 4px 0";
+        title.style.padding = "2px 0 4px 0";
         title.textContent = blk;
-        root.appendChild(title);
+        card.appendChild(title);
+
+        // Temporarily redirect root so renderRuleHeader/renderNodeRow/renderPlanNode append to card
+        const origRoot = root;
+        root = card;
 
         const names = blocks.get(blk) || [];
         const isStratum = /^stratum\s+/i.test(blk);
@@ -747,6 +880,9 @@
         } else {
           names.sort(cmpById).forEach((n) => renderNodeRow(n));
         }
+
+        root = origRoot;
+        root.appendChild(card);
       }
 
       if (autoExpand) state.defaultExpanded = true;
@@ -1194,20 +1330,14 @@
           nodeTip = `${labelEsc}\ntime: ${fmtMs(ms)}\nactivations: ${node.self_activations}`;
         }
 
-        const tspans = b.lines
-          .map((ln, i) => {
-            const safe = escapeHtml(ln);
-            const dy = i === 0 ? 0 : NODE.lineH;
-            return `<tspan x="${b.w / 2}" dy="${dy}">${safe}</tspan>`;
-          })
-          .join("");
-
-        const textY0 = NODE.padY + 12;
+        const colorizedLines = b.lines.map((ln) => colorizeHtml(ln)).join("<br>");
 
         verts += `
       <g class="g-node${isSel ? " selected" : ""}" data-name="${name}" transform="translate(${b.x0}, ${b.y0})">
         <rect width="${b.w}" height="${b.h}" fill="${nodeColor(node)}"></rect>
-        <text x="${b.w / 2}" y="${textY0}" text-anchor="middle">${tspans}</text>
+        <foreignObject width="${b.w}" height="${b.h}">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="g-node-label" style="width:${b.w}px;height:${b.h}px;font:${NODE.font};line-height:${NODE.lineH}px;padding:0 ${NODE.padX}px">${colorizedLines}</div>
+        </foreignObject>
         <title>${nodeTip}</title>
       </g>`;
       }
@@ -1225,6 +1355,7 @@
       const svg = document.getElementById("graphSvg");
       const viewport = document.getElementById("viewport");
       const edgeEls = Array.from(svg.querySelectorAll(".g-edge"));
+      const nodeEls = Array.from(svg.querySelectorAll(".g-node"));
 
       function applyTransform() {
         viewport.setAttribute(
@@ -1258,7 +1389,9 @@
         if (g) return;
         state.selected = null;
         state.selectedRule = null;
+        state.highlightedRule = null;
         clearEdgeFocus();
+        clearNodeFocus();
         renderTree();
         renderTopNodes();
         renderGraph();
@@ -1282,6 +1415,30 @@
         edgeEls.forEach((el) => {
           el.classList.remove("dim");
           el.classList.remove("highlight");
+        });
+      }
+
+      function focusConnectedNodes(name) {
+        const connected = new Set([name]);
+        edgeEls.forEach((el) => {
+          const from = el.getAttribute("data-from");
+          const to = el.getAttribute("data-to");
+          if (from === name) connected.add(to);
+          if (to === name) connected.add(from);
+        });
+        nodeEls.forEach((el) => {
+          const n = el.getAttribute("data-name");
+          if (connected.has(n)) {
+            el.classList.remove("dim");
+          } else {
+            el.classList.add("dim");
+          }
+        });
+      }
+
+      function clearNodeFocus() {
+        nodeEls.forEach((el) => {
+          el.classList.remove("dim");
         });
       }
 
@@ -1348,7 +1505,34 @@
         { passive: false }
       );
 
-      if (state.selected) focusEdges(state.selected);
+      if (state.selected) {
+        focusEdges(state.selected);
+        focusConnectedNodes(state.selected);
+      } else if (state.highlightedRule) {
+        const ruleNodes = nodesForRule(state.highlightedRule);
+        nodeEls.forEach((el) => {
+          const n = el.getAttribute("data-name");
+          if (ruleNodes.has(n)) {
+            el.classList.remove("dim");
+            el.classList.add("selected");
+          } else {
+            el.classList.add("dim");
+            el.classList.remove("selected");
+          }
+        });
+        // Highlight edges between rule nodes, dim others.
+        edgeEls.forEach((el) => {
+          const from = el.getAttribute("data-from");
+          const to = el.getAttribute("data-to");
+          if (ruleNodes.has(from) && ruleNodes.has(to)) {
+            el.classList.add("highlight");
+            el.classList.remove("dim");
+          } else {
+            el.classList.add("dim");
+            el.classList.remove("highlight");
+          }
+        });
+      }
     }
 
     // Ensure a selected node is visible in the left list and scroll to it.
@@ -1414,7 +1598,7 @@
             const label = node.label || name;
             return `
         <div class="toplist-item${active}" data-name="${escapeHtml(name)}">
-          <div class="toplist-name" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
+          <div class="toplist-name" title="${escapeHtml(label)}">${colorizeHtml(label)}</div>
           <div class="toplist-ms">${node.self_batched_in.toLocaleString()}</div>
         </div>`;
           })
@@ -1445,7 +1629,7 @@
           const label = node.label || name;
           return `
         <div class="toplist-item${active}" data-name="${escapeHtml(name)}">
-          <div class="toplist-name" title="${escapeHtml(label)}">${escapeHtml(label)}</div>
+          <div class="toplist-name" title="${escapeHtml(label)}">${colorizeHtml(label)}</div>
           <div class="toplist-ms">${fmtMs(node.self_total_active_ms)} ms</div>
         </div>`;
         })
@@ -1457,6 +1641,7 @@
     }
 
     function selectNode(name, preferredRule = null) {
+      state.highlightedRule = null;
       state.selected = name;
 
       const node = DATA.nodes[name];
