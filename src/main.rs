@@ -8,6 +8,7 @@ mod diagnostics;
 mod log;
 mod ops;
 mod render;
+mod stats;
 mod view;
 
 pub type Result<T> = anyhow::Result<T>;
@@ -20,11 +21,11 @@ struct Cli {
     #[arg(short = 'p', long)]
     ops: String,
 
-    /// Path to the Timely time log (time.tsv).
+    /// Path to the folder containing time log files (*.log).
     #[arg(short = 't', long)]
     time: String,
 
-    /// Path to the memory log (memory.tsv).
+    /// Path to the folder containing memory log files (*.log).
     #[arg(short = 'm', long)]
     memory: String,
 
@@ -68,11 +69,11 @@ fn main() -> Result<()> {
         .map(|(fp, id)| (fp, id.to_string()))
         .collect();
 
-    // 2) Parse time log.
-    let time_index = log::parse_time_file(&time)?;
+    // 2) Parse time log folder (all *.log files, aggregated across workers).
+    let time_index = log::parse_time_folder(&time)?;
 
-    // 3) Parse memory log.
-    let memory_index = log::parse_memory_file(&memory)?;
+    // 3) Parse memory log folder (all *.log files, aggregated across workers).
+    let memory_index = log::parse_memory_folder(&memory)?;
 
     // 4) Aggregate.
     let data = view::build_report_data(

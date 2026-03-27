@@ -1,30 +1,30 @@
 {
   "rules": [
     {
-      "text": "tc(x, y) :- arc(x, y).",
+      "text": "reach(y) :- source(y).",
       "plan_tree": [
         {
-          "fingerprint": "0x8f826b86e6071a79",
+          "fingerprint": "0x02639d8db95b71ab",
           "parents": []
         }
       ]
     },
     {
-      "text": "tc(x, y) :- tc(x, z), arc(z, y).",
+      "text": "reach(y) :- reach(x), arc(x, y).",
       "plan_tree": [
         {
-          "fingerprint": "0xd3f02d243669cca0",
+          "fingerprint": "0x154110f540d2c391",
           "parents": []
         },
         {
-          "fingerprint": "0xb30de599bb2898bf",
+          "fingerprint": "0x84ef8400e552f1b5",
           "parents": []
         },
         {
-          "fingerprint": "0x710ec2cd2932502a",
+          "fingerprint": "0x2f3883f985718d17",
           "parents": [
-            "0xd3f02d243669cca0",
-            "0xb30de599bb2898bf"
+            "0x154110f540d2c391",
+            "0x84ef8400e552f1b5"
           ]
         }
       ]
@@ -33,7 +33,7 @@
   "nodes": [
     {
       "id": 0,
-      "name": "arc: input",
+      "name": "source: input",
       "block": "input",
       "fingerprint": null,
       "tags": [
@@ -49,7 +49,7 @@
     },
     {
       "id": 1,
-      "name": "arc: dedup",
+      "name": "source: dedup",
       "block": "input",
       "fingerprint": null,
       "tags": [
@@ -75,11 +75,11 @@
     },
     {
       "id": 2,
-      "name": "Map: V:(V0, V1)",
-      "block": "stratum 0",
-      "fingerprint": "0x8f826b86e6071a79",
+      "name": "arc: input",
+      "block": "input",
+      "fingerprint": null,
       "tags": [
-        "Stage"
+        "Input"
       ],
       "operators": [
         [
@@ -87,17 +87,15 @@
           5
         ]
       ],
-      "parents": [
-        1
-      ]
+      "parents": []
     },
     {
       "id": 3,
-      "name": "tc: concat & dedup",
-      "block": "stratum 0",
+      "name": "arc: dedup",
+      "block": "input",
       "fingerprint": null,
       "tags": [
-        "Runtime"
+        "Input"
       ],
       "operators": [
         [
@@ -119,9 +117,9 @@
     },
     {
       "id": 4,
-      "name": "Arrange: K:(V0), V:(V1)",
-      "block": "stratum 1",
-      "fingerprint": "0xb30de599bb2898bf",
+      "name": "Map: V:(V0)",
+      "block": "stratum 0",
+      "fingerprint": "0x02639d8db95b71ab",
       "tags": [
         "Stage"
       ],
@@ -129,10 +127,6 @@
         [
           0,
           9
-        ],
-        [
-          0,
-          10
         ]
       ],
       "parents": [
@@ -141,8 +135,8 @@
     },
     {
       "id": 5,
-      "name": "enter",
-      "block": "stratum 1",
+      "name": "reach: concat & dedup",
+      "block": "stratum 0",
       "fingerprint": null,
       "tags": [
         "Runtime"
@@ -150,8 +144,15 @@
       "operators": [
         [
           0,
-          11,
-          1
+          10
+        ],
+        [
+          0,
+          11
+        ],
+        [
+          0,
+          12
         ]
       ],
       "parents": [
@@ -160,163 +161,11 @@
     },
     {
       "id": 6,
-      "name": "enter",
+      "name": "Arrange: K:(V0), V:(V1)",
       "block": "stratum 1",
-      "fingerprint": null,
-      "tags": [
-        "Runtime"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          2
-        ]
-      ],
-      "parents": [
-        3
-      ]
-    },
-    {
-      "id": 7,
-      "name": "iter_tc: feedback",
-      "block": "stratum 1",
-      "fingerprint": null,
-      "tags": [
-        "Runtime"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          3
-        ]
-      ],
-      "parents": []
-    },
-    {
-      "id": 8,
-      "name": "Arrange: K:(V1), V:(V0)",
-      "block": "stratum 1",
-      "fingerprint": "0xd3f02d243669cca0",
+      "fingerprint": "0x84ef8400e552f1b5",
       "tags": [
         "Stage"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          4
-        ],
-        [
-          0,
-          11,
-          5
-        ]
-      ],
-      "parents": [
-        7
-      ]
-    },
-    {
-      "id": 9,
-      "name": "Join: V:(LV0, RV0)",
-      "block": "stratum 1",
-      "fingerprint": "0x710ec2cd2932502a",
-      "tags": [
-        "Stage"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          6
-        ]
-      ],
-      "parents": [
-        8,
-        5
-      ]
-    },
-    {
-      "id": 10,
-      "name": "tc: concat & dedup",
-      "block": "stratum 1",
-      "fingerprint": null,
-      "tags": [
-        "Runtime"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          7
-        ],
-        [
-          0,
-          11,
-          8
-        ],
-        [
-          0,
-          11,
-          9
-        ],
-        [
-          0,
-          11,
-          10
-        ]
-      ],
-      "parents": [
-        9,
-        6
-      ]
-    },
-    {
-      "id": 11,
-      "name": "iter_tc: resultsin",
-      "block": "stratum 1",
-      "fingerprint": null,
-      "tags": [
-        "Runtime"
-      ],
-      "operators": [
-        [
-          0,
-          11,
-          11
-        ]
-      ],
-      "parents": [
-        10
-      ]
-    },
-    {
-      "id": 12,
-      "name": "tc: leave",
-      "block": "stratum 1",
-      "fingerprint": null,
-      "tags": [
-        "Runtime"
-      ],
-      "operators": [
-        [
-          0,
-          12
-        ]
-      ],
-      "parents": [
-        11
-      ]
-    },
-    {
-      "id": 13,
-      "name": "tc: inspect size",
-      "block": "inspect",
-      "fingerprint": null,
-      "tags": [
-        "Inspect"
       ],
       "operators": [
         [
@@ -326,15 +175,197 @@
         [
           0,
           14
+        ]
+      ],
+      "parents": [
+        3
+      ]
+    },
+    {
+      "id": 7,
+      "name": "enter",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          1
+        ]
+      ],
+      "parents": [
+        6
+      ]
+    },
+    {
+      "id": 8,
+      "name": "enter",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          2
+        ]
+      ],
+      "parents": [
+        5
+      ]
+    },
+    {
+      "id": 9,
+      "name": "recursive_reach: feedback",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          3
+        ]
+      ],
+      "parents": []
+    },
+    {
+      "id": 10,
+      "name": "Arrange: K:(V0)",
+      "block": "stratum 1",
+      "fingerprint": "0x154110f540d2c391",
+      "tags": [
+        "Stage"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          4
         ],
         [
           0,
-          15
+          15,
+          5
         ],
+        [
+          0,
+          15,
+          6
+        ]
+      ],
+      "parents": [
+        9
+      ]
+    },
+    {
+      "id": 11,
+      "name": "SemiJoin: V:(RV0)",
+      "block": "stratum 1",
+      "fingerprint": "0x2f3883f985718d17",
+      "tags": [
+        "Stage"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          7
+        ]
+      ],
+      "parents": [
+        10,
+        7
+      ]
+    },
+    {
+      "id": 12,
+      "name": "reach: concat & dedup",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          8
+        ],
+        [
+          0,
+          15,
+          9
+        ],
+        [
+          0,
+          15,
+          10
+        ],
+        [
+          0,
+          15,
+          11
+        ]
+      ],
+      "parents": [
+        11,
+        8
+      ]
+    },
+    {
+      "id": 13,
+      "name": "recursive_reach: resultsin",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
+        [
+          0,
+          15,
+          12
+        ]
+      ],
+      "parents": [
+        12
+      ]
+    },
+    {
+      "id": 14,
+      "name": "reach: leave",
+      "block": "stratum 1",
+      "fingerprint": null,
+      "tags": [
+        "Runtime"
+      ],
+      "operators": [
         [
           0,
           16
-        ],
+        ]
+      ],
+      "parents": [
+        13
+      ]
+    },
+    {
+      "id": 15,
+      "name": "reach: inspect size",
+      "block": "inspect",
+      "fingerprint": null,
+      "tags": [
+        "Inspect"
+      ],
+      "operators": [
         [
           0,
           17
@@ -354,10 +385,26 @@
         [
           0,
           21
+        ],
+        [
+          0,
+          22
+        ],
+        [
+          0,
+          23
+        ],
+        [
+          0,
+          24
+        ],
+        [
+          0,
+          25
         ]
       ],
       "parents": [
-        12
+        14
       ]
     }
   ]

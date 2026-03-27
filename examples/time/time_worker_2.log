@@ -1,0 +1,39 @@
+addr                 activations  total_active_ms  name
+[0]                  1331         761.101          Dataflow
+[0, 1]               2            0.001            Input
+[0, 2]               2            0.003            FlatMap
+[0, 3]               3            0.008            Consolidate
+[0, 4]               2            0.004            AsCollection
+[0, 5]               2            0.000            Input
+[0, 6]               3            26.278           FlatMap
+[0, 7]               4            172.412          Consolidate
+[0, 8]               4            17.893           AsCollection
+[0, 9]               2            0.003            FlatMap
+[0, 10]              2            0.003            FlatMap
+[0, 11]              4            0.009            Consolidate
+[0, 12]              2            0.002            AsCollection
+[0, 13]              4            27.456           FlatMap
+[0, 14]              5            198.458          ArrangeByKey
+[0, 15]              904          305.612          Iterative
+[0, 15, 1]           4            0.007            FlatMap
+[0, 15, 2]           2            0.003            Enter
+[0, 15, 3]           24           0.048            Feedback
+[0, 15, 4]           24           0.673            FlatMap
+[0, 15, 5]           24           1.739            FlatMap
+[0, 15, 6]           62           4.356            ArrangeBySelf
+[0, 15, 7]           40           127.583          Join
+[0, 15, 8]           24           0.289            Concatenate
+[0, 15, 9]           24           28.006           FlatMap
+[0, 15, 10]          65           117.628          Arrange: ThresholdTotal
+[0, 15, 11]          34           19.004           ThresholdTotal
+[0, 15, 12]          24           0.129            ResultsIn
+[0, 16]              31           0.062            Leave
+[0, 17]              24           1.217            FlatMap
+[0, 18]              72           5.611            Consolidate
+[0, 19]              4            1.285            AsCollection
+[0, 20]              4            0.495            FlatMap
+[0, 21]              4            0.458            FlatMap
+[0, 22]              4            1.010            FlatMap
+[0, 23]              7            0.007            Consolidate
+[0, 24]              2            0.001            AsCollection
+[0, 25]              2            0.001            InspectBatch

@@ -2,8 +2,9 @@
 
 use crate::addr::Addr;
 use crate::diagnostics;
-use crate::log::{TimeIndex, TimeRow, MemoryIndex};
+use crate::log::{MemoryIndex, TimeIndex};
 use crate::ops::{NodeSpec, RuleSpec};
+use crate::stats::Stats;
 use crate::Result;
 
 use anyhow::bail;
@@ -15,14 +16,14 @@ use std::collections::BTreeSet;
 pub struct OperatorView {
     pub addr: Vec<u32>,
     pub op_name: String,
-    pub activations: u64,
-    pub total_active_ms: f64,
+    pub activations: Stats,
+    pub total_active_ms: Stats,
     /// None if this operator has no memory row in the memory log.
-    pub batched_in: Option<u64>,
-    pub merges: Option<u64>,
-    pub merge_in: Option<u64>,
-    pub merge_out: Option<u64>,
-    pub dropped: Option<u64>,
+    pub batched_in: Option<Stats>,
+    pub merges: Option<Stats>,
+    pub merge_in: Option<Stats>,
+    pub merge_out: Option<Stats>,
+    pub dropped: Option<Stats>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -42,18 +43,21 @@ pub struct NameNodeView {
     /// Additional parents beyond the chosen primary parent (for DAG info).
     pub extra_parents: Vec<String>,
 
-    /// Aggregated over operators owned by this name.
-    pub self_activations: u64,
-    pub self_total_active_ms: f64,
+    /// Aggregated over operators owned by this name (sum of means).
+    pub self_activations: Stats,
+    pub self_total_active_ms: Stats,
 
     /// Aggregated memory fields (summed over operators that have memory data).
-    pub self_batched_in: u64,
-    pub self_merges: u64,
-    pub self_merge_in: u64,
-    pub self_merge_out: u64,
-    pub self_dropped: u64,
+    pub self_batched_in: Stats,
+    pub self_merges: Stats,
+    pub self_merge_in: Stats,
+    pub self_merge_out: Stats,
+    pub self_dropped: Stats,
     /// True if at least one operator has memory row.
     pub has_memory_data: bool,
+
+    /// Number of workers used for aggregation.
+    pub num_workers: usize,
 
     /// Operators owned by this name (sorted by addr asc).
     pub operators: Vec<OperatorView>,
@@ -82,6 +86,7 @@ pub struct ReportData {
     pub nodes: BTreeMap<String, NameNodeView>,
     pub rules: Vec<RuleView>,
     pub totals: TotalsView,
+    pub num_workers: usize,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -89,10 +94,9 @@ pub struct TotalsView {
     pub names: usize,
     pub operators_in_time: usize,
     pub operators_mapped: usize,
-    pub total_mapped_ms: f64,
-    pub total_mapped_activations: u64,
-    /// Total batched_in across all mapped operators.
-    pub total_batched_in: u64,
+    pub total_mapped_ms: Stats,
+    pub total_mapped_activations: Stats,
+    pub total_batched_in: Stats,
 }
 
 /// Build report data. Performs:
@@ -131,9 +135,7 @@ pub fn build_report_data(
                     "{}",
                     diagnostics::error_message(format!(
                         "operator addr {:?} is assigned to multiple names: {} and {}",
-                        addr.0,
-                        prev,
-                        name
+                        addr.0, prev, name
                     ))
                 );
             }
@@ -141,7 +143,6 @@ pub fn build_report_data(
     }
 
     // Phase 2: normalize parent lists once and derive tree/DAG metadata.
-    // We choose a primary parent for each node: lexicographically smallest parent.
     let mut normalized_parents: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (name, spec) in nodes_spec {
         let parents = normalize_parents(spec.parents.iter().map(|p| p.to_string()).collect());
@@ -177,10 +178,6 @@ pub fn build_report_data(
         kids.sort();
     }
 
-    // Build DAG parents list for direct consumption in the renderer.
-    let dag_parents: BTreeMap<String, Vec<String>> = normalized_parents.clone();
-
-    // Roots for the tree view: use provided roots, plus any node that has no primary parent.
     let mut roots_set: BTreeSet<String> = roots.iter().cloned().collect();
     for (name, pp) in &primary_parent {
         if pp.is_none() {
@@ -192,92 +189,83 @@ pub fn build_report_data(
     // Phase 3: build per-name operator lists + aggregates.
     let mut nodes_view: BTreeMap<String, NameNodeView> = BTreeMap::new();
 
-    let mut total_mapped_ms = 0.0f64;
-    let mut total_mapped_activations = 0u64;
+    let mut total_mapped_ms = Stats::default();
+    let mut total_mapped_activations = Stats::default();
     let mut operators_mapped = 0usize;
-    let mut total_batched_in = 0u64;
+    let mut total_batched_in = Stats::default();
+    let mut num_workers = 0usize;
 
     for (name, spec) in nodes_spec {
         let mut operators: Vec<OperatorView> = Vec::new();
-        let mut self_ms = 0.0f64;
-        let mut self_act = 0u64;
-        let mut self_batched_in = 0u64;
-        let mut self_merges = 0u64;
-        let mut self_merge_in = 0u64;
-        let mut self_merge_out = 0u64;
-        let mut self_dropped = 0u64;
+        let mut self_ms = Stats::default();
+        let mut self_act = Stats::default();
+        let mut self_batched_in = Stats::default();
+        let mut self_merges = Stats::default();
+        let mut self_merge_in = Stats::default();
+        let mut self_merge_out = Stats::default();
+        let mut self_dropped = Stats::default();
         let mut has_memory_data = false;
 
         for addr in &spec.operators {
-            // Look up time data.
-            let (activations, total_active_ms, op_name) = match time.get(addr) {
-                Some(TimeRow {
-                    activations,
-                    total_active_ms,
-                    op_name,
-                    ..
-                }) => {
-                    self_ms += *total_active_ms;
-                    self_act += *activations;
-                    total_mapped_ms += *total_active_ms;
-                    total_mapped_activations += *activations;
+            let (act_stats, ms_stats, op_name) = match time.get(addr) {
+                Some(tr) => {
+                    self_ms = &self_ms + &tr.total_active_ms;
+                    self_act = &self_act + &tr.activations;
+                    total_mapped_ms = &total_mapped_ms + &tr.total_active_ms;
+                    total_mapped_activations = &total_mapped_activations + &tr.activations;
                     operators_mapped += 1;
-                    (*activations, *total_active_ms, op_name.clone())
+                    if tr.num_workers > num_workers {
+                        num_workers = tr.num_workers;
+                    }
+                    (tr.activations.clone(), tr.total_active_ms.clone(), tr.op_name.clone())
                 }
                 None => {
                     diagnostics::warn(format!(
                         "ops.json maps name '{}' to addr {:?}, but addr not found in time log",
                         name, addr.0
                     ));
-                    (0, 0.0, String::new())
+                    (Stats::default(), Stats::default(), String::new())
                 }
             };
 
-            // Look up memory data.
             let mem_row = memory.get(addr);
 
-            // Cross-check: if the same addr appears in both logs, their op_name must agree.
-            if let Some(mr) = mem_row {
-                if !op_name.is_empty() && mr.op_name != op_name {
-                    bail!(
-                        "{}",
-                        diagnostics::error_message(format!(
-                            "op_name mismatch at addr {:?}: time log has {:?} but memory log has {:?}",
-                            addr.0, op_name, mr.op_name
-                        ))
-                    );
+            let (batched_in, merges, merge_in_s, merge_out_s, dropped) = match mem_row {
+                Some(mr) => {
+                    has_memory_data = true;
+                    self_batched_in = &self_batched_in + &mr.batched_in;
+                    self_merges = &self_merges + &mr.merges;
+                    self_merge_in = &self_merge_in + &mr.merge_in;
+                    self_merge_out = &self_merge_out + &mr.merge_out;
+                    self_dropped = &self_dropped + &mr.dropped;
+                    total_batched_in = &total_batched_in + &mr.batched_in;
+                    if mr.num_workers > num_workers {
+                        num_workers = mr.num_workers;
+                    }
+                    (
+                        Some(mr.batched_in.clone()),
+                        Some(mr.merges.clone()),
+                        Some(mr.merge_in.clone()),
+                        Some(mr.merge_out.clone()),
+                        Some(mr.dropped.clone()),
+                    )
                 }
-            }
-
-            let batched_in = mem_row.map(|mr| {
-                has_memory_data = true;
-                self_batched_in += mr.batched_in;
-                self_merges += mr.merges;
-                self_merge_in += mr.merge_in;
-                self_merge_out += mr.merge_out;
-                self_dropped += mr.dropped;
-                total_batched_in += mr.batched_in;
-                mr.batched_in
-            });
-            let merges = mem_row.map(|mr| mr.merges);
-            let merge_in = mem_row.map(|mr| mr.merge_in);
-            let merge_out = mem_row.map(|mr| mr.merge_out);
-            let dropped = mem_row.map(|mr| mr.dropped);
+                None => (None, None, None, None, None),
+            };
 
             operators.push(OperatorView {
                 addr: addr.0.clone(),
                 op_name,
-                activations,
-                total_active_ms,
+                activations: act_stats,
+                total_active_ms: ms_stats,
                 batched_in,
                 merges,
-                merge_in,
-                merge_out,
+                merge_in: merge_in_s,
+                merge_out: merge_out_s,
                 dropped,
             });
         }
 
-        // Sort operators by addr only (stable, deterministic).
         operators.sort_by(|a, b| a.addr.cmp(&b.addr));
 
         nodes_view.insert(
@@ -289,7 +277,7 @@ pub fn build_report_data(
                 fingerprint: spec.fingerprint.clone(),
                 tags: spec.tags.clone(),
                 children: tree_children.get(name).cloned().unwrap_or_default(),
-                dag_parents: dag_parents.get(name).cloned().unwrap_or_default(),
+                dag_parents: normalized_parents.get(name).cloned().unwrap_or_default(),
                 extra_parents: extra_parents.get(name).cloned().unwrap_or_default(),
                 self_activations: self_act,
                 self_total_active_ms: self_ms,
@@ -299,6 +287,7 @@ pub fn build_report_data(
                 self_merge_out,
                 self_dropped,
                 has_memory_data,
+                num_workers,
                 operators,
             },
         );
@@ -306,6 +295,7 @@ pub fn build_report_data(
 
     Ok(ReportData {
         roots,
+        num_workers,
         totals: TotalsView {
             names: nodes_spec.len(),
             operators_in_time: time.len(),
@@ -324,7 +314,6 @@ fn build_rule_views(
     nodes_spec: &BTreeMap<String, NodeSpec>,
     fingerprint_to_node: &BTreeMap<String, String>,
 ) -> Vec<RuleView> {
-    // Collect which rules each fingerprint appears in (by index).
     let mut fp_to_rules: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for (rule_idx, rule) in rules_spec.iter().enumerate() {
         for fp in rule.nodes.keys() {
@@ -335,7 +324,6 @@ fn build_rule_views(
     let mut views = Vec::new();
 
     for (rule_idx, rule) in rules_spec.iter().enumerate() {
-        // Parent list within this rule.
         let mut parents: BTreeMap<String, Vec<String>> = BTreeMap::new();
         for (fp, node) in &rule.nodes {
             for child in &node.children {
@@ -352,7 +340,6 @@ fn build_rule_views(
                 .map(|s| s.label.clone());
 
             let parent_list = parents.get(fp).cloned().unwrap_or_default();
-            // Shared if this fingerprint appears in another rule (computation reused across rules).
             let shared = fp_to_rules
                 .get(fp)
                 .map(|rules| rules.iter().any(|&idx| idx != rule_idx))

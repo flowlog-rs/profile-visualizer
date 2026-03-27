@@ -367,6 +367,101 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 13px;
     }
+
+    /* Stats bar inline chart */
+    .stats-cell {
+      min-width: 160px;
+      padding: 4px 0;
+    }
+
+    .stats-value {
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: #222;
+      margin-bottom: 2px;
+    }
+
+    .stats-bar-wrap {
+      position: relative;
+      height: 14px;
+      border-radius: 3px;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+
+    .stats-range {
+      position: absolute;
+      top: 2px;
+      height: 10px;
+      border-radius: 2px;
+      opacity: 0.35;
+    }
+
+    .stats-sigma {
+      position: absolute;
+      top: 1px;
+      height: 12px;
+      border-radius: 2px;
+      opacity: 0.7;
+    }
+
+    .stats-mean {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 14px;
+      border-radius: 1px;
+    }
+
+    .stats-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #999;
+      margin-top: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Node detail stat cards */
+    .detail-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      max-width: 220px;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fafbfc;
+    }
+
+    .stat-card-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .stat-card-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-card-sub {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
   </style>
 </head>
 
@@ -406,6 +501,7 @@
       <div id="detailPane">
         <h2 id="title">Select a node</h2>
         <div id="meta" class="muted"></div>
+        <div id="detailStats"></div>
         <div id="rulePicker"></div>
 
         <table id="opsTable" style="display:none;">
@@ -462,6 +558,112 @@
 
     function fmtMs(x) {
       return (Math.round(x * 1000) / 1000).toFixed(3);
+    }
+
+    /** Normalize a value to a Stats object. Handles null, numbers, and Stats objects. */
+    function ensureStats(s) {
+      if (s && typeof s === "object") return s;
+      const v = s || 0;
+      return { mean: v, var: 0, min: v, max: v };
+    }
+
+    function stddev(s) { return Math.sqrt((s && s.var) || 0); }
+
+    function getFormatter(fmt) {
+      return fmt === "ms" ? fmtMs : (v) => Math.round(v).toLocaleString();
+    }
+
+    /** Format a Stats object as text */
+    function fmtStats(s, fmt) {
+      const st = ensureStats(s);
+      const f = getFormatter(fmt);
+      if (DATA.num_workers <= 1) return f(st.mean);
+      return `${f(st.mean)} (±${f(stddev(st))}) [${f(st.min)}..${f(st.max)}]`;
+    }
+
+    /** Short format: just the mean */
+    function fmtMean(s, fmt) {
+      return getFormatter(fmt)(ensureStats(s).mean);
+    }
+
+    /** Get the mean from a Stats object or a raw number */
+    function getMean(s) {
+      return ensureStats(s).mean;
+    }
+
+    /** Safe max over an array (avoids stack overflow from spread on large arrays) */
+    function arrayMax(arr, fallback) {
+      return arr.reduce((a, b) => Math.max(a, b), fallback ?? -Infinity);
+    }
+
+    /** Auto-format a number: use ms format for small floats, locale for large ints */
+    function fmtAuto(v) {
+      if (v === 0) return "0";
+      if (Math.abs(v) < 100 && v !== Math.floor(v)) return fmtMs(v);
+      return Math.round(v).toLocaleString();
+    }
+
+    /**
+     * Render an inline bar chart for a Stats object.
+     * colMax: the max value in this column (for consistent scaling across rows).
+     * color: CSS color for the bar.
+     * Returns HTML string.
+     */
+    function renderStatsBar(s, colMax, color) {
+      s = ensureStats(s);
+      if (DATA.num_workers <= 1) {
+        // Single worker: simple proportional bar
+        const pct = colMax > 0 ? (s.mean / colMax) * 100 : 0;
+        return `<div class="stats-cell">
+          <div class="stats-value">${fmtAuto(s.mean)}</div>
+          <div class="stats-bar-wrap">
+            <div class="stats-sigma" style="left:0;width:${pct}%;background:${color};opacity:0.5;border-radius:2px;"></div>
+          </div>
+        </div>`;
+      }
+      // Multi-worker: range chart
+      const std = stddev(s);
+      const lo = Math.max(0, s.mean - std);
+      const hi = s.mean + std;
+      const scale = colMax > 0 ? 100 / colMax : 0;
+
+      const minPct = s.min * scale;
+      const maxPct = s.max * scale;
+      const loPct = lo * scale;
+      const hiPct = hi * scale;
+      const meanPct = s.mean * scale;
+
+      return `<div class="stats-cell">
+        <div class="stats-value">${fmtAuto(s.mean)}</div>
+        <div class="stats-bar-wrap" title="mean: ${fmtAuto(s.mean)}  σ: ${fmtAuto(std)}  min: ${fmtAuto(s.min)}  max: ${fmtAuto(s.max)}">
+          <div class="stats-range" style="left:${minPct}%;width:${Math.max(0.5, maxPct - minPct)}%;background:${color};"></div>
+          <div class="stats-sigma" style="left:${loPct}%;width:${Math.max(0.5, hiPct - loPct)}%;background:${color};"></div>
+          <div class="stats-mean" style="left:${meanPct}%;background:${color};"></div>
+        </div>
+        <div class="stats-label-row">
+          <span>${fmtAuto(s.min)}</span>
+          <span>±${fmtAuto(std)}</span>
+          <span>${fmtAuto(s.max)}</span>
+        </div>
+      </div>`;
+    }
+
+    /** Render a stat card for the detail header */
+    function renderStatCard(label, stats, fmt, color) {
+      if (!stats) return "";
+      const mean = getMean(stats);
+      const f = fmt === "ms" ? fmtMs : fmtAuto;
+      let sub = "";
+      if (DATA.num_workers > 1) {
+        const st = ensureStats(stats);
+        sub = `σ ${f(stddev(st))} &nbsp; min ${f(st.min)} &nbsp; max ${f(st.max)}`;
+      }
+      const suffix = fmt === "ms" ? " ms" : "";
+      return `<div class="stat-card">
+        <div class="stat-card-label">${label}</div>
+        <div class="stat-card-value" style="color:${color || '#111'}">${f(mean)}${suffix}</div>
+        ${sub ? `<div class="stat-card-sub">${sub}</div>` : ""}
+      </div>`;
     }
 
     function escapeHtml(s) {
@@ -532,14 +734,15 @@
     function renderSummary() {
       const t = DATA.totals;
       const el = document.getElementById("summary");
-      const memPill = `<span class="pill">total batched_in: <b>${t.total_batched_in.toLocaleString()}</b></span>`;
+      const workerPill = DATA.num_workers > 1 ? `<span class="pill">workers: <b>${DATA.num_workers}</b></span>` : "";
       el.innerHTML = `
     <span class="pill">names: <b>${t.names}</b></span>
     <span class="pill">operators in time log: <b>${t.operators_in_time}</b></span>
     <span class="pill">operators mapped: <b>${t.operators_mapped}</b></span>
-    <span class="pill">mapped ms: <b>${fmtMs(t.total_mapped_ms)}</b></span>
-    <span class="pill">mapped activations: <b>${t.total_mapped_activations}</b></span>
-    ${memPill}
+    <span class="pill">mapped ms: <b>${fmtStats(t.total_mapped_ms, "ms")}</b></span>
+    <span class="pill">mapped activations: <b>${fmtStats(t.total_mapped_activations)}</b></span>
+    <span class="pill">total batched_in: <b>${fmtStats(t.total_batched_in)}</b></span>
+    ${workerPill}
   `;
     }
 
@@ -682,10 +885,10 @@
       const nodeMetaStr = (node) => {
         if (state.displayMode === "memory") {
           return node.has_memory_data
-            ? `batched_in: ${node.self_batched_in.toLocaleString()}, merges: ${node.self_merges.toLocaleString()}, merge_in: ${node.self_merge_in.toLocaleString()}, merge_out: ${node.self_merge_out.toLocaleString()}, dropped: ${node.self_dropped.toLocaleString()}`
+            ? `batched_in: ${fmtStats(node.self_batched_in)}, merges: ${fmtStats(node.self_merges)}, merge_in: ${fmtStats(node.self_merge_in)}, merge_out: ${fmtStats(node.self_merge_out)}, dropped: ${fmtStats(node.self_dropped)}`
             : "no memory data";
         }
-        return `${fmtMs(node.self_total_active_ms)} ms, ${node.self_activations} act`;
+        return `${fmtStats(node.self_total_active_ms, "ms")} ms, ${fmtStats(node.self_activations)} act`;
       };
 
       function renderNodeRow(name, depth = 0) {
@@ -1185,25 +1388,25 @@
       }
 
       // Node color scale based on self time or memory (batched_in).
-      const maxMs = Math.max(
-        ...Object.values(nodes).map((n) => n.self_total_active_ms || 0),
+      const maxMs = arrayMax(
+        Object.values(nodes).map((n) => getMean(n.self_total_active_ms)),
         0.0001
       );
-      const maxBatchedIn = Math.max(
-        ...Object.values(nodes).map((n) => n.self_batched_in || 0),
+      const maxBatchedIn = arrayMax(
+        Object.values(nodes).map((n) => getMean(n.self_batched_in)),
         1
       );
 
       function nodeColor(node) {
         if (state.displayMode === "memory") {
           if (!node.has_memory_data) return "rgb(255,255,255)";
-          const t = Math.min(1, (node.self_batched_in || 0) / maxBatchedIn);
+          const t = Math.min(1, getMean(node.self_batched_in) / maxBatchedIn);
           const c1 = [255, 255, 255];
           const c2 = [220, 30, 30];
           const mix = c1.map((v, i) => Math.round(v + (c2[i] - v) * t));
           return `rgb(${mix[0]},${mix[1]},${mix[2]})`;
         }
-        const t = Math.min(1, (node.self_total_active_ms || 0) / maxMs);
+        const t = Math.min(1, getMean(node.self_total_active_ms) / maxMs);
         const c1 = [233, 242, 255];
         const c2 = [91, 141, 239];
         const mix = c1.map((v, i) => Math.round(v + (c2[i] - v) * t));
@@ -1316,18 +1519,17 @@
         if (!b) continue;
 
         const isSel = state.selected === name;
-        const ms = node.self_total_active_ms || 0;
         const labelEsc = escapeHtml(node.label || name);
 
         let nodeTip;
         if (state.displayMode === "memory") {
           if (node.has_memory_data) {
-            nodeTip = `${labelEsc}\nbatched_in: ${node.self_batched_in.toLocaleString()}\nmerges: ${node.self_merges.toLocaleString()}\nmerge_in: ${node.self_merge_in.toLocaleString()}\nmerge_out: ${node.self_merge_out.toLocaleString()}\ndropped: ${node.self_dropped.toLocaleString()}`;
+            nodeTip = `${labelEsc}\nbatched_in: ${fmtStats(node.self_batched_in)}\nmerges: ${fmtStats(node.self_merges)}\nmerge_in: ${fmtStats(node.self_merge_in)}\nmerge_out: ${fmtStats(node.self_merge_out)}\ndropped: ${fmtStats(node.self_dropped)}`;
           } else {
             nodeTip = `${labelEsc}\n(no memory data)`;
           }
         } else {
-          nodeTip = `${labelEsc}\ntime: ${fmtMs(ms)}\nactivations: ${node.self_activations}`;
+          nodeTip = `${labelEsc}\ntime: ${fmtStats(node.self_total_active_ms, "ms")}\nactivations: ${fmtStats(node.self_activations)}`;
         }
 
         const colorizedLines = b.lines.map((ln) => colorizeHtml(ln)).join("<br>");
@@ -1584,7 +1786,7 @@
         const memNodes = Object.entries(DATA.nodes || {})
           .map(([name, node]) => ({ name, node }))
           .filter((x) => x.node.has_memory_data)
-          .sort((a, b) => b.node.self_batched_in - a.node.self_batched_in)
+          .sort((a, b) => getMean(b.node.self_batched_in) - getMean(a.node.self_batched_in))
           .slice(0, 10);
 
         if (!memNodes.length) {
@@ -1599,7 +1801,7 @@
             return `
         <div class="toplist-item${active}" data-name="${escapeHtml(name)}">
           <div class="toplist-name" title="${escapeHtml(label)}">${colorizeHtml(label)}</div>
-          <div class="toplist-ms">${node.self_batched_in.toLocaleString()}</div>
+          <div class="toplist-ms">${fmtMean(node.self_batched_in)}</div>
         </div>`;
           })
           .join("");
@@ -1614,8 +1816,8 @@
       if (titleEl) titleEl.textContent = "Top 10 by Time";
       const nodes = Object.entries(DATA.nodes || {})
         .map(([name, node]) => ({ name, node }))
-        .filter((x) => typeof x.node?.self_total_active_ms === "number")
-        .sort((a, b) => b.node.self_total_active_ms - a.node.self_total_active_ms)
+        .filter((x) => x.node?.self_total_active_ms)
+        .sort((a, b) => getMean(b.node.self_total_active_ms) - getMean(a.node.self_total_active_ms))
         .slice(0, 10);
 
       if (!nodes.length) {
@@ -1630,7 +1832,7 @@
           return `
         <div class="toplist-item${active}" data-name="${escapeHtml(name)}">
           <div class="toplist-name" title="${escapeHtml(label)}">${colorizeHtml(label)}</div>
-          <div class="toplist-ms">${fmtMs(node.self_total_active_ms)} ms</div>
+          <div class="toplist-ms">${fmtMean(node.self_total_active_ms, "ms")} ms</div>
         </div>`;
         })
         .join("");
@@ -1677,14 +1879,24 @@
           : "";
       const sharedLabel = matches.length > 1 ? ` | shared in ${matches.length} rules` : "";
 
-      const memInfo = node.has_memory_data
-        ? ` | batched_in: ${node.self_batched_in.toLocaleString()} | merges: ${node.self_merges.toLocaleString()} | merge_in: ${node.self_merge_in.toLocaleString()} | merge_out: ${node.self_merge_out.toLocaleString()} | dropped: ${node.self_dropped.toLocaleString()}`
-        : "";
+      const metaParts = [`id: ${name}`];
+      if (sharedLabel) metaParts.push(sharedLabel.trim());
+      if (extra) metaParts.push(extra.trim());
+      document.getElementById("meta").textContent = metaParts.join(" | ");
 
-      document.getElementById("meta").textContent =
-        `id: ${name} | time: ${fmtMs(node.self_total_active_ms)} ms | activations: ${node.self_activations}${memInfo}` +
-        sharedLabel +
-        extra;
+      // Render stat cards
+      const statsEl = document.getElementById("detailStats");
+      let cardsHtml = "";
+      cardsHtml += renderStatCard("Active Time", node.self_total_active_ms, "ms", "#2563eb");
+      cardsHtml += renderStatCard("Activations", node.self_activations, "", "#6366f1");
+      if (node.has_memory_data) {
+        cardsHtml += renderStatCard("Batched In", node.self_batched_in, "", "#dc2626");
+        cardsHtml += renderStatCard("Merges", node.self_merges, "", "#ea580c");
+        cardsHtml += renderStatCard("Merge In", node.self_merge_in, "", "#d97706");
+        cardsHtml += renderStatCard("Merge Out", node.self_merge_out, "", "#059669");
+        cardsHtml += renderStatCard("Dropped", node.self_dropped, "", "#7c3aed");
+      }
+      statsEl.innerHTML = `<div class="detail-stats">${cardsHtml}</div>`;
 
       renderRulePicker(name, fp, matches, chosenRule);
 
@@ -1693,30 +1905,44 @@
       body.innerHTML = "";
 
       const head = document.getElementById("opsTableHead");
-      const showMemCol = true;
+      const showMemCol = node.has_memory_data;
       head.innerHTML = `<tr>
         <th>addr</th>
         <th>operator</th>
-        <th class="num">activations</th>
-        <th class="num">active time</th>
-        ${showMemCol ? '<th class="num">batched_in</th><th class="num">merges</th><th class="num">merge_in</th><th class="num">merge_out</th><th class="num">dropped</th>' : ""}
+        <th>activations</th>
+        <th>active time</th>
+        ${showMemCol ? '<th>batched_in</th><th>merges</th><th>merge_in</th><th>merge_out</th><th>dropped</th>' : ""}
       </tr>`;
 
       if (!node.operators || node.operators.length === 0) {
         tbl.style.display = "none";
       } else {
+        // Compute per-column max for consistent bar scaling
+        const ops = node.operators;
+        const colMax = {
+          activations: arrayMax(ops.map(o => getMean(o.activations)), 0.001),
+          total_active_ms: arrayMax(ops.map(o => getMean(o.total_active_ms)), 0.001),
+          batched_in: arrayMax(ops.map(o => getMean(o.batched_in)), 0.001),
+          merges: arrayMax(ops.map(o => getMean(o.merges)), 0.001),
+          merge_in: arrayMax(ops.map(o => getMean(o.merge_in)), 0.001),
+          merge_out: arrayMax(ops.map(o => getMean(o.merge_out)), 0.001),
+          dropped: arrayMax(ops.map(o => getMean(o.dropped)), 0.001),
+        };
+
         tbl.style.display = "table";
-        for (const op of node.operators) {
+        for (const op of ops) {
           const tr = document.createElement("tr");
-          const memFmt = (v) => (v !== null && v !== undefined ? v.toLocaleString() : "—");
+          const memBar = (v, key, color) => (v !== null && v !== undefined
+            ? renderStatsBar(v, colMax[key], color)
+            : "—");
           const memCells = showMemCol
-            ? `<td class="num">${memFmt(op.batched_in)}</td><td class="num">${memFmt(op.merges)}</td><td class="num">${memFmt(op.merge_in)}</td><td class="num">${memFmt(op.merge_out)}</td><td class="num">${memFmt(op.dropped)}</td>`
+            ? `<td>${memBar(op.batched_in, "batched_in", "#dc2626")}</td><td>${memBar(op.merges, "merges", "#ea580c")}</td><td>${memBar(op.merge_in, "merge_in", "#d97706")}</td><td>${memBar(op.merge_out, "merge_out", "#059669")}</td><td>${memBar(op.dropped, "dropped", "#7c3aed")}</td>`
             : "";
           tr.innerHTML = `
         <td><code>[${op.addr.join(", ")}]</code></td>
         <td>${escapeHtml(op.op_name)}</td>
-        <td class="num">${op.activations}</td>
-        <td class="num">${fmtMs(op.total_active_ms)}</td>
+        <td>${renderStatsBar(op.activations, colMax.activations, "#6366f1")}</td>
+        <td>${renderStatsBar(op.total_active_ms, colMax.total_active_ms, "#2563eb")}</td>
         ${memCells}
       `;
           body.appendChild(tr);

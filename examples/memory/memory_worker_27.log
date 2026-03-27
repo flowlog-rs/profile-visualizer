@@ -1,0 +1,9 @@
+addr                 batched_in     merges     merge_in       merge_out      dropped        name
+[0, 3]               0              0          0              0              0              Consolidate
+[0, 7]               0              0          0              0              0              Consolidate
+[0, 11]              0              0          0              0              0              Consolidate
+[0, 14]              1069408        0          0              0              1069408        ArrangeByKey
+[0, 15, 6]           0              0          0              0              0              ArrangeBySelf
+[0, 15, 10]          143436         6          156385         113503         100554         Arrange: ThresholdTotal
+[0, 18]              0              0          0              0              0              Consolidate
+[0, 23]              0              0          0              0              0              Consolidate

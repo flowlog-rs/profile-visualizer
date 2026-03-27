@@ -1,60 +1,288 @@
-//! Parsing for the Timely time log (time.tsv) and memory log (memory.tsv).
+//! Parsing for the Timely time log and memory log.
+//!
+//! Supports reading a folder of per-worker log files (e.g. time_worker_0.log,
+//! time_worker_1.log, ...) and aggregating into mean + variance across workers.
 
 use crate::Result;
 use crate::addr::Addr;
 use crate::diagnostics;
+use crate::stats::Stats;
 
 use anyhow::{Context, anyhow, bail};
 use regex::Regex;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
+use std::path::Path;
+use std::sync::LazyLock;
 
-/// A single operator row from the Timely time log.
+// ---------------------------------------------------------------------------
+// Aggregated row types (mean + variance across workers)
+// ---------------------------------------------------------------------------
+
+/// Aggregated time row across workers.
 #[derive(Debug, Clone)]
 pub struct TimeRow {
-    pub activations: u64,
-    pub total_active_ms: f64,
+    pub activations: Stats,
+    pub total_active_ms: Stats,
     pub op_name: String,
+    pub num_workers: usize,
 }
 
-/// Index by address for fast lookup during aggregation.
 pub type TimeIndex = BTreeMap<Addr, TimeRow>;
 
-/// A single operator row from the memory profile table.
+/// Aggregated memory row across workers.
 #[derive(Debug, Clone)]
 pub struct MemoryRow {
-    pub batched_in: u64,
-    pub merges: u64,
-    pub merge_in: u64,
-    pub merge_out: u64,
-    pub dropped: u64,
+    pub batched_in: Stats,
+    pub merges: Stats,
+    pub merge_in: Stats,
+    pub merge_out: Stats,
+    pub dropped: Stats,
     pub op_name: String,
+    pub num_workers: usize,
 }
 
-/// Index by address for fast lookup during memory aggregation.
 pub type MemoryIndex = BTreeMap<Addr, MemoryRow>;
 
-/// Parse the Timely time log (time.tsv) into an address-to-row index.
-///
-/// Expected columns (whitespace-separated):
-/// addr  activations  total_active_ms  name...
-///
-/// Example:
-/// [0, 8, 10]   33   853.886   ThresholdTotal
-pub fn parse_time_file(path: &str) -> Result<TimeIndex> {
+// ---------------------------------------------------------------------------
+// Raw per-worker row types (internal)
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone)]
+struct RawTimeRow {
+    activations: u64,
+    total_active_ms: f64,
+    op_name: String,
+}
+
+type RawTimeIndex = BTreeMap<Addr, RawTimeRow>;
+
+#[derive(Debug, Clone)]
+struct RawMemoryRow {
+    batched_in: u64,
+    merges: u64,
+    merge_in: u64,
+    merge_out: u64,
+    dropped: u64,
+    op_name: String,
+}
+
+type RawMemoryIndex = BTreeMap<Addr, RawMemoryRow>;
+
+// ---------------------------------------------------------------------------
+// Public API: folder-based parsing
+// ---------------------------------------------------------------------------
+
+/// Parse all time log files in a folder (*.log) and aggregate into mean + variance.
+pub fn parse_time_folder(dir: &str) -> Result<TimeIndex> {
+    let files = collect_log_files(dir)?;
+    if files.is_empty() {
+        bail!(
+            "{}",
+            diagnostics::error_message(format!("no .log files found in time folder {}", dir))
+        );
+    }
+
+    let mut all: Vec<RawTimeIndex> = Vec::new();
+    for f in &files {
+        all.push(parse_raw_time_file(f)?);
+    }
+
+    aggregate_time(&all, &files)
+}
+
+/// Parse all memory log files in a folder (*.log) and aggregate into mean + variance.
+pub fn parse_memory_folder(dir: &str) -> Result<MemoryIndex> {
+    let files = collect_log_files(dir)?;
+    if files.is_empty() {
+        bail!(
+            "{}",
+            diagnostics::error_message(format!(
+                "no .log files found in memory folder {}",
+                dir
+            ))
+        );
+    }
+
+    let mut all: Vec<RawMemoryIndex> = Vec::new();
+    for f in &files {
+        all.push(parse_raw_memory_file(f)?);
+    }
+
+    aggregate_memory(&all, &files)
+}
+
+// ---------------------------------------------------------------------------
+// Aggregation helpers
+// ---------------------------------------------------------------------------
+
+/// Validate that op_name is consistent across workers for a given addr.
+fn validate_op_name(
+    op_name: &mut Option<String>,
+    candidate: &str,
+    addr: &Addr,
+    first_file: &str,
+    current_file: &str,
+) -> Result<()> {
+    if let Some(existing) = op_name.as_ref() {
+        if existing != candidate {
+            bail!(
+                "{}",
+                diagnostics::error_message(format!(
+                    "op_name mismatch for addr {:?} between {} ({:?}) and {} ({:?})",
+                    addr.0, first_file, existing, current_file, candidate
+                ))
+            );
+        }
+    } else {
+        *op_name = Some(candidate.to_string());
+    }
+    Ok(())
+}
+
+fn aggregate_time(workers: &[RawTimeIndex], files: &[String]) -> Result<TimeIndex> {
+    let n = workers.len();
+    let all_addrs: BTreeSet<&Addr> = workers.iter().flat_map(|w| w.keys()).collect();
+
+    let mut out = TimeIndex::new();
+    for addr in all_addrs {
+        let mut activations = Vec::with_capacity(n);
+        let mut ms = Vec::with_capacity(n);
+        let mut op_name: Option<String> = None;
+
+        for (wi, w) in workers.iter().enumerate() {
+            match w.get(addr) {
+                Some(row) => {
+                    validate_op_name(&mut op_name, &row.op_name, addr, &files[0], &files[wi])?;
+                    activations.push(row.activations as f64);
+                    ms.push(row.total_active_ms);
+                }
+                None => {
+                    activations.push(0.0);
+                    ms.push(0.0);
+                }
+            }
+        }
+
+        out.insert(
+            addr.clone(),
+            TimeRow {
+                activations: Stats::from_values(&activations),
+                total_active_ms: Stats::from_values(&ms),
+                op_name: op_name.unwrap_or_default(),
+                num_workers: n,
+            },
+        );
+    }
+
+    Ok(out)
+}
+
+fn aggregate_memory(workers: &[RawMemoryIndex], files: &[String]) -> Result<MemoryIndex> {
+    let n = workers.len();
+    let all_addrs: BTreeSet<&Addr> = workers.iter().flat_map(|w| w.keys()).collect();
+
+    let mut out = MemoryIndex::new();
+    for addr in all_addrs {
+        let mut batched_in = Vec::with_capacity(n);
+        let mut merges = Vec::with_capacity(n);
+        let mut merge_in = Vec::with_capacity(n);
+        let mut merge_out = Vec::with_capacity(n);
+        let mut dropped = Vec::with_capacity(n);
+        let mut op_name: Option<String> = None;
+
+        for (wi, w) in workers.iter().enumerate() {
+            match w.get(addr) {
+                Some(row) => {
+                    validate_op_name(&mut op_name, &row.op_name, addr, &files[0], &files[wi])?;
+                    batched_in.push(row.batched_in as f64);
+                    merges.push(row.merges as f64);
+                    merge_in.push(row.merge_in as f64);
+                    merge_out.push(row.merge_out as f64);
+                    dropped.push(row.dropped as f64);
+                }
+                None => {
+                    batched_in.push(0.0);
+                    merges.push(0.0);
+                    merge_in.push(0.0);
+                    merge_out.push(0.0);
+                    dropped.push(0.0);
+                }
+            }
+        }
+
+        out.insert(
+            addr.clone(),
+            MemoryRow {
+                batched_in: Stats::from_values(&batched_in),
+                merges: Stats::from_values(&merges),
+                merge_in: Stats::from_values(&merge_in),
+                merge_out: Stats::from_values(&merge_out),
+                dropped: Stats::from_values(&dropped),
+                op_name: op_name.unwrap_or_default(),
+                num_workers: n,
+            },
+        );
+    }
+
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// File collection
+// ---------------------------------------------------------------------------
+
+fn collect_log_files(dir: &str) -> Result<Vec<String>> {
+    let path = Path::new(dir);
+    if !path.is_dir() {
+        bail!(
+            "{}",
+            diagnostics::error_message(format!("{} is not a directory", dir))
+        );
+    }
+
+    let mut files: Vec<String> = Vec::new();
+    for entry in fs::read_dir(path)
+        .with_context(|| diagnostics::error_message(format!("read directory {}", dir)))?
+    {
+        let entry = entry?;
+        let p = entry.path();
+        if p.is_file() {
+            if let Some(ext) = p.extension() {
+                if ext == "log" {
+                    files.push(p.to_string_lossy().to_string());
+                }
+            }
+        }
+    }
+    files.sort();
+    Ok(files)
+}
+
+// ---------------------------------------------------------------------------
+// Compiled regexes (compiled once)
+// ---------------------------------------------------------------------------
+
+static TIME_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^\s*(\[[^\]]*\])\s+(\d+)\s+([0-9]+(?:\.[0-9]+)?)\s+(.*?)\s*$"#).unwrap()
+});
+
+static MEMORY_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^\s*(\[[^\]]*\])\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s*$"#)
+        .unwrap()
+});
+
+// ---------------------------------------------------------------------------
+// Raw single-file parsers (internal)
+// ---------------------------------------------------------------------------
+
+fn parse_raw_time_file(path: &str) -> Result<RawTimeIndex> {
     let text = fs::read_to_string(path)
         .with_context(|| diagnostics::error_message(format!("read time log file {}", path)))?;
 
-    // We allow variable spacing; name may contain spaces and ':'.
-    // Capture:
-    // 1) addr: \[ ... \]
-    // 2) activations: integer
-    // 3) total_active_ms: float/integer
-    // 4) name: rest of line
-    const LOG_LINE_RE: &str = r#"^\s*(\[[^\]]*\])\s+(\d+)\s+([0-9]+(?:\.[0-9]+)?)\s+(.*?)\s*$"#;
-    let re = Regex::new(LOG_LINE_RE)?;
+    let re = &*TIME_RE;
 
-    let mut out: TimeIndex = TimeIndex::new();
+    let mut out = RawTimeIndex::new();
     for (lineno, line) in text.lines().enumerate() {
         let lno = lineno + 1;
         let line = line.trim_end();
@@ -63,7 +291,6 @@ pub fn parse_time_file(path: &str) -> Result<TimeIndex> {
             continue;
         }
 
-        // Skip header line if present.
         if line.contains("addr") && line.contains("activations") && line.contains("total_active_ms")
         {
             continue;
@@ -126,7 +353,7 @@ pub fn parse_time_file(path: &str) -> Result<TimeIndex> {
             diagnostics::error_message(format!("bad addr at {}:{}: {}", path, lno, addr_str))
         })?;
 
-        let row = TimeRow {
+        let row = RawTimeRow {
             activations,
             total_active_ms,
             op_name,
@@ -146,23 +373,13 @@ pub fn parse_time_file(path: &str) -> Result<TimeIndex> {
     Ok(out)
 }
 
-/// Parse a memory profile table log file into an address-to-row index.
-///
-/// Expected columns (whitespace-separated):
-/// addr  batched_in  merges  merge_in  merge_out  dropped  name...
-///
-/// Example:
-/// [0, 11, 9]   8082820   7   11644270   7853107   4291657   Arrange: ThresholdTotal
-pub fn parse_memory_file(path: &str) -> Result<MemoryIndex> {
+fn parse_raw_memory_file(path: &str) -> Result<RawMemoryIndex> {
     let text = fs::read_to_string(path)
         .with_context(|| diagnostics::error_message(format!("read memory file {}", path)))?;
 
-    // Capture: addr, batched_in, merges, merge_in, merge_out, dropped, name
-    const MEM_LINE_RE: &str =
-        r#"^\s*(\[[^\]]*\])\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s*$"#;
-    let re = Regex::new(MEM_LINE_RE)?;
+    let re = &*MEMORY_RE;
 
-    let mut out: MemoryIndex = MemoryIndex::new();
+    let mut out = RawMemoryIndex::new();
     for (lineno, line) in text.lines().enumerate() {
         let lno = lineno + 1;
         let line = line.trim_end();
@@ -171,7 +388,6 @@ pub fn parse_memory_file(path: &str) -> Result<MemoryIndex> {
             continue;
         }
 
-        // Skip header line if present.
         if line.contains("addr") && line.contains("batched_in") {
             continue;
         }
@@ -215,7 +431,7 @@ pub fn parse_memory_file(path: &str) -> Result<MemoryIndex> {
             diagnostics::error_message(format!("bad addr at {}:{}: {}", path, lno, addr_str))
         })?;
 
-        let row = MemoryRow {
+        let row = RawMemoryRow {
             batched_in,
             merges,
             merge_in,
@@ -240,14 +456,17 @@ pub fn parse_memory_file(path: &str) -> Result<MemoryIndex> {
 
 /// Parse "[0, 8, 10]" into Addr(vec![0, 8, 10]).
 fn parse_addr(s: &str) -> Result<Addr> {
-    let s = s.trim();
-    if !s.starts_with('[') || !s.ends_with(']') {
-        bail!(
-            "{}",
-            diagnostics::error_message(format!("addr must be bracketed: {}", s))
-        );
-    }
-    let inner = &s[1..s.len() - 1].trim();
+    let inner = s
+        .trim()
+        .strip_prefix('[')
+        .and_then(|s| s.strip_suffix(']'))
+        .ok_or_else(|| {
+            anyhow!(diagnostics::error_message(format!(
+                "addr must be bracketed: {}",
+                s
+            )))
+        })?
+        .trim();
     if inner.is_empty() {
         return Ok(Addr::new(vec![]));
     }
