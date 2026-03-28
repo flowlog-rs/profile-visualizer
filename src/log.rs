@@ -70,46 +70,52 @@ struct RawMemoryRow {
 type RawMemoryIndex = BTreeMap<Addr, RawMemoryRow>;
 
 // ---------------------------------------------------------------------------
-// Public API: folder-based parsing
+// Public API: folder-based parsing (returns snapshots grouped by timestamp)
 // ---------------------------------------------------------------------------
 
-/// Parse all time log files in a folder (*.log) and aggregate into mean + variance.
-pub fn parse_time_folder(dir: &str) -> Result<TimeIndex> {
-    let files = collect_log_files(dir)?;
-    if files.is_empty() {
-        bail!(
-            "{}",
-            diagnostics::error_message(format!("no .log files found in time folder {}", dir))
-        );
-    }
-
-    let mut all: Vec<RawTimeIndex> = Vec::new();
-    for f in &files {
-        all.push(parse_raw_time_file(f)?);
-    }
-
-    aggregate_time(&all, &files)
+/// A labeled snapshot of aggregated data (one per timestamp, or one "batch" for non-timestamped).
+pub struct Snapshot<T> {
+    pub label: String,
+    pub data: T,
 }
 
-/// Parse all memory log files in a folder (*.log) and aggregate into mean + variance.
-pub fn parse_memory_folder(dir: &str) -> Result<MemoryIndex> {
+/// Parse all time log files in a folder, grouped by timestamp.
+pub fn parse_time_folder(dir: &str) -> Result<Vec<Snapshot<TimeIndex>>> {
+    parse_folder(dir, "time", parse_raw_time_file, aggregate_time)
+}
+
+/// Parse all memory log files in a folder, grouped by timestamp.
+pub fn parse_memory_folder(dir: &str) -> Result<Vec<Snapshot<MemoryIndex>>> {
+    parse_folder(dir, "memory", parse_raw_memory_file, aggregate_memory)
+}
+
+fn parse_folder<R, T>(
+    dir: &str,
+    kind: &str,
+    parse_file: fn(&str) -> Result<R>,
+    aggregate: fn(&[R], &[String]) -> Result<T>,
+) -> Result<Vec<Snapshot<T>>> {
     let files = collect_log_files(dir)?;
     if files.is_empty() {
         bail!(
             "{}",
-            diagnostics::error_message(format!(
-                "no .log files found in memory folder {}",
-                dir
-            ))
+            diagnostics::error_message(format!("no .log files found in {} folder {}", kind, dir))
         );
     }
 
-    let mut all: Vec<RawMemoryIndex> = Vec::new();
-    for f in &files {
-        all.push(parse_raw_memory_file(f)?);
+    let groups = group_by_timestamp(&files);
+    let mut snapshots = Vec::new();
+    for (label, group_files) in groups {
+        let mut workers = Vec::new();
+        for f in &group_files {
+            workers.push(parse_file(f)?);
+        }
+        snapshots.push(Snapshot {
+            label,
+            data: aggregate(&workers, &group_files)?,
+        });
     }
-
-    aggregate_memory(&all, &files)
+    Ok(snapshots)
 }
 
 // ---------------------------------------------------------------------------
@@ -229,8 +235,12 @@ fn aggregate_memory(workers: &[RawMemoryIndex], files: &[String]) -> Result<Memo
 }
 
 // ---------------------------------------------------------------------------
-// File collection
+// File collection and timestamp grouping
 // ---------------------------------------------------------------------------
+
+/// Regex to detect timestamped filenames like `*_tN_*.log`.
+static TIMESTAMP_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"_t(\d+)_").unwrap());
 
 fn collect_log_files(dir: &str) -> Result<Vec<String>> {
     let path = Path::new(dir);
@@ -257,6 +267,29 @@ fn collect_log_files(dir: &str) -> Result<Vec<String>> {
     }
     files.sort();
     Ok(files)
+}
+
+/// Group files by timestamp `_tN_` in the filename. Returns sorted `(label, files)` pairs.
+fn group_by_timestamp(files: &[String]) -> Vec<(String, Vec<String>)> {
+    let re = &*TIMESTAMP_RE;
+    let mut groups: BTreeMap<u64, Vec<String>> = BTreeMap::new();
+
+    for f in files {
+        let filename = Path::new(f)
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy();
+        let ts = re
+            .captures(&filename)
+            .and_then(|c| c[1].parse::<u64>().ok())
+            .unwrap_or(0);
+        groups.entry(ts).or_default().push(f.clone());
+    }
+
+    groups
+        .into_iter()
+        .map(|(ts, files)| (format!("t{}", ts), files))
+        .collect()
 }
 
 // ---------------------------------------------------------------------------

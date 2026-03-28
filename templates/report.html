@@ -39,6 +39,12 @@
       gap: 8px;
     }
 
+    #detailPane {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
     .summary {
       display: flex;
       gap: 16px;
@@ -462,10 +468,43 @@
       margin-top: 2px;
       font-variant-numeric: tabular-nums;
     }
+    /* Snapshot slider */
+    .snapshot-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      background: #f0f4ff;
+      border-bottom: 1px solid #d0d8e8;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .snapshot-slider-wrap label {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .snapshot-slider-wrap input[type="range"] {
+      flex: 1;
+      max-width: 400px;
+      accent-color: #2563eb;
+    }
+
+    .snapshot-label {
+      font-weight: 700;
+      color: #2563eb;
+      min-width: 40px;
+    }
   </style>
 </head>
 
 <body>
+  <div id="snapshotSlider" class="snapshot-slider-wrap" style="display:none;">
+    <label>Snapshot:</label>
+    <input type="range" id="snapshotRange" min="0" max="0" value="0" step="1">
+    <span class="snapshot-label" id="snapshotLabel">—</span>
+  </div>
   <header>
     <div class="summary" id="summary"></div>
   </header>
@@ -525,8 +564,11 @@
   </div>
 
   <script>
-    // Embedded report data (JSON object literal)
-    const DATA = __DATA__;
+    // Embedded report data (JSON wrapper with snapshots)
+    const _RAW = __DATA__;
+    const SNAPSHOTS = _RAW.snapshots;
+    const SNAPSHOT_LABELS = _RAW.snapshot_labels;
+    let DATA = SNAPSHOTS[0];
 
     const state = {
       expanded: new Set(),
@@ -538,6 +580,8 @@
       graph: { tx: 0, ty: 0, scale: 1 }, // pan/zoom
       defaultExpanded: true,
       displayMode: "time", // "time" or "memory"
+      snapshotIdx: 0,
+      selectedRuleContext: null,
     };
 
     // Unique key for rule plan nodes (rule text + fingerprint).
@@ -723,7 +767,7 @@
 
       const contentW = Math.min(
         maxContentW,
-        Math.max(...lines.map(measureTextPx), 0)
+        arrayMax(lines.map(measureTextPx), 0)
       );
 
       const w = Math.max(NODE.minW, Math.min(NODE.maxW, contentW + 2 * NODE.padX));
@@ -755,22 +799,85 @@
       );
     }
 
-    function rulesForFingerprint(fp) {
-      if (!fp) return [];
-      const out = [];
-      for (const r of DATA.rules || []) {
-        if (r.nodes && r.nodes[fp]) out.push(r.text);
+    // --- Per-snapshot caches (rebuilt on snapshot switch) ---
+    let _fpToRules = new Map();   // fingerprint -> [ruleText, ...]
+    let _rulesByText = new Map(); // ruleText -> rule object
+    let _ruleToBlock = new Map(); // ruleText -> block string
+    let _blockToRules = new Map(); // block -> Set<ruleText>
+
+    function getBlock(node) { return (node?.block || "other").toString(); }
+
+    function blockRank(block) {
+      const b = String(block || "").toLowerCase();
+      if (b.startsWith("input")) return 0;
+      const m = b.match(/^stratum\s*(\d+)/);
+      if (m) return 1 + parseInt(m[1], 10);
+      if (b.includes("inspect")) return 1000;
+      return 500;
+    }
+
+    function rebuildCaches() {
+      const nodes = DATA.nodes || {};
+      const rules = DATA.rules || [];
+
+      _fpToRules = new Map();
+      for (const r of rules) {
+        for (const fp of Object.keys(r.nodes || {})) {
+          if (!_fpToRules.has(fp)) _fpToRules.set(fp, []);
+          _fpToRules.get(fp).push(r.text);
+        }
       }
-      return out;
+
+      _rulesByText = new Map(rules.map((r) => [r.text, r]));
+
+      _ruleToBlock = new Map();
+      for (const rule of rules) {
+        const rootPn = rule.root ? rule.nodes?.[rule.root] : null;
+        const rootNode = rootPn?.node ? nodes[rootPn.node] : null;
+        if (rootNode) {
+          _ruleToBlock.set(rule.text, getBlock(rootNode));
+        } else {
+          const counts = new Map();
+          for (const pn of Object.values(rule.nodes || {})) {
+            const nn = pn.node ? nodes[pn.node] : null;
+            if (nn) {
+              const b = getBlock(nn);
+              counts.set(b, (counts.get(b) || 0) + 1);
+            }
+          }
+          let best = null, bestC = 0;
+          for (const [b, c] of counts) {
+            if (c > bestC) { best = b; bestC = c; }
+          }
+          if (best) _ruleToBlock.set(rule.text, best);
+        }
+      }
+
+      _blockToRules = new Map();
+      for (const [rt, blk] of _ruleToBlock) {
+        if (!_blockToRules.has(blk)) _blockToRules.set(blk, new Set());
+        _blockToRules.get(blk).add(rt);
+      }
+
+      // Invalidate DAG caches (same structure across snapshots, but be safe).
+      _dagChildren = undefined;
+      _dagParents = undefined;
+      _nodesForRuleCache.clear();
+    }
+
+    // Cached DAG adjacency and rule-node mapping (invalidated via rebuildCaches).
+    let _dagChildren, _dagParents;
+    const _nodesForRuleCache = new Map();
+
+    rebuildCaches();
+
+    function rulesForFingerprint(fp) {
+      return fp ? (_fpToRules.get(fp) || []) : [];
     }
 
     function findRuleByText(text) {
-      if (!text) return null;
-      return (DATA.rules || []).find((r) => r.text === text) || null;
+      return _rulesByText.get(text) || null;
     }
-
-    // Cached DAG adjacency (built once, DATA is static).
-    let _dagChildren, _dagParents;
     function dagAdj() {
       if (_dagChildren) return { childrenOf: _dagChildren, parentsOf: _dagParents };
       _dagChildren = new Map();
@@ -787,8 +894,6 @@
       }
       return { childrenOf: _dagChildren, parentsOf: _dagParents };
     }
-
-    const _nodesForRuleCache = new Map();
 
     /** Return set of node names that belong to a rule (by fingerprint mapping),
      *  plus any intermediary non-fingerprinted nodes (like "enter") that bridge
@@ -841,7 +946,7 @@
 
       const nodes = DATA.nodes;
       const rules = DATA.rules || [];
-      const rulesByText = new Map(rules.map((r) => [r.text, r]));
+      let currentBlockRules = new Set();
 
       const autoExpand = !state.defaultExpanded && state.expanded.size === 0;
 
@@ -858,29 +963,16 @@
         return a.localeCompare(b);
       };
 
-      const blocks = new Map(); // block -> [names]
+      const blocks = new Map();
       for (const [name, node] of Object.entries(nodes)) {
-        const blk = (node.block || "other").toString();
+        const blk = getBlock(node);
         if (!blocks.has(blk)) blocks.set(blk, []);
         blocks.get(blk).push(name);
       }
 
-      // Order blocks: input, stratum N ascending, inspect, other.
-      const blockOrder = (b) => {
-        const l = b.toLowerCase();
-        if (l.startsWith("input")) return [0, 0];
-        const m = l.match(/^stratum\s*(\d+)/);
-        if (m) return [1, parseInt(m[1], 10)];
-        if (l.includes("inspect")) return [2, 0];
-        return [3, b];
-      };
-      const sortedBlocks = Array.from(blocks.keys()).sort((a, b) => {
-        const oa = blockOrder(a);
-        const ob = blockOrder(b);
-        if (oa[0] !== ob[0]) return oa[0] - ob[0];
-        if (oa[1] !== ob[1]) return oa[1] < ob[1] ? -1 : oa[1] > ob[1] ? 1 : 0;
-        return a.localeCompare(b);
-      });
+      const sortedBlocks = Array.from(blocks.keys()).sort((a, b) =>
+        blockRank(a) - blockRank(b) || a.localeCompare(b)
+      );
 
       const nodeMetaStr = (node) => {
         if (state.displayMode === "memory") {
@@ -977,8 +1069,25 @@
         const hasChildren = nextEdges.length > 0;
         const expanded = hasChildren && state.expanded.has(key);
 
+        // Shared within same block: fingerprint used by another rule in this block.
+        const fpRules = rulesForFingerprint(fp);
+        const sameBlockShared = fpRules.length > 1 && fpRules.some(
+          (r) => r !== rule.text && currentBlockRules.has(r)
+        );
+
         const row = document.createElement("div");
-        row.className = "tree-node" + (state.selected === name ? " selected" : "");
+        // Highlight: shared nodes highlight in all sharing rules within the block.
+        let isSelected = false;
+        if (state.selected === name) {
+          if (!state.selectedRuleContext) {
+            isSelected = true;
+          } else if (state.selectedRuleContext === rule.text) {
+            isSelected = true;
+          } else if (sameBlockShared && currentBlockRules.has(state.selectedRuleContext)) {
+            isSelected = true;
+          }
+        }
+        row.className = "tree-node" + (isSelected ? " selected" : "");
         row.dataset.name = name || fp;
         row.dataset.rule = rule.text;
         row.dataset.fp = fp;
@@ -989,7 +1098,7 @@
           : '<span class="toggle"></span>';
 
         const labelText = node?.label || pn.label || name || pn.fingerprint || fp;
-        const shared = pn.shared ? ' <span class="muted">[shared]</span>' : "";
+        const shared = sameBlockShared ? ' <span class="muted">[shared]</span>' : "";
 
         row.innerHTML = `${indent}${toggle}${colorizeHtml(labelText)}${shared}`;
 
@@ -1045,34 +1154,27 @@
         const isStratum = /^stratum\s+/i.test(blk);
 
         if (isStratum) {
-          const runtimeNodes = [];
-          const ruleNodesByText = new Map();
+          const rulesForBlock = _blockToRules.get(blk) || new Set();
+          currentBlockRules = rulesForBlock;
 
-          for (const n of names) {
-            const fp = nodes[n]?.fingerprint || null;
-            const matches = fp ? rulesForFingerprint(fp) : [];
-            if (!matches.length) {
-              runtimeNodes.push(n);
-              continue;
-            }
-            for (const r of matches) {
-              if (!ruleNodesByText.has(r)) ruleNodesByText.set(r, new Set());
-              ruleNodesByText.get(r).add(n);
+          // Collect named nodes owned by rules in this block vs runtime.
+          const ruleOwnedNodes = new Set();
+          for (const rule of rules) {
+            if (!rulesForBlock.has(rule.text)) continue;
+            for (const pn of Object.values(rule.nodes || {})) {
+              if (pn.node) ruleOwnedNodes.add(pn.node);
             }
           }
+          const runtimeNodes = names.filter((n) => !ruleOwnedNodes.has(n));
 
-          // Render rules in spec order for stability.
+          // Render rules assigned to this block (in spec order).
           for (const rule of rules) {
-            const r = rule.text;
-            const set = ruleNodesByText.get(r);
-            if (!set || set.size === 0) continue;
+            if (!rulesForBlock.has(rule.text)) continue;
 
-            renderRuleHeader(`${r}`);
+            renderRuleHeader(rule.text);
 
             if (rule.root && rule.nodes?.[rule.root]) {
               renderPlanNode(rule, rule.root, 0);
-            } else {
-              Array.from(set).sort(cmpById).forEach((n) => renderNodeRow(n));
             }
           }
 
@@ -1096,24 +1198,11 @@
       const nodes = DATA.nodes;
       const allNames = Object.keys(nodes);
 
-      function blockOf(node) {
-        if (node.block) return node.block;
-        return "other";
-      }
-
-      function blockRank(block) {
-        if (!block) return 0;
-        const b = String(block).toLowerCase();
-        if (b.startsWith("input")) return 0;
-        const m = b.match(/^stratum\s*(\d+)/);
-        if (m) return 1 + parseInt(m[1], 10);
-        if (b.includes("inspect")) return 1000;
-        return 500;
-      }
+      // Uses shared getBlock() and blockRank() defined at module scope.
 
       function uniqueBlocksInOrder() {
         const set = new Set();
-        for (const name of allNames) set.add(blockOf(nodes[name]));
+        for (const name of allNames) set.add(getBlock(nodes[name]));
         return Array.from(set).sort(
           (a, b) =>
             blockRank(a) - blockRank(b) || String(a).localeCompare(String(b))
@@ -1187,11 +1276,11 @@
       // --- Depth = max(parent depth) + 1 (ensures below *all* parents) ---
       const depth = new Map();
       for (const n of allNames) {
-        const blk = blockOf(nodes[n]);
+        const blk = getBlock(nodes[n]);
         depth.set(n, blockRank(blk));
       }
       for (const r of DATA.roots || []) {
-        const blk = blockOf(nodes[r]);
+        const blk = getBlock(nodes[r]);
         depth.set(r, blockRank(blk));
       }
 
@@ -1201,7 +1290,7 @@
           const pd = depth.get(p) ?? 0;
           d = Math.max(d, pd + 1);
         }
-        const blk = blockOf(nodes[v]);
+        const blk = getBlock(nodes[v]);
         d = Math.max(d, blockRank(blk));
         depth.set(v, d);
       }
@@ -1307,7 +1396,7 @@
       // Map block -> [node names]
       const namesByBlock = new Map();
       for (const name of allNames) {
-        const blk = blockOf(nodes[name]);
+        const blk = getBlock(nodes[name]);
         if (!namesByBlock.has(blk)) namesByBlock.set(blk, []);
         namesByBlock.get(blk).push(name);
       }
@@ -1373,7 +1462,7 @@
       for (const [name, node] of Object.entries(nodes)) {
         const b = boxByName.get(name);
         if (!b) continue;
-        const blk = blockOf(node);
+        const blk = getBlock(node);
         const bb = blockBoxes.get(blk) || {
           x0: Infinity,
           y0: Infinity,
@@ -1738,13 +1827,31 @@
     }
 
     // Ensure a selected node is visible in the left list and scroll to it.
+    function expandRulePlanTree(ruleText) {
+      const ruleObj = findRuleByText(ruleText);
+      if (ruleObj && ruleObj.nodes) {
+        for (const [rfp, pn] of Object.entries(ruleObj.nodes)) {
+          const hasEdges = (pn.children && pn.children.length) || (pn.parents && pn.parents.length);
+          if (hasEdges) state.expanded.add(planKey(ruleText, rfp));
+        }
+      }
+    }
+
     function ensureTreeVisible(name, ruleText = null, fp = null) {
       let row = null;
+      // 1) Exact match: fingerprint + rule
       if (fp && ruleText) {
         row = document.querySelector(
           `#tree .tree-node[data-fp="${CSS.escape(fp)}"][data-rule="${CSS.escape(ruleText)}"]`
         );
       }
+      // 2) Name + rule (for nodes without fingerprint, or fp not in this rule)
+      if (!row && ruleText) {
+        row = document.querySelector(
+          `#tree .tree-node[data-name="${CSS.escape(name)}"][data-rule="${CSS.escape(ruleText)}"]`
+        );
+      }
+      // 3) Just name (last resort)
       if (!row) {
         row = document.querySelector(`#tree .tree-node[data-name="${CSS.escape(name)}"]`);
       }
@@ -1845,6 +1952,8 @@
     function selectNode(name, preferredRule = null) {
       state.highlightedRule = null;
       state.selected = name;
+      // Track which rule the user clicked from, so the sidebar only highlights there.
+      state.selectedRuleContext = preferredRule || null;
 
       const node = DATA.nodes[name];
       document.getElementById("title").textContent = node.label;
@@ -1852,6 +1961,7 @@
       const fp = node.fingerprint || null;
       const matches = fp ? rulesForFingerprint(fp) : [];
 
+      // Pick the rule for the detail pane (must contain this fingerprint).
       let chosenRule = null;
       if (preferredRule && matches.includes(preferredRule)) {
         chosenRule = preferredRule;
@@ -1862,13 +1972,17 @@
       }
       state.selectedRule = chosenRule;
 
-      // Ensure the corresponding plan tree is expanded so the node is visible.
-      if (chosenRule && fp) {
-        const ruleObj = findRuleByText(chosenRule);
-        if (ruleObj && ruleObj.nodes) {
-          for (const [rfp, pn] of Object.entries(ruleObj.nodes)) {
-            const hasEdges = (pn.children && pn.children.length) || (pn.parents && pn.parents.length);
-            if (hasEdges) state.expanded.add(planKey(chosenRule, rfp));
+      // For sidebar scroll: stay in the rule the user clicked from.
+      const scrollRule = preferredRule || chosenRule;
+
+      // Expand the clicked rule + same-block siblings that share this fingerprint.
+      const expandRule = scrollRule || chosenRule;
+      if (expandRule) expandRulePlanTree(expandRule);
+      if (fp && expandRule) {
+        const nodeBlock = getBlock(node);
+        for (const sr of rulesForFingerprint(fp)) {
+          if (sr !== expandRule && _ruleToBlock.get(sr) === nodeBlock) {
+            expandRulePlanTree(sr);
           }
         }
       }
@@ -1909,8 +2023,8 @@
       head.innerHTML = `<tr>
         <th>addr</th>
         <th>operator</th>
-        <th>activations</th>
         <th>active time</th>
+        <th>activations</th>
         ${showMemCol ? '<th>batched_in</th><th>merges</th><th>merge_in</th><th>merge_out</th><th>dropped</th>' : ""}
       </tr>`;
 
@@ -1941,8 +2055,8 @@
           tr.innerHTML = `
         <td><code>[${op.addr.join(", ")}]</code></td>
         <td>${escapeHtml(op.op_name)}</td>
-        <td>${renderStatsBar(op.activations, colMax.activations, "#6366f1")}</td>
         <td>${renderStatsBar(op.total_active_ms, colMax.total_active_ms, "#2563eb")}</td>
+        <td>${renderStatsBar(op.activations, colMax.activations, "#6366f1")}</td>
         ${memCells}
       `;
           body.appendChild(tr);
@@ -1950,7 +2064,7 @@
       }
 
       renderTree();
-      ensureTreeVisible(name, chosenRule, fp);
+      ensureTreeVisible(name, scrollRule, fp);
       renderGraph();
       renderTopNodes();
     }
@@ -2012,6 +2126,38 @@
 
     document.getElementById("modeTime").onclick = () => setDisplayMode("time");
     document.getElementById("modeMemory").onclick = () => setDisplayMode("memory");
+
+    // --- Snapshot slider ---
+    function setSnapshot(idx) {
+      state.snapshotIdx = idx;
+      DATA = SNAPSHOTS[idx];
+      rebuildCaches();
+      document.getElementById("snapshotLabel").textContent = SNAPSHOT_LABELS[idx];
+      document.getElementById("snapshotRange").value = idx;
+      renderAll();
+    }
+
+    function renderAll() {
+      renderSummary();
+      if (state.selected && DATA.nodes[state.selected]) {
+        // selectNode already calls renderTree + renderGraph + renderTopNodes.
+        selectNode(state.selected);
+      } else {
+        renderTree();
+        renderTopNodes();
+        if (state.view === "graph") renderGraph();
+      }
+    }
+
+    if (SNAPSHOTS.length > 1) {
+      const slider = document.getElementById("snapshotSlider");
+      slider.style.display = "flex";
+      const range = document.getElementById("snapshotRange");
+      range.max = SNAPSHOTS.length - 1;
+      range.value = 0;
+      document.getElementById("snapshotLabel").textContent = SNAPSHOT_LABELS[0];
+      range.addEventListener("input", (e) => setSnapshot(parseInt(e.target.value, 10)));
+    }
 
     renderSummary();
     renderTree();

@@ -1,0 +1,502 @@
+addr                 batched_in     merges     merge_in       merge_out      dropped        name
+[0, 3]               139            0          0              0              0              Arrange: Threshold
+[0, 4]               139            0          0              0              0              Threshold
+[0, 8]               85             0          0              0              0              Arrange: Threshold
+[0, 9]               85             0          0              0              0              Threshold
+[0, 13]              0              0          0              0              0              Arrange: Threshold
+[0, 14]              0              0          0              0              0              Threshold
+[0, 18]              1301           0          0              0              0              Arrange: Threshold
+[0, 19]              1301           0          0              0              0              Threshold
+[0, 23]              13             0          0              0              0              Arrange: Threshold
+[0, 24]              13             0          0              0              0              Threshold
+[0, 28]              3127           0          0              0              0              Arrange: Threshold
+[0, 29]              3127           0          0              0              0              Threshold
+[0, 33]              3624           0          0              0              0              Arrange: Threshold
+[0, 34]              3624           0          0              0              0              Threshold
+[0, 38]              1736           0          0              0              0              Arrange: Threshold
+[0, 39]              1736           0          0              0              0              Threshold
+[0, 43]              16639          0          0              0              0              Arrange: Threshold
+[0, 44]              16639          0          0              0              0              Threshold
+[0, 48]              1337           0          0              0              0              Arrange: Threshold
+[0, 49]              1337           0          0              0              0              Threshold
+[0, 53]              125            0          0              0              0              Arrange: Threshold
+[0, 54]              125            0          0              0              0              Threshold
+[0, 58]              10             0          0              0              0              Arrange: Threshold
+[0, 59]              10             0          0              0              0              Threshold
+[0, 63]              19             0          0              0              0              Arrange: Threshold
+[0, 64]              19             0          0              0              0              Threshold
+[0, 68]              40             0          0              0              0              Arrange: Threshold
+[0, 69]              40             0          0              0              0              Threshold
+[0, 73]              866            0          0              0              0              Arrange: Threshold
+[0, 74]              866            0          0              0              0              Threshold
+[0, 78]              773            0          0              0              0              Arrange: Threshold
+[0, 79]              773            0          0              0              0              Threshold
+[0, 83]              1636           0          0              0              0              Arrange: Threshold
+[0, 84]              1636           0          0              0              0              Threshold
+[0, 88]              5249           0          0              0              0              Arrange: Threshold
+[0, 89]              5249           0          0              0              0              Threshold
+[0, 93]              624            0          0              0              0              Arrange: Threshold
+[0, 94]              624            0          0              0              0              Threshold
+[0, 98]              634            0          0              0              0              Arrange: Threshold
+[0, 99]              634            0          0              0              0              Threshold
+[0, 103]             641            0          0              0              0              Arrange: Threshold
+[0, 104]             641            0          0              0              0              Threshold
+[0, 108]             1025           0          0              0              0              Arrange: Threshold
+[0, 109]             1025           0          0              0              0              Threshold
+[0, 113]             2684           0          0              0              0              Arrange: Threshold
+[0, 114]             2684           0          0              0              0              Threshold
+[0, 118]             1263           0          0              0              0              Arrange: Threshold
+[0, 119]             1263           0          0              0              0              Threshold
+[0, 123]             1312           0          0              0              0              Arrange: Threshold
+[0, 124]             1312           0          0              0              0              Threshold
+[0, 128]             687            0          0              0              0              Arrange: Threshold
+[0, 129]             687            0          0              0              0              Threshold
+[0, 133]             1840           0          0              0              0              Arrange: Threshold
+[0, 134]             1840           0          0              0              0              Threshold
+[0, 138]             134            0          0              0              0              Arrange: Threshold
+[0, 139]             134            0          0              0              0              Threshold
+[0, 143]             503            0          0              0              0              Arrange: Threshold
+[0, 144]             503            0          0              0              0              Threshold
+[0, 148]             841            0          0              0              0              Arrange: Threshold
+[0, 149]             841            0          0              0              0              Threshold
+[0, 153]             258            0          0              0              0              Arrange: Threshold
+[0, 154]             258            0          0              0              0              Threshold
+[0, 158]             947            0          0              0              0              Arrange: Threshold
+[0, 159]             947            0          0              0              0              Threshold
+[0, 215]             866            0          0              0              0              Arrange: Threshold
+[0, 216]             866            0          0              0              0              Threshold
+[0, 222]             154            0          0              0              0              Arrange: Threshold
+[0, 223]             154            0          0              0              0              Threshold
+[0, 226]             1619           0          0              0              0              Arrange: Threshold
+[0, 227]             1619           0          0              0              0              Threshold
+[0, 230]             642            0          0              0              0              Arrange: Threshold
+[0, 231]             642            0          0              0              0              Threshold
+[0, 234]             10             0          0              0              0              Arrange: Threshold
+[0, 235]             10             0          0              0              0              Threshold
+[0, 238]             564            0          0              0              0              Arrange: Threshold
+[0, 239]             564            0          0              0              0              Threshold
+[0, 242]             139            0          0              0              0              Arrange: Threshold
+[0, 243]             139            0          0              0              0              Threshold
+[0, 246]             283            0          0              0              0              Arrange: Threshold
+[0, 247]             283            0          0              0              0              Threshold
+[0, 250]             918            0          0              0              0              Arrange: Threshold
+[0, 251]             918            0          0              0              0              Threshold
+[0, 254]             5310           0          0              0              0              Arrange: Threshold
+[0, 255]             5310           0          0              0              0              Threshold
+[0, 258]             125            0          0              0              0              Arrange: Threshold
+[0, 259]             125            0          0              0              0              Threshold
+[0, 262]             675            0          0              0              0              Arrange: Threshold
+[0, 263]             675            0          0              0              0              Threshold
+[0, 268]             4322           0          0              0              0              Arrange: Threshold
+[0, 269]             4322           0          0              0              0              Threshold
+[0, 272]             634            0          0              0              0              Arrange: Threshold
+[0, 273]             634            0          0              0              0              Threshold
+[0, 276]             81             0          0              0              0              Arrange: Threshold
+[0, 277]             81             0          0              0              0              Threshold
+[0, 280]             936            0          0              0              0              Arrange: Threshold
+[0, 281]             936            0          0              0              0              Threshold
+[0, 284]             2699           0          0              0              0              Arrange: Threshold
+[0, 285]             2699           0          0              0              0              Threshold
+[0, 288]             625            0          0              0              0              Arrange: Threshold
+[0, 289]             625            0          0              0              0              Threshold
+[0, 295]             3218           0          0              0              0              Arrange: Threshold
+[0, 296]             3218           0          0              0              0              Threshold
+[0, 299]             1382           0          0              0              0              Arrange: Threshold
+[0, 300]             1382           0          0              0              0              Threshold
+[0, 305]             7521           0          0              0              0              Arrange: Threshold
+[0, 306]             7521           0          0              0              0              Threshold
+[0, 309]             1911           0          0              0              0              Arrange: Threshold
+[0, 310]             1911           0          0              0              0              Threshold
+[0, 313]             277            0          0              0              0              Arrange: Threshold
+[0, 314]             277            0          0              0              0              Threshold
+[0, 317]             19             0          0              0              0              Arrange: Threshold
+[0, 318]             19             0          0              0              0              Threshold
+[0, 333]             17036          0          0              0              0              Arrange: Threshold
+[0, 334]             17036          0          0              0              0              Threshold
+[0, 337]             1900           0          0              0              0              Arrange: Threshold
+[0, 338]             1900           0          0              0              0              Threshold
+[0, 341]             707            0          0              0              0              Arrange: Threshold
+[0, 342]             707            0          0              0              0              Threshold
+[0, 345]             138            0          0              0              0              Arrange: Threshold
+[0, 346]             138            0          0              0              0              Threshold
+[0, 353]             154            0          0              0              0              Arrange: Threshold
+[0, 354]             154            0          0              0              0              Threshold
+[0, 357]             814            0          0              0              0              Arrange: Threshold
+[0, 358]             814            0          0              0              0              Threshold
+[0, 361]             1397           0          0              0              0              Arrange: Threshold
+[0, 362]             1397           0          0              0              0              Threshold
+[0, 365]             1039           0          0              0              0              Arrange: Threshold
+[0, 366]             1039           0          0              0              0              Threshold
+[0, 369]             2682           0          0              0              0              Arrange: Threshold
+[0, 370]             2682           0          0              0              0              Threshold
+[0, 373]             450            0          0              0              0              Arrange: Threshold
+[0, 374]             450            0          0              0              0              Threshold
+[0, 378]             0              0          0              0              0              ArrangeBySelf
+[0, 381]             0              0          0              0              0              ArrangeBySelf
+[0, 383]             0              0          0              0              0              ArrangeByKey
+[0, 385]             0              0          0              0              0              ArrangeByKey
+[0, 389]             0              0          0              0              0              ArrangeBySelf
+[0, 392]             0              0          0              0              0              ArrangeBySelf
+[0, 394]             0              0          0              0              0              ArrangeByKey
+[0, 397]             0              0          0              0              0              ArrangeByKey
+[0, 400]             0              0          0              0              0              ArrangeByKey
+[0, 408]             1              0          0              0              0              ArrangeBySelf
+[0, 411]             878            0          0              0              0              ArrangeBySelf
+[0, 414]             2              0          0              0              0              ArrangeBySelf
+[0, 417]             195            0          0              0              0              ArrangeBySelf
+[0, 419]             1212           0          0              0              0              ArrangeByKey
+[0, 422]             0              0          0              0              0              ArrangeBySelf
+[0, 424]             0              0          0              0              0              ArrangeByKey
+[0, 426]             0              0          0              0              0              ArrangeByKey
+[0, 429]             1              0          0              0              0              ArrangeBySelf
+[0, 432]             1              0          0              0              0              ArrangeBySelf
+[0, 435]             1              0          0              0              0              ArrangeBySelf
+[0, 437]             0              0          0              0              0              ArrangeByKey
+[0, 440]             1              0          0              0              0              ArrangeBySelf
+[0, 443]             1              0          0              0              0              ArrangeBySelf
+[0, 445]             0              0          0              0              0              ArrangeByKey
+[0, 448]             1              0          0              0              0              ArrangeBySelf
+[0, 452]             105            0          0              0              0              ArrangeBySelf
+[0, 454]             1310           0          0              0              0              ArrangeByKey
+[0, 456]             1310           0          0              0              0              ArrangeByKey
+[0, 458]             1310           0          0              0              0              ArrangeByKey
+[0, 461]             1397           0          0              0              0              Arrange: Threshold
+[0, 462]             1397           0          0              0              0              Threshold
+[0, 466]             123            0          0              0              0              Arrange: Threshold
+[0, 467]             123            0          0              0              0              Threshold
+[0, 473]             1274           0          0              0              0              Arrange: Threshold
+[0, 474]             1274           0          0              0              0              Threshold
+[0, 476]             1205           0          0              0              0              ArrangeByKey
+[0, 479]             1312           0          0              0              0              Arrange: Threshold
+[0, 480]             1312           0          0              0              0              Threshold
+[0, 484]             94             0          0              0              0              Arrange: Threshold
+[0, 485]             94             0          0              0              0              Threshold
+[0, 491]             1218           0          0              0              0              Arrange: Threshold
+[0, 492]             1218           0          0              0              0              Threshold
+[0, 494]             1205           0          0              0              0              ArrangeByKey
+[0, 497]             1382           0          0              0              0              Arrange: Threshold
+[0, 498]             1382           0          0              0              0              Threshold
+[0, 502]             113            0          0              0              0              Arrange: Threshold
+[0, 503]             113            0          0              0              0              Threshold
+[0, 509]             1269           0          0              0              0              Arrange: Threshold
+[0, 510]             1269           0          0              0              0              Threshold
+[0, 512]             1205           0          0              0              0              ArrangeByKey
+[0, 514]             1205           0          0              0              0              ArrangeByKey
+[0, 518]             2682           0          0              0              0              ArrangeBySelf
+[0, 520]             4277           0          0              0              0              ArrangeByKey
+[0, 522]             1530           0          0              0              0              ArrangeByKey
+[0, 525]             1310           0          0              0              0              ArrangeBySelf
+[0, 527]             1310           0          0              0              0              ArrangeByKey
+[0, 529]             1527           0          0              0              0              ArrangeByKey
+[0, 531]             1310           0          0              0              0              ArrangeByKey
+[0, 535]             1310           0          0              0              0              ArrangeBySelf
+[0, 537]             1310           0          0              0              0              ArrangeByKey
+[0, 539]             1527           0          0              0              0              ArrangeByKey
+[0, 541]             1310           0          0              0              0              ArrangeByKey
+[0, 545]             564            0          0              0              0              ArrangeBySelf
+[0, 547]             16993          0          0              0              0              ArrangeByKey
+[0, 549]             4277           0          0              0              0              ArrangeByKey
+[0, 551]             564            0          0              0              0              ArrangeByKey
+[0, 553]             564            0          0              0              0              ArrangeByKey
+[0, 556]             16993          0          0              0              0              ArrangeByKey
+[0, 558]             925            0          0              0              0              ArrangeByKey
+[0, 561]             1646           0          0              0              0              ArrangeByKey
+[0, 563]             1646           0          0              0              0              ArrangeByKey
+[0, 565]             7553           0          0              0              0              ArrangeByKey
+[0, 568]             7553           0          0              0              0              ArrangeByKey
+[0, 570]             7553           0          0              0              0              ArrangeByKey
+[0, 572]             5298           0          0              0              0              ArrangeByKey
+[0, 575]             609            0          0              0              0              ArrangeByKey
+[0, 577]             609            0          0              0              0              ArrangeByKey
+[0, 579]             609            0          0              0              0              ArrangeByKey
+[0, 581]             609            0          0              0              0              ArrangeByKey
+[0, 584]             831            0          0              0              0              ArrangeByKey
+[0, 586]             831            0          0              0              0              ArrangeByKey
+[0, 588]             831            0          0              0              0              ArrangeByKey
+[0, 591]             283            0          0              0              0              ArrangeByKey
+[0, 593]             283            0          0              0              0              ArrangeByKey
+[0, 595]             283            0          0              0              0              ArrangeByKey
+[0, 598]             149            0          0              0              0              ArrangeByKey
+[0, 600]             149            0          0              0              0              ArrangeByKey
+[0, 602]             3125           0          0              0              0              ArrangeByKey
+[0, 605]             3125           0          0              0              0              ArrangeByKey
+[0, 607]             442            0          0              0              0              ArrangeByKey
+[0, 610]             667            0          0              0              0              ArrangeByKey
+[0, 612]             667            0          0              0              0              ArrangeByKey
+[0, 614]             667            0          0              0              0              ArrangeByKey
+[0, 616]             667            0          0              0              0              ArrangeByKey
+[0, 619]             1867           0          0              0              0              ArrangeByKey
+[0, 621]             1867           0          0              0              0              ArrangeByKey
+[0, 623]             1867           0          0              0              0              ArrangeByKey
+[0, 625]             1867           0          0              0              0              ArrangeByKey
+[0, 628]             1637           0          0              0              0              Arrange: Threshold
+[0, 629]             1637           0          0              0              0              Threshold
+[0, 632]             574            0          0              0              0              Arrange: Threshold
+[0, 633]             574            0          0              0              0              Threshold
+[0, 642]             47             0          0              0              0              Arrange: Threshold
+[0, 643]             47             0          0              0              0              Threshold
+[0, 646]             155            0          0              0              0              Arrange: Threshold
+[0, 647]             155            0          0              0              0              Threshold
+[0, 650]             2766           0          0              0              0              Arrange: Threshold
+[0, 651]             2766           0          0              0              0              Threshold
+[0, 654]             1927           0          0              0              0              Arrange: Threshold
+[0, 655]             1927           0          0              0              0              Threshold
+[0, 658]             807            0          0              0              0              Arrange: Threshold
+[0, 659]             807            0          0              0              0              Threshold
+[0, 662]             666            0          0              0              0              Arrange: Threshold
+[0, 663]             666            0          0              0              0              Threshold
+[0, 666]             1294           0          0              0              0              Arrange: Threshold
+[0, 667]             1294           0          0              0              0              Threshold
+[0, 670]             881            0          0              0              0              Arrange: Threshold
+[0, 671]             881            0          0              0              0              Threshold
+[0, 674]             605            0          0              0              0              Arrange: Threshold
+[0, 675]             605            0          0              0              0              Threshold
+[0, 678]             0              0          0              0              0              Arrange: Threshold
+[0, 679]             0              0          0              0              0              Threshold
+[0, 682]             145            0          0              0              0              Arrange: Threshold
+[0, 683]             145            0          0              0              0              Threshold
+[0, 686]             2776           0          0              0              0              Arrange: Threshold
+[0, 687]             2776           0          0              0              0              Threshold
+[0, 690]             4845           0          0              0              0              Arrange: Threshold
+[0, 691]             4845           0          0              0              0              Threshold
+[0, 694]             462            0          0              0              0              Arrange: Threshold
+[0, 695]             462            0          0              0              0              Threshold
+[0, 698]             247            0          0              0              0              Arrange: Threshold
+[0, 699]             247            0          0              0              0              Threshold
+[0, 702]             16             0          0              0              0              ArrangeByKey
+[0, 704]             4209           0          0              0              0              ArrangeByKey
+[0, 705, 6]          218            8          327            327            0              ArrangeByKey
+[0, 705, 12]         263            6          346            346            0              Arrange: Threshold
+[0, 705, 13]         260            6          341            341            0              Threshold
+[0, 710]             0              0          0              0              0              ArrangeBySelf
+[0, 712]             1310           0          0              0              0              ArrangeByKey
+[0, 717]             19             0          0              0              0              ArrangeBySelf
+[0, 719]             218            0          0              0              0              ArrangeByKey
+[0, 723]             125            0          0              0              0              ArrangeBySelf
+[0, 727]             0              0          0              0              0              Arrange: Threshold
+[0, 728]             0              0          0              0              0              Threshold
+[0, 731]             30             0          0              0              0              Arrange: Threshold
+[0, 732]             30             0          0              0              0              Threshold
+[0, 737]             310            0          0              0              0              Arrange: Threshold
+[0, 738]             310            0          0              0              0              Threshold
+[0, 741]             0              0          0              0              0              Arrange: Threshold
+[0, 742]             0              0          0              0              0              Threshold
+[0, 745]             1294           0          0              0              0              Arrange: Threshold
+[0, 746]             1294           0          0              0              0              Threshold
+[0, 749]             122            0          0              0              0              ArrangeByKey
+[0, 750, 5]          8671           3          4502           4502           0              ArrangeByKey
+[0, 750, 9]          284            6          98             98             0              Arrange: Threshold
+[0, 750, 10]         284            6          98             98             0              Threshold
+[0, 755]             593            0          0              0              0              Arrange: Threshold
+[0, 756]             593            0          0              0              0              Threshold
+[0, 759]             283            0          0              0              0              Arrange: Threshold
+[0, 760]             283            0          0              0              0              Threshold
+[0, 764]             1245           0          0              0              0              ArrangeBySelf
+[0, 766]             4209           0          0              0              0              ArrangeByKey
+[0, 768]             16             0          0              0              0              ArrangeByKey
+[0, 769, 7]          5730           8          8282           8282           0              ArrangeByKey
+[0, 769, 9]          5370           7          11428          11428          0              ArrangeByKey
+[0, 769, 12]         5506           6          11505          11505          0              Arrange: Threshold
+[0, 769, 13]         5506           6          11505          11505          0              Threshold
+[0, 769, 17]         261            8          215            215            0              Arrange: Threshold
+[0, 769, 18]         261            8          215            215            0              Threshold
+[0, 769, 24]         5174           5          6573           6573           0              Arrange: Threshold
+[0, 769, 25]         5174           5          6573           6573           0              Threshold
+[0, 769, 28]         64             9          64             64             0              ArrangeByKey
+[0, 769, 31]         75             8          54             54             0              Arrange: Threshold
+[0, 769, 32]         75             8          54             54             0              Threshold
+[0, 769, 36]         21             9          18             18             0              Arrange: Threshold
+[0, 769, 37]         21             9          18             18             0              Threshold
+[0, 769, 43]         52             9          34             34             0              Arrange: Threshold
+[0, 769, 44]         52             9          34             34             0              Threshold
+[0, 769, 49]         6517           6          13661          13661          0              Arrange: Threshold
+[0, 769, 50]         6513           6          13652          13652          0              Threshold
+[0, 773]             154            0          0              0              0              ArrangeBySelf
+[0, 775]             5              0          0              0              0              ArrangeByKey
+[0, 777]             5              0          0              0              0              ArrangeByKey
+[0, 779]             5              0          0              0              0              ArrangeByKey
+[0, 781]             5              0          0              0              0              ArrangeByKey
+[0, 782, 7]          697            1          0              0              0              ArrangeByKey
+[0, 782, 9]          10744          2          0              0              0              ArrangeByKey
+[0, 782, 11]         697            1          0              0              0              ArrangeByKey
+[0, 782, 13]         613            2          0              0              0              ArrangeByKey
+[0, 782, 17]         616            0          0              0              0              Arrange: Threshold
+[0, 782, 18]         616            0          0              0              0              Threshold
+[0, 787]             611            0          0              0              0              Arrange: Threshold
+[0, 788]             611            0          0              0              0              Threshold
+[0, 791]             616            0          0              0              0              Arrange: Threshold
+[0, 792]             616            0          0              0              0              Threshold
+[0, 795]             122            0          0              0              0              ArrangeByKey
+[0, 797]             31             0          0              0              0              ArrangeByKey
+[0, 799]             3450           0          0              0              0              ArrangeByKey
+[0, 801]             1362           0          0              0              0              ArrangeByKey
+[0, 803]             10             0          0              0              0              ArrangeByKey
+[0, 806]             611            0          0              0              0              ArrangeBySelf
+[0, 808]             198            0          0              0              0              ArrangeByKey
+[0, 810]             16917          0          0              0              0              ArrangeByKey
+[0, 812]             4356           0          0              0              0              ArrangeByKey
+[0, 814]             1627           0          0              0              0              ArrangeByKey
+[0, 816]             18228          0          0              0              0              ArrangeByKey
+[0, 818]             1031           0          0              0              0              ArrangeByKey
+[0, 820]             4277           0          0              0              0              ArrangeByKey
+[0, 822]             1113           0          0              0              0              ArrangeByKey
+[0, 824]             2682           0          0              0              0              ArrangeByKey
+[0, 826]             2676           0          0              0              0              ArrangeByKey
+[0, 828]             2676           0          0              0              0              ArrangeByKey
+[0, 830]             6384           0          0              0              0              ArrangeByKey
+[0, 832]             1351           0          0              0              0              ArrangeByKey
+[0, 834]             4201           0          0              0              0              ArrangeByKey
+[0, 836]             537            0          0              0              0              ArrangeByKey
+[0, 838]             10744          0          0              0              0              ArrangeByKey
+[0, 840]             1306           0          0              0              0              ArrangeByKey
+[0, 843]             1113           0          0              0              0              ArrangeBySelf
+[0, 845]             898            0          0              0              0              ArrangeByKey
+[0, 847]             2478           0          0              0              0              ArrangeByKey
+[0, 849]             591            0          0              0              0              ArrangeByKey
+[0, 851]             1403           0          0              0              0              ArrangeByKey
+[0, 853]             60             0          0              0              0              ArrangeByKey
+[0, 855]             249            0          0              0              0              ArrangeByKey
+[0, 857]             600            0          0              0              0              ArrangeByKey
+[0, 859]             395            0          0              0              0              ArrangeByKey
+[0, 861]             116            0          0              0              0              ArrangeByKey
+[0, 863]             115            0          0              0              0              ArrangeByKey
+[0, 865]             1510           0          0              0              0              ArrangeByKey
+[0, 867]             549            0          0              0              0              ArrangeByKey
+[0, 870]             564            0          0              0              0              ArrangeBySelf
+[0, 872]             4277           0          0              0              0              ArrangeByKey
+[0, 874]             564            0          0              0              0              ArrangeByKey
+[0, 876]             1310           0          0              0              0              ArrangeByKey
+[0, 877, 52]         47             247        210            210            0              ArrangeBySelf
+[0, 877, 57]         282            244        1437           1437           0              ArrangeBySelf
+[0, 877, 59]         276            245        599            599            0              ArrangeByKey
+[0, 877, 61]         683549         237        4187881        4187881        0              ArrangeByKey
+[0, 877, 63]         460            243        1560           1560           0              ArrangeByKey
+[0, 877, 65]         15882          241        82726          82726          0              ArrangeByKey
+[0, 877, 67]         7722           240        29094          29094          0              ArrangeByKey
+[0, 877, 69]         9              247        9              9              0              ArrangeByKey
+[0, 877, 71]         30958          241        133917         133917         0              ArrangeByKey
+[0, 877, 74]         37             248        190            190            0              ArrangeByKey
+[0, 877, 76]         70             245        204            204            0              ArrangeByKey
+[0, 877, 78]         7722           241        29094          29094          0              ArrangeByKey
+[0, 877, 80]         154862         239        728868         728868         0              ArrangeByKey
+[0, 877, 82]         346            247        365            365            0              ArrangeByKey
+[0, 877, 84]         0              249        0              0              0              ArrangeByKey
+[0, 877, 86]         5              248        17             17             0              ArrangeByKey
+[0, 877, 89]         1102           241        5738           5738           0              ArrangeByKey
+[0, 877, 92]         331            245        1729           1729           0              ArrangeByKey
+[0, 877, 94]         9845           238        47544          47544          0              ArrangeByKey
+[0, 877, 96]         210535         240        1087631        1087631        0              ArrangeByKey
+[0, 877, 100]        4230           243        22226          22226          0              ArrangeBySelf
+[0, 877, 102]        287            244        1382           1382           0              ArrangeByKey
+[0, 877, 104]        987            242        5193           5193           0              ArrangeByKey
+[0, 877, 106]        1436           242        8244           8244           0              ArrangeByKey
+[0, 877, 108]        794            242        3721           3721           0              ArrangeByKey
+[0, 877, 111]        656            245        3453           3453           0              ArrangeByKey
+[0, 877, 113]        612            244        3158           3158           0              ArrangeByKey
+[0, 877, 115]        612            244        3158           3158           0              ArrangeByKey
+[0, 877, 117]        175954         239        1128914        1128914        0              ArrangeByKey
+[0, 877, 119]        17787          240        100318         100318         0              ArrangeByKey
+[0, 877, 121]        17787          240        100318         100318         0              ArrangeByKey
+[0, 877, 123]        10034          239        50292          50292          0              ArrangeByKey
+[0, 877, 126]        1235           243        6731           6731           0              ArrangeByKey
+[0, 877, 128]        1069           244        5717           5717           0              ArrangeByKey
+[0, 877, 131]        3285           241        18807          18807          0              ArrangeByKey
+[0, 877, 134]        27             246        106            106            0              ArrangeByKey
+[0, 877, 136]        1769           244        8421           8421           0              ArrangeByKey
+[0, 877, 138]        147304         241        695119         695119         0              ArrangeByKey
+[0, 877, 141]        617473         236        3295713        3295713        0              ArrangeBySelf
+[0, 877, 144]        163463         239        866746         866746         0              ArrangeByKey
+[0, 877, 146]        163463         239        866746         866746         0              ArrangeByKey
+[0, 877, 148]        13964          242        79764          79764          0              ArrangeByKey
+[0, 877, 150]        10792          243        62309          62309          0              ArrangeByKey
+[0, 877, 154]        22317          240        123495         123495         0              ArrangeBySelf
+[0, 877, 156]        791            243        4370           4370           0              ArrangeByKey
+[0, 877, 159]        584            243        3109           3109           0              ArrangeBySelf
+[0, 877, 161]        867            242        4655           4655           0              ArrangeByKey
+[0, 877, 164]        899            243        5079           5079           0              ArrangeByKey
+[0, 877, 167]        184            245        892            892            0              ArrangeByKey
+[0, 877, 169]        24054          238        110689         110689         0              ArrangeByKey
+[0, 877, 173]        5182           240        26198          26198          0              ArrangeBySelf
+[0, 877, 177]        353            246        1955           1955           0              ArrangeBySelf
+[0, 877, 182]        66             247        294            294            0              ArrangeBySelf
+[0, 877, 185]        194            245        819            819            0              ArrangeByKey
+[0, 877, 187]        50             246        205            205            0              ArrangeByKey
+[0, 877, 191]        58             247        243            243            0              ArrangeByKey
+[0, 877, 195]        60             245        234            234            0              ArrangeBySelf
+[0, 877, 199]        282            244        1437           1437           0              ArrangeBySelf
+[0, 877, 204]        4230           243        22226          22226          0              ArrangeByKey
+[0, 877, 207]        119            246        619            619            0              ArrangeBySelf
+[0, 877, 210]        75             245        342            342            0              ArrangeBySelf
+[0, 877, 217]        1646           241        9967           9967           0              Arrange: Threshold
+[0, 877, 218]        282            243        1437           1437           0              Threshold
+[0, 877, 222]        2551           242        13038          13038          0              Arrange: Threshold
+[0, 877, 223]        2522           242        12895          12895          0              Threshold
+[0, 877, 226]        958            244        3802           3802           0              Arrange: Threshold
+[0, 877, 227]        958            244        3802           3802           0              Threshold
+[0, 877, 232]        11949          239        65720          65720          0              Arrange: Threshold
+[0, 877, 233]        1296           242        6801           6801           0              Threshold
+[0, 877, 236]        241792         239        1317190        1317190        0              Arrange: Threshold
+[0, 877, 237]        220929         237        1148918        1148918        0              Threshold
+[0, 877, 246]        284            245        1665           1665           0              Arrange: Threshold
+[0, 877, 247]        47             246        210            210            0              Threshold
+[0, 877, 250]        9067           241        45651          45651          0              Arrange: Threshold
+[0, 877, 251]        4911           240        23241          23241          0              Threshold
+[0, 877, 262]        1097842        234        5974814        5974814        0              Arrange: Threshold
+[0, 877, 263]        617473         235        3295713        3295713        0              Threshold
+[0, 887]             6513           0          0              0              0              Arrange: Threshold
+[0, 888]             6513           0          0              0              0              Threshold
+[0, 893]             0              0          0              0              0              Consolidate
+[0, 898]             1294           0          0              0              0              Arrange: Threshold
+[0, 899]             1294           0          0              0              0              Threshold
+[0, 904]             0              0          0              0              0              Consolidate
+[0, 909]             139            0          0              0              0              Arrange: Threshold
+[0, 910]             139            0          0              0              0              Threshold
+[0, 915]             0              0          0              0              0              Consolidate
+[0, 920]             284            0          0              0              0              Arrange: Threshold
+[0, 921]             284            0          0              0              0              Threshold
+[0, 926]             0              0          0              0              0              Consolidate
+[0, 931]             283            0          0              0              0              Arrange: Threshold
+[0, 932]             283            0          0              0              0              Threshold
+[0, 937]             0              0          0              0              0              Consolidate
+[0, 942]             260            0          0              0              0              Arrange: Threshold
+[0, 943]             260            0          0              0              0              Threshold
+[0, 948]             0              0          0              0              0              Consolidate
+[0, 953]             616            0          0              0              0              Arrange: Threshold
+[0, 954]             616            0          0              0              0              Threshold
+[0, 959]             0              0          0              0              0              Consolidate
+[0, 964]             611            0          0              0              0              Arrange: Threshold
+[0, 965]             611            0          0              0              0              Threshold
+[0, 970]             0              0          0              0              0              Consolidate
+[0, 975]             616            0          0              0              0              Arrange: Threshold
+[0, 976]             616            0          0              0              0              Threshold
+[0, 981]             0              0          0              0              0              Consolidate
+[0, 986]             0              0          0              0              0              Arrange: Threshold
+[0, 987]             0              0          0              0              0              Threshold
+[0, 992]             0              0          0              0              0              Consolidate
+[0, 997]             30             0          0              0              0              Arrange: Threshold
+[0, 998]             30             0          0              0              0              Threshold
+[0, 1003]            0              0          0              0              0              Consolidate
+[0, 1008]            47             0          0              0              0              Arrange: Threshold
+[0, 1009]            47             0          0              0              0              Threshold
+[0, 1014]            0              0          0              0              0              Consolidate
+[0, 1019]            2522           0          0              0              0              Arrange: Threshold
+[0, 1020]            2522           0          0              0              0              Threshold
+[0, 1025]            0              0          0              0              0              Consolidate
+[0, 1030]            617473         0          0              0              0              Arrange: Threshold
+[0, 1031]            617473         0          0              0              0              Threshold
+[0, 1036]            0              0          0              0              0              Consolidate
+[0, 1041]            220929         0          0              0              0              Arrange: Threshold
+[0, 1042]            220929         0          0              0              0              Threshold
+[0, 1047]            0              0          0              0              0              Consolidate
+[0, 1052]            958            0          0              0              0              Arrange: Threshold
+[0, 1053]            958            0          0              0              0              Threshold
+[0, 1058]            0              0          0              0              0              Consolidate
+[0, 1063]            1296           0          0              0              0              Arrange: Threshold
+[0, 1064]            1296           0          0              0              0              Threshold
+[0, 1069]            0              0          0              0              0              Consolidate
+[0, 1074]            4911           0          0              0              0              Arrange: Threshold
+[0, 1075]            4911           0          0              0              0              Threshold
+[0, 1080]            0              0          0              0              0              Consolidate
+[0, 1085]            282            0          0              0              0              Arrange: Threshold
+[0, 1086]            282            0          0              0              0              Threshold
+[0, 1091]            0              0          0              0              0              Consolidate

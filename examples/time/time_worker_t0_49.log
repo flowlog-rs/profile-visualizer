@@ -1,0 +1,1467 @@
+addr                 activations  total_active_ms  name
+[0]                  235244       8699.465         Dataflow
+[0, 1]               1            0.001            Input
+[0, 2]               2            0.411            FlatMap
+[0, 3]               6            0.057            Arrange: Threshold
+[0, 4]               4            0.054            Threshold
+[0, 5]               3            0.010            AsCollection
+[0, 6]               1            0.000            Input
+[0, 7]               2            0.323            FlatMap
+[0, 8]               6            0.045            Arrange: Threshold
+[0, 9]               4            0.039            Threshold
+[0, 10]              3            0.009            AsCollection
+[0, 11]              1            0.000            Input
+[0, 12]              1            0.001            FlatMap
+[0, 13]              3            0.022            Arrange: Threshold
+[0, 14]              2            0.008            Threshold
+[0, 15]              1            0.001            AsCollection
+[0, 16]              1            0.000            Input
+[0, 17]              2            0.316            FlatMap
+[0, 18]              7            0.246            Arrange: Threshold
+[0, 19]              4            0.379            Threshold
+[0, 20]              3            0.027            AsCollection
+[0, 21]              1            0.000            Input
+[0, 22]              2            0.251            FlatMap
+[0, 23]              7            0.043            Arrange: Threshold
+[0, 24]              4            0.019            Threshold
+[0, 25]              3            0.005            AsCollection
+[0, 26]              1            0.000            Input
+[0, 27]              2            0.333            FlatMap
+[0, 28]              7            0.348            Arrange: Threshold
+[0, 29]              4            0.684            Threshold
+[0, 30]              3            0.049            AsCollection
+[0, 31]              1            0.000            Input
+[0, 32]              2            0.453            FlatMap
+[0, 33]              7            0.369            Arrange: Threshold
+[0, 34]              4            0.555            Threshold
+[0, 35]              3            0.041            AsCollection
+[0, 36]              1            0.000            Input
+[0, 37]              2            0.263            FlatMap
+[0, 38]              9            0.404            Arrange: Threshold
+[0, 39]              4            0.497            Threshold
+[0, 40]              3            0.118            AsCollection
+[0, 41]              1            0.000            Input
+[0, 42]              2            1.044            FlatMap
+[0, 43]              8            2.722            Arrange: Threshold
+[0, 44]              4            5.669            Threshold
+[0, 45]              3            0.349            AsCollection
+[0, 46]              1            0.000            Input
+[0, 47]              2            0.109            FlatMap
+[0, 48]              8            0.219            Arrange: Threshold
+[0, 49]              4            0.498            Threshold
+[0, 50]              3            0.032            AsCollection
+[0, 51]              1            0.000            Input
+[0, 52]              2            0.233            FlatMap
+[0, 53]              6            0.062            Arrange: Threshold
+[0, 54]              4            0.048            Threshold
+[0, 55]              3            0.007            AsCollection
+[0, 56]              1            0.000            Input
+[0, 57]              2            0.162            FlatMap
+[0, 58]              7            0.055            Arrange: Threshold
+[0, 59]              4            0.017            Threshold
+[0, 60]              3            0.007            AsCollection
+[0, 61]              1            0.000            Input
+[0, 62]              2            0.077            FlatMap
+[0, 63]              6            0.020            Arrange: Threshold
+[0, 64]              4            0.019            Threshold
+[0, 65]              3            0.004            AsCollection
+[0, 66]              1            0.000            Input
+[0, 67]              2            0.221            FlatMap
+[0, 68]              6            0.041            Arrange: Threshold
+[0, 69]              4            0.035            Threshold
+[0, 70]              3            0.006            AsCollection
+[0, 71]              1            0.000            Input
+[0, 72]              2            0.232            FlatMap
+[0, 73]              7            0.121            Arrange: Threshold
+[0, 74]              4            0.247            Threshold
+[0, 75]              3            0.016            AsCollection
+[0, 76]              1            0.000            Input
+[0, 77]              2            0.269            FlatMap
+[0, 78]              7            0.134            Arrange: Threshold
+[0, 79]              4            0.287            Threshold
+[0, 80]              3            0.017            AsCollection
+[0, 81]              1            0.000            Input
+[0, 82]              2            0.650            FlatMap
+[0, 83]              7            0.395            Arrange: Threshold
+[0, 84]              4            0.684            Threshold
+[0, 85]              3            0.091            AsCollection
+[0, 86]              1            0.000            Input
+[0, 87]              2            0.578            FlatMap
+[0, 88]              7            1.239            Arrange: Threshold
+[0, 89]              4            2.016            Threshold
+[0, 90]              3            0.235            AsCollection
+[0, 91]              1            0.000            Input
+[0, 92]              2            0.226            FlatMap
+[0, 93]              6            0.153            Arrange: Threshold
+[0, 94]              4            0.215            Threshold
+[0, 95]              3            0.024            AsCollection
+[0, 96]              1            0.000            Input
+[0, 97]              2            0.463            FlatMap
+[0, 98]              6            0.336            Arrange: Threshold
+[0, 99]              4            0.228            Threshold
+[0, 100]             3            0.020            AsCollection
+[0, 101]             1            0.000            Input
+[0, 102]             2            0.210            FlatMap
+[0, 103]             6            0.130            Arrange: Threshold
+[0, 104]             4            0.282            Threshold
+[0, 105]             3            0.017            AsCollection
+[0, 106]             1            0.000            Input
+[0, 107]             2            0.449            FlatMap
+[0, 108]             7            0.219            Arrange: Threshold
+[0, 109]             4            0.399            Threshold
+[0, 110]             3            0.033            AsCollection
+[0, 111]             1            0.000            Input
+[0, 112]             2            0.590            FlatMap
+[0, 113]             6            0.635            Arrange: Threshold
+[0, 114]             4            1.015            Threshold
+[0, 115]             3            0.162            AsCollection
+[0, 116]             1            0.000            Input
+[0, 117]             2            0.287            FlatMap
+[0, 118]             7            0.318            Arrange: Threshold
+[0, 119]             4            0.558            Threshold
+[0, 120]             3            0.045            AsCollection
+[0, 121]             1            0.000            Input
+[0, 122]             2            0.245            FlatMap
+[0, 123]             7            0.237            Arrange: Threshold
+[0, 124]             4            0.466            Threshold
+[0, 125]             3            0.057            AsCollection
+[0, 126]             1            0.000            Input
+[0, 127]             2            0.499            FlatMap
+[0, 128]             7            0.172            Arrange: Threshold
+[0, 129]             4            0.285            Threshold
+[0, 130]             3            0.025            AsCollection
+[0, 131]             1            0.000            Input
+[0, 132]             2            0.520            FlatMap
+[0, 133]             6            0.429            Arrange: Threshold
+[0, 134]             4            0.709            Threshold
+[0, 135]             3            0.117            AsCollection
+[0, 136]             1            0.000            Input
+[0, 137]             2            0.192            FlatMap
+[0, 138]             7            0.069            Arrange: Threshold
+[0, 139]             4            0.070            Threshold
+[0, 140]             3            0.013            AsCollection
+[0, 141]             1            0.000            Input
+[0, 142]             2            0.187            FlatMap
+[0, 143]             6            0.129            Arrange: Threshold
+[0, 144]             4            0.223            Threshold
+[0, 145]             3            0.024            AsCollection
+[0, 146]             1            0.000            Input
+[0, 147]             2            0.288            FlatMap
+[0, 148]             7            0.213            Arrange: Threshold
+[0, 149]             4            0.314            Threshold
+[0, 150]             3            0.037            AsCollection
+[0, 151]             1            0.001            Input
+[0, 152]             2            0.354            FlatMap
+[0, 153]             6            0.105            Arrange: Threshold
+[0, 154]             4            0.138            Threshold
+[0, 155]             3            0.026            AsCollection
+[0, 156]             1            0.000            Input
+[0, 157]             2            0.190            FlatMap
+[0, 158]             6            0.230            Arrange: Threshold
+[0, 159]             4            0.343            Threshold
+[0, 160]             3            0.032            AsCollection
+[0, 161]             3            0.008            FlatMap
+[0, 162]             3            0.006            FlatMap
+[0, 163]             3            0.024            FlatMap
+[0, 164]             3            0.021            FlatMap
+[0, 165]             3            0.015            FlatMap
+[0, 166]             3            0.011            FlatMap
+[0, 167]             3            0.011            FlatMap
+[0, 168]             3            0.014            FlatMap
+[0, 169]             3            0.015            FlatMap
+[0, 170]             3            0.012            FlatMap
+[0, 171]             3            0.008            FlatMap
+[0, 172]             3            0.008            FlatMap
+[0, 173]             3            0.009            FlatMap
+[0, 174]             3            0.006            FlatMap
+[0, 175]             3            0.005            FlatMap
+[0, 176]             3            0.006            FlatMap
+[0, 177]             3            0.025            FlatMap
+[0, 178]             3            0.020            FlatMap
+[0, 179]             3            0.021            FlatMap
+[0, 180]             3            0.025            FlatMap
+[0, 181]             3            0.015            FlatMap
+[0, 182]             3            0.010            FlatMap
+[0, 183]             3            0.010            FlatMap
+[0, 184]             3            0.011            FlatMap
+[0, 185]             3            0.018            FlatMap
+[0, 186]             3            0.016            FlatMap
+[0, 187]             3            0.029            FlatMap
+[0, 188]             3            0.030            FlatMap
+[0, 189]             3            0.044            FlatMap
+[0, 190]             3            0.030            FlatMap
+[0, 191]             3            0.013            FlatMap
+[0, 192]             3            0.014            FlatMap
+[0, 193]             3            0.017            FlatMap
+[0, 194]             3            0.010            FlatMap
+[0, 195]             3            0.009            FlatMap
+[0, 196]             3            0.009            FlatMap
+[0, 197]             3            0.008            FlatMap
+[0, 198]             3            0.010            FlatMap
+[0, 199]             3            0.016            FlatMap
+[0, 200]             3            0.009            FlatMap
+[0, 201]             3            0.009            FlatMap
+[0, 202]             3            0.056            FlatMap
+[0, 203]             3            0.075            FlatMap
+[0, 204]             3            0.055            FlatMap
+[0, 205]             3            0.020            FlatMap
+[0, 206]             3            0.021            FlatMap
+[0, 207]             3            0.020            FlatMap
+[0, 208]             3            0.012            FlatMap
+[0, 209]             3            0.009            FlatMap
+[0, 210]             3            0.007            FlatMap
+[0, 211]             3            0.006            FlatMap
+[0, 212]             3            0.004            FlatMap
+[0, 213]             3            0.014            FlatMap
+[0, 214]             3            0.041            FlatMap
+[0, 215]             4            0.057            Arrange: Threshold
+[0, 216]             4            0.200            Threshold
+[0, 217]             3            0.017            AsCollection
+[0, 218]             4            0.007            Concatenate
+[0, 219]             4            0.006            Concatenate
+[0, 220]             4            0.011            Concatenate
+[0, 221]             4            0.039            FlatMap
+[0, 222]             11           0.038            Arrange: Threshold
+[0, 223]             4            0.066            Threshold
+[0, 224]             3            0.008            AsCollection
+[0, 225]             3            0.099            FlatMap
+[0, 226]             5            0.285            Arrange: Threshold
+[0, 227]             4            0.562            Threshold
+[0, 228]             3            0.035            AsCollection
+[0, 229]             3            0.078            FlatMap
+[0, 230]             5            0.123            Arrange: Threshold
+[0, 231]             4            0.209            Threshold
+[0, 232]             3            0.013            AsCollection
+[0, 233]             3            0.021            FlatMap
+[0, 234]             12           0.017            Arrange: Threshold
+[0, 235]             4            0.019            Threshold
+[0, 236]             3            0.004            AsCollection
+[0, 237]             3            0.076            FlatMap
+[0, 238]             5            0.120            Arrange: Threshold
+[0, 239]             4            0.194            Threshold
+[0, 240]             3            0.015            AsCollection
+[0, 241]             3            0.027            FlatMap
+[0, 242]             4            0.018            Arrange: Threshold
+[0, 243]             4            0.051            Threshold
+[0, 244]             3            0.019            AsCollection
+[0, 245]             3            0.081            FlatMap
+[0, 246]             5            0.081            Arrange: Threshold
+[0, 247]             4            0.109            Threshold
+[0, 248]             3            0.009            AsCollection
+[0, 249]             3            0.086            FlatMap
+[0, 250]             5            0.144            Arrange: Threshold
+[0, 251]             4            0.299            Threshold
+[0, 252]             3            0.018            AsCollection
+[0, 253]             3            0.200            FlatMap
+[0, 254]             5            0.837            Arrange: Threshold
+[0, 255]             4            1.722            Threshold
+[0, 256]             3            0.107            AsCollection
+[0, 257]             3            0.031            FlatMap
+[0, 258]             13           0.018            Arrange: Threshold
+[0, 259]             4            0.093            Threshold
+[0, 260]             3            0.013            AsCollection
+[0, 261]             3            0.098            FlatMap
+[0, 262]             5            0.133            Arrange: Threshold
+[0, 263]             4            0.221            Threshold
+[0, 264]             3            0.016            AsCollection
+[0, 265]             3            0.008            Concatenate
+[0, 266]             3            0.007            Concatenate
+[0, 267]             3            0.187            FlatMap
+[0, 268]             5            0.686            Arrange: Threshold
+[0, 269]             4            1.323            Threshold
+[0, 270]             3            0.095            AsCollection
+[0, 271]             3            0.091            FlatMap
+[0, 272]             5            0.143            Arrange: Threshold
+[0, 273]             4            0.208            Threshold
+[0, 274]             3            0.015            AsCollection
+[0, 275]             3            0.033            FlatMap
+[0, 276]             5            0.042            Arrange: Threshold
+[0, 277]             4            0.042            Threshold
+[0, 278]             3            0.007            AsCollection
+[0, 279]             3            0.086            FlatMap
+[0, 280]             5            0.140            Arrange: Threshold
+[0, 281]             4            0.272            Threshold
+[0, 282]             3            0.025            AsCollection
+[0, 283]             3            0.181            FlatMap
+[0, 284]             5            0.372            Arrange: Threshold
+[0, 285]             4            0.776            Threshold
+[0, 286]             3            0.045            AsCollection
+[0, 287]             3            0.113            FlatMap
+[0, 288]             5            0.118            Arrange: Threshold
+[0, 289]             4            0.215            Threshold
+[0, 290]             3            0.015            AsCollection
+[0, 291]             3            0.005            Concatenate
+[0, 292]             3            0.005            Concatenate
+[0, 293]             3            0.005            Concatenate
+[0, 294]             3            0.266            FlatMap
+[0, 295]             5            0.534            Arrange: Threshold
+[0, 296]             4            0.976            Threshold
+[0, 297]             3            0.060            AsCollection
+[0, 298]             3            0.189            FlatMap
+[0, 299]             5            0.213            Arrange: Threshold
+[0, 300]             4            0.405            Threshold
+[0, 301]             3            0.039            AsCollection
+[0, 302]             3            0.008            Concatenate
+[0, 303]             3            0.009            Concatenate
+[0, 304]             3            0.299            FlatMap
+[0, 305]             5            1.243            Arrange: Threshold
+[0, 306]             4            2.357            Threshold
+[0, 307]             3            0.162            AsCollection
+[0, 308]             3            0.117            FlatMap
+[0, 309]             5            0.309            Arrange: Threshold
+[0, 310]             4            0.548            Threshold
+[0, 311]             3            0.036            AsCollection
+[0, 312]             3            0.063            FlatMap
+[0, 313]             5            0.081            Arrange: Threshold
+[0, 314]             4            0.115            Threshold
+[0, 315]             3            0.012            AsCollection
+[0, 316]             3            0.030            FlatMap
+[0, 317]             14           0.016            Arrange: Threshold
+[0, 318]             4            0.024            Threshold
+[0, 319]             3            0.007            AsCollection
+[0, 320]             3            0.007            Concatenate
+[0, 321]             3            0.010            Concatenate
+[0, 322]             3            0.006            Concatenate
+[0, 323]             3            0.005            Concatenate
+[0, 324]             3            0.007            Concatenate
+[0, 325]             3            0.009            Concatenate
+[0, 326]             3            0.008            Concatenate
+[0, 327]             3            0.013            Concatenate
+[0, 328]             3            0.010            Concatenate
+[0, 329]             3            0.010            Concatenate
+[0, 330]             3            0.013            Concatenate
+[0, 331]             3            0.012            Concatenate
+[0, 332]             3            0.720            FlatMap
+[0, 333]             5            3.229            Arrange: Threshold
+[0, 334]             4            4.931            Threshold
+[0, 335]             3            0.509            AsCollection
+[0, 336]             3            0.153            FlatMap
+[0, 337]             5            0.335            Arrange: Threshold
+[0, 338]             4            0.619            Threshold
+[0, 339]             3            0.038            AsCollection
+[0, 340]             3            0.150            FlatMap
+[0, 341]             5            0.149            Arrange: Threshold
+[0, 342]             4            0.236            Threshold
+[0, 343]             3            0.024            AsCollection
+[0, 344]             3            0.141            FlatMap
+[0, 345]             5            0.072            Arrange: Threshold
+[0, 346]             4            0.064            Threshold
+[0, 347]             3            0.007            AsCollection
+[0, 348]             3            0.006            Concatenate
+[0, 349]             4            0.005            Concatenate
+[0, 350]             4            0.005            Concatenate
+[0, 351]             4            0.006            Concatenate
+[0, 352]             4            0.160            FlatMap
+[0, 353]             16           0.102            Arrange: Threshold
+[0, 354]             4            0.063            Threshold
+[0, 355]             3            0.009            AsCollection
+[0, 356]             3            0.149            FlatMap
+[0, 357]             5            0.141            Arrange: Threshold
+[0, 358]             4            0.299            Threshold
+[0, 359]             3            0.021            AsCollection
+[0, 360]             3            0.192            FlatMap
+[0, 361]             5            0.193            Arrange: Threshold
+[0, 362]             4            0.463            Threshold
+[0, 363]             3            0.044            AsCollection
+[0, 364]             3            0.228            FlatMap
+[0, 365]             5            0.183            Arrange: Threshold
+[0, 366]             4            0.375            Threshold
+[0, 367]             3            0.021            AsCollection
+[0, 368]             3            0.321            FlatMap
+[0, 369]             5            0.424            Arrange: Threshold
+[0, 370]             4            0.873            Threshold
+[0, 371]             3            0.051            AsCollection
+[0, 372]             3            0.106            FlatMap
+[0, 373]             5            0.106            Arrange: Threshold
+[0, 374]             4            0.171            Threshold
+[0, 375]             3            0.011            AsCollection
+[0, 376]             3            0.005            FlatMap
+[0, 377]             1            0.000            FlatMap
+[0, 378]             3            0.006            ArrangeBySelf
+[0, 379]             3            0.005            FlatMap
+[0, 380]             1            0.001            FlatMap
+[0, 381]             3            0.005            ArrangeBySelf
+[0, 382]             2            0.011            Join
+[0, 383]             3            0.010            ArrangeByKey
+[0, 384]             3            0.022            FlatMap
+[0, 385]             6            0.014            ArrangeByKey
+[0, 386]             3            0.036            Join
+[0, 387]             3            0.004            FlatMap
+[0, 388]             1            0.001            FlatMap
+[0, 389]             3            0.005            ArrangeBySelf
+[0, 390]             3            0.005            FlatMap
+[0, 391]             1            0.001            FlatMap
+[0, 392]             3            0.008            ArrangeBySelf
+[0, 393]             2            0.008            Join
+[0, 394]             3            0.006            ArrangeByKey
+[0, 395]             3            0.010            Join
+[0, 396]             3            0.005            FlatMap
+[0, 397]             3            0.011            ArrangeByKey
+[0, 398]             2            0.007            Join
+[0, 399]             3            0.021            FlatMap
+[0, 400]             6            0.009            ArrangeByKey
+[0, 401]             2            0.007            Join
+[0, 402]             3            0.007            FlatMap
+[0, 403]             3            0.008            FlatMap
+[0, 404]             3            0.010            FlatMap
+[0, 405]             3            0.006            FlatMap
+[0, 406]             3            0.015            FlatMap
+[0, 407]             1            0.001            FlatMap
+[0, 408]             4            0.015            ArrangeBySelf
+[0, 409]             3            0.020            FlatMap
+[0, 410]             3            0.060            FlatMap
+[0, 411]             25           0.107            ArrangeBySelf
+[0, 412]             3            0.019            FlatMap
+[0, 413]             3            0.047            FlatMap
+[0, 414]             5            0.012            ArrangeBySelf
+[0, 415]             3            0.012            FlatMap
+[0, 416]             3            0.038            FlatMap
+[0, 417]             17           0.040            ArrangeBySelf
+[0, 418]             3            0.096            FlatMap
+[0, 419]             5            0.246            ArrangeByKey
+[0, 420]             1            0.001            FlatMap
+[0, 421]             1            0.000            FlatMap
+[0, 422]             2            0.009            ArrangeBySelf
+[0, 423]             5            0.026            Join
+[0, 424]             3            0.008            ArrangeByKey
+[0, 425]             5            0.021            Join
+[0, 426]             3            0.007            ArrangeByKey
+[0, 427]             7            0.034            Join
+[0, 428]             3            0.020            FlatMap
+[0, 429]             7            0.024            ArrangeBySelf
+[0, 430]             7            0.040            Join
+[0, 431]             3            0.019            FlatMap
+[0, 432]             8            0.007            ArrangeBySelf
+[0, 433]             7            0.024            Join
+[0, 434]             3            0.037            FlatMap
+[0, 435]             8            0.008            ArrangeBySelf
+[0, 436]             5            0.017            Join
+[0, 437]             2            0.005            ArrangeByKey
+[0, 438]             6            0.022            Join
+[0, 439]             3            0.017            FlatMap
+[0, 440]             3            0.023            ArrangeBySelf
+[0, 441]             6            0.019            Join
+[0, 442]             3            0.015            FlatMap
+[0, 443]             3            0.011            ArrangeBySelf
+[0, 444]             4            0.014            Join
+[0, 445]             2            0.005            ArrangeByKey
+[0, 446]             3            0.044            Join
+[0, 447]             3            0.024            FlatMap
+[0, 448]             3            0.009            ArrangeBySelf
+[0, 449]             4            0.013            Join
+[0, 450]             3            0.011            FlatMap
+[0, 451]             3            0.034            FlatMap
+[0, 452]             20           0.033            ArrangeBySelf
+[0, 453]             3            0.081            FlatMap
+[0, 454]             5            0.294            ArrangeByKey
+[0, 455]             3            0.205            FlatMap
+[0, 456]             5            0.240            ArrangeByKey
+[0, 457]             3            0.102            FlatMap
+[0, 458]             5            0.208            ArrangeByKey
+[0, 459]             3            0.052            AsCollection
+[0, 460]             3            0.104            FlatMap
+[0, 461]             5            0.210            Arrange: Threshold
+[0, 462]             4            0.417            Threshold
+[0, 463]             3            0.025            AsCollection
+[0, 464]             6            0.060            Join
+[0, 465]             3            0.052            FlatMap
+[0, 466]             5            0.057            Arrange: Threshold
+[0, 467]             4            0.045            Threshold
+[0, 468]             3            0.007            AsCollection
+[0, 469]             3            0.005            FlatMap
+[0, 470]             3            0.006            Concatenate
+[0, 471]             3            0.014            FlatMap
+[0, 472]             3            0.047            FlatMap
+[0, 473]             4            0.122            Arrange: Threshold
+[0, 474]             4            0.384            Threshold
+[0, 475]             3            0.113            AsCollection
+[0, 476]             5            0.186            ArrangeByKey
+[0, 477]             3            0.059            AsCollection
+[0, 478]             3            0.114            FlatMap
+[0, 479]             5            0.213            Arrange: Threshold
+[0, 480]             4            0.392            Threshold
+[0, 481]             3            0.022            AsCollection
+[0, 482]             6            0.048            Join
+[0, 483]             3            0.077            FlatMap
+[0, 484]             7            0.066            Arrange: Threshold
+[0, 485]             4            0.050            Threshold
+[0, 486]             3            0.006            AsCollection
+[0, 487]             3            0.007            FlatMap
+[0, 488]             4            0.008            Concatenate
+[0, 489]             4            0.015            FlatMap
+[0, 490]             4            0.076            FlatMap
+[0, 491]             7            0.111            Arrange: Threshold
+[0, 492]             4            0.355            Threshold
+[0, 493]             3            0.129            AsCollection
+[0, 494]             5            0.183            ArrangeByKey
+[0, 495]             3            0.057            AsCollection
+[0, 496]             3            0.107            FlatMap
+[0, 497]             5            0.202            Arrange: Threshold
+[0, 498]             4            0.387            Threshold
+[0, 499]             3            0.026            AsCollection
+[0, 500]             6            0.044            Join
+[0, 501]             3            0.056            FlatMap
+[0, 502]             5            0.053            Arrange: Threshold
+[0, 503]             4            0.048            Threshold
+[0, 504]             3            0.006            AsCollection
+[0, 505]             3            0.004            FlatMap
+[0, 506]             3            0.005            Concatenate
+[0, 507]             3            0.015            FlatMap
+[0, 508]             3            0.049            FlatMap
+[0, 509]             4            0.134            Arrange: Threshold
+[0, 510]             4            0.363            Threshold
+[0, 511]             3            0.135            AsCollection
+[0, 512]             5            0.197            ArrangeByKey
+[0, 513]             7            0.274            Join
+[0, 514]             8            0.106            ArrangeByKey
+[0, 515]             6            0.294            Join
+[0, 516]             3            0.036            FlatMap
+[0, 517]             3            0.066            FlatMap
+[0, 518]             4            0.175            ArrangeBySelf
+[0, 519]             3            0.184            FlatMap
+[0, 520]             5            0.714            ArrangeByKey
+[0, 521]             6            0.631            Join
+[0, 522]             5            0.405            ArrangeByKey
+[0, 523]             3            0.017            FlatMap
+[0, 524]             3            0.106            FlatMap
+[0, 525]             5            0.162            ArrangeBySelf
+[0, 526]             3            0.286            FlatMap
+[0, 527]             5            0.249            ArrangeByKey
+[0, 528]             6            0.216            Join
+[0, 529]             4            0.191            ArrangeByKey
+[0, 530]             7            0.243            Join
+[0, 531]             4            0.099            ArrangeByKey
+[0, 532]             6            0.268            Join
+[0, 533]             3            0.018            FlatMap
+[0, 534]             3            0.239            FlatMap
+[0, 535]             5            0.176            ArrangeBySelf
+[0, 536]             3            0.116            FlatMap
+[0, 537]             5            0.208            ArrangeByKey
+[0, 538]             7            0.218            Join
+[0, 539]             4            0.187            ArrangeByKey
+[0, 540]             7            0.230            Join
+[0, 541]             4            0.108            ArrangeByKey
+[0, 542]             6            0.255            Join
+[0, 543]             3            0.011            FlatMap
+[0, 544]             3            0.032            FlatMap
+[0, 545]             4            0.036            ArrangeBySelf
+[0, 546]             3            0.529            FlatMap
+[0, 547]             5            2.883            ArrangeByKey
+[0, 548]             3            0.207            FlatMap
+[0, 549]             5            0.681            ArrangeByKey
+[0, 550]             6            0.164            Join
+[0, 551]             17           0.058            ArrangeByKey
+[0, 552]             6            0.149            Join
+[0, 553]             4            0.050            ArrangeByKey
+[0, 554]             6            0.142            Join
+[0, 555]             3            0.578            FlatMap
+[0, 556]             5            2.834            ArrangeByKey
+[0, 557]             3            0.095            FlatMap
+[0, 558]             5            0.198            ArrangeByKey
+[0, 559]             6            0.251            Join
+[0, 560]             3            0.135            FlatMap
+[0, 561]             5            0.275            ArrangeByKey
+[0, 562]             6            0.333            Join
+[0, 563]             4            0.168            ArrangeByKey
+[0, 564]             3            0.285            FlatMap
+[0, 565]             5            1.253            ArrangeByKey
+[0, 566]             6            0.361            Join
+[0, 567]             3            0.271            FlatMap
+[0, 568]             5            1.260            ArrangeByKey
+[0, 569]             6            1.412            Join
+[0, 570]             4            0.790            ArrangeByKey
+[0, 571]             3            0.236            FlatMap
+[0, 572]             5            0.819            ArrangeByKey
+[0, 573]             6            1.105            Join
+[0, 574]             3            0.083            FlatMap
+[0, 575]             5            0.116            ArrangeByKey
+[0, 576]             6            0.169            Join
+[0, 577]             4            0.057            ArrangeByKey
+[0, 578]             6            0.179            Join
+[0, 579]             4            0.058            ArrangeByKey
+[0, 580]             3            0.074            FlatMap
+[0, 581]             5            0.114            ArrangeByKey
+[0, 582]             7            0.177            Join
+[0, 583]             3            0.105            FlatMap
+[0, 584]             5            0.139            ArrangeByKey
+[0, 585]             6            0.207            Join
+[0, 586]             4            0.072            ArrangeByKey
+[0, 587]             3            0.127            FlatMap
+[0, 588]             5            0.136            ArrangeByKey
+[0, 589]             6            0.200            Join
+[0, 590]             3            0.074            FlatMap
+[0, 591]             5            0.089            ArrangeByKey
+[0, 592]             6            0.110            Join
+[0, 593]             4            0.029            ArrangeByKey
+[0, 594]             3            0.085            FlatMap
+[0, 595]             5            0.094            ArrangeByKey
+[0, 596]             6            0.093            Join
+[0, 597]             3            0.082            FlatMap
+[0, 598]             5            0.065            ArrangeByKey
+[0, 599]             6            0.084            Join
+[0, 600]             4            0.017            ArrangeByKey
+[0, 601]             3            0.166            FlatMap
+[0, 602]             5            0.587            ArrangeByKey
+[0, 603]             6            0.072            Join
+[0, 604]             6            0.661            Join
+[0, 605]             5            0.293            ArrangeByKey
+[0, 606]             3            0.083            FlatMap
+[0, 607]             5            0.103            ArrangeByKey
+[0, 608]             6            0.145            Join
+[0, 609]             3            0.095            FlatMap
+[0, 610]             5            0.129            ArrangeByKey
+[0, 611]             6            0.202            Join
+[0, 612]             5            0.051            ArrangeByKey
+[0, 613]             3            0.170            FlatMap
+[0, 614]             5            0.119            ArrangeByKey
+[0, 615]             6            0.161            Join
+[0, 616]             4            0.054            ArrangeByKey
+[0, 617]             7            0.186            Join
+[0, 618]             3            0.175            FlatMap
+[0, 619]             5            0.300            ArrangeByKey
+[0, 620]             7            0.451            Join
+[0, 621]             18           0.194            ArrangeByKey
+[0, 622]             6            0.413            Join
+[0, 623]             5            0.172            ArrangeByKey
+[0, 624]             3            0.144            FlatMap
+[0, 625]             5            0.292            ArrangeByKey
+[0, 626]             7            0.403            Join
+[0, 627]             3            0.163            FlatMap
+[0, 628]             5            0.282            Arrange: Threshold
+[0, 629]             4            0.470            Threshold
+[0, 630]             3            0.047            AsCollection
+[0, 631]             3            0.097            FlatMap
+[0, 632]             5            0.126            Arrange: Threshold
+[0, 633]             4            0.200            Threshold
+[0, 634]             3            0.021            AsCollection
+[0, 635]             1            0.002            Concatenate
+[0, 636]             1            0.002            Concatenate
+[0, 637]             1            0.001            Concatenate
+[0, 638]             3            0.006            Concatenate
+[0, 639]             3            0.005            Concatenate
+[0, 640]             3            0.005            Concatenate
+[0, 641]             3            0.038            FlatMap
+[0, 642]             20           0.136            Arrange: Threshold
+[0, 643]             4            0.151            Threshold
+[0, 644]             3            0.014            AsCollection
+[0, 645]             3            0.093            FlatMap
+[0, 646]             5            0.064            Arrange: Threshold
+[0, 647]             4            0.060            Threshold
+[0, 648]             3            0.008            AsCollection
+[0, 649]             3            0.153            FlatMap
+[0, 650]             7            0.396            Arrange: Threshold
+[0, 651]             4            0.858            Threshold
+[0, 652]             3            0.056            AsCollection
+[0, 653]             3            0.175            FlatMap
+[0, 654]             7            0.357            Arrange: Threshold
+[0, 655]             4            0.615            Threshold
+[0, 656]             3            0.040            AsCollection
+[0, 657]             3            0.113            FlatMap
+[0, 658]             5            0.143            Arrange: Threshold
+[0, 659]             4            0.263            Threshold
+[0, 660]             3            0.020            AsCollection
+[0, 661]             3            0.140            FlatMap
+[0, 662]             7            0.156            Arrange: Threshold
+[0, 663]             4            0.223            Threshold
+[0, 664]             3            0.016            AsCollection
+[0, 665]             3            0.155            FlatMap
+[0, 666]             5            0.258            Arrange: Threshold
+[0, 667]             4            0.436            Threshold
+[0, 668]             3            0.074            AsCollection
+[0, 669]             3            0.114            FlatMap
+[0, 670]             5            0.162            Arrange: Threshold
+[0, 671]             4            0.290            Threshold
+[0, 672]             3            0.020            AsCollection
+[0, 673]             3            0.131            FlatMap
+[0, 674]             8            0.162            Arrange: Threshold
+[0, 675]             4            0.232            Threshold
+[0, 676]             3            0.016            AsCollection
+[0, 677]             1            0.001            FlatMap
+[0, 678]             2            0.005            Arrange: Threshold
+[0, 679]             2            0.007            Threshold
+[0, 680]             1            0.001            AsCollection
+[0, 681]             3            0.040            FlatMap
+[0, 682]             12           0.040            Arrange: Threshold
+[0, 683]             4            0.074            Threshold
+[0, 684]             3            0.008            AsCollection
+[0, 685]             3            0.177            FlatMap
+[0, 686]             9            0.423            Arrange: Threshold
+[0, 687]             4            0.832            Threshold
+[0, 688]             3            0.049            AsCollection
+[0, 689]             3            0.302            FlatMap
+[0, 690]             7            0.960            Arrange: Threshold
+[0, 691]             4            1.496            Threshold
+[0, 692]             3            0.098            AsCollection
+[0, 693]             3            0.118            FlatMap
+[0, 694]             7            0.141            Arrange: Threshold
+[0, 695]             4            0.171            Threshold
+[0, 696]             3            0.018            AsCollection
+[0, 697]             3            0.093            FlatMap
+[0, 698]             8            0.086            Arrange: Threshold
+[0, 699]             4            0.107            Threshold
+[0, 700]             3            0.008            AsCollection
+[0, 701]             3            0.081            FlatMap
+[0, 702]             5            0.051            ArrangeByKey
+[0, 703]             3            0.302            FlatMap
+[0, 704]             6            0.055            ArrangeByKey
+[0, 705]             389          8.659            Iterative
+[0, 705, 1]          3            0.009            FlatMap
+[0, 705, 2]          3            0.007            FlatMap
+[0, 705, 3]          3            0.008            Enter
+[0, 705, 4]          21           0.033            Feedback
+[0, 705, 5]          21           0.461            FlatMap
+[0, 705, 6]          58           0.279            ArrangeByKey
+[0, 705, 7]          29           0.138            Join
+[0, 705, 8]          29           0.198            Join
+[0, 705, 9]          9            0.015            Concatenate
+[0, 705, 10]         11           0.016            Concatenate
+[0, 705, 11]         11           0.220            FlatMap
+[0, 705, 12]         54           0.234            Arrange: Threshold
+[0, 705, 13]         29           0.348            Threshold
+[0, 705, 14]         21           0.037            AsCollection
+[0, 705, 15]         21           0.018            ResultsIn
+[0, 706]             27           0.032            Leave
+[0, 707]             1            0.001            FlatMap
+[0, 708]             1            0.001            FlatMap
+[0, 709]             1            0.002            FlatMap
+[0, 710]             2            0.005            ArrangeBySelf
+[0, 711]             3            0.155            FlatMap
+[0, 712]             5            0.244            ArrangeByKey
+[0, 713]             5            0.028            Join
+[0, 714]             3            0.011            FlatMap
+[0, 715]             3            0.010            FlatMap
+[0, 716]             3            0.016            FlatMap
+[0, 717]             11           0.032            ArrangeBySelf
+[0, 718]             21           0.457            FlatMap
+[0, 719]             39           0.159            ArrangeByKey
+[0, 720]             7            0.036            Join
+[0, 721]             3            0.010            FlatMap
+[0, 722]             3            0.018            FlatMap
+[0, 723]             12           0.026            ArrangeBySelf
+[0, 724]             7            0.057            Join
+[0, 725]             3            0.014            FlatMap
+[0, 726]             1            0.001            FlatMap
+[0, 727]             3            0.006            Arrange: Threshold
+[0, 728]             2            0.006            Threshold
+[0, 729]             1            0.001            AsCollection
+[0, 730]             3            0.048            FlatMap
+[0, 731]             4            0.019            Arrange: Threshold
+[0, 732]             4            0.025            Threshold
+[0, 733]             3            0.010            AsCollection
+[0, 734]             3            0.005            Concatenate
+[0, 735]             5            0.008            Concatenate
+[0, 736]             5            0.134            FlatMap
+[0, 737]             12           0.114            Arrange: Threshold
+[0, 738]             4            0.206            Threshold
+[0, 739]             3            0.014            AsCollection
+[0, 740]             1            0.001            FlatMap
+[0, 741]             2            0.004            Arrange: Threshold
+[0, 742]             2            0.007            Threshold
+[0, 743]             1            0.001            AsCollection
+[0, 744]             3            0.061            FlatMap
+[0, 745]             4            0.128            Arrange: Threshold
+[0, 746]             4            0.394            Threshold
+[0, 747]             3            0.028            AsCollection
+[0, 748]             3            0.054            FlatMap
+[0, 749]             14           0.062            ArrangeByKey
+[0, 750]             285          6.837            Iterative
+[0, 750, 1]          3            0.006            Enter
+[0, 750, 2]          3            0.006            FlatMap
+[0, 750, 3]          21           0.026            Feedback
+[0, 750, 4]          21           0.378            FlatMap
+[0, 750, 5]          64           0.190            ArrangeByKey
+[0, 750, 6]          22           0.190            Join
+[0, 750, 7]          9            0.015            Concatenate
+[0, 750, 8]          9            0.219            FlatMap
+[0, 750, 9]          65           0.188            Arrange: Threshold
+[0, 750, 10]         29           0.295            Threshold
+[0, 750, 11]         21           0.035            AsCollection
+[0, 750, 12]         21           0.015            ResultsIn
+[0, 751]             28           0.034            Leave
+[0, 752]             21           0.029            FlatMap
+[0, 753]             23           0.022            Concatenate
+[0, 754]             23           0.392            FlatMap
+[0, 755]             44           0.187            Arrange: Threshold
+[0, 756]             4            0.293            Threshold
+[0, 757]             3            0.018            AsCollection
+[0, 758]             21           0.293            FlatMap
+[0, 759]             35           0.093            Arrange: Threshold
+[0, 760]             4            0.094            Threshold
+[0, 761]             3            0.012            AsCollection
+[0, 762]             3            0.016            FlatMap
+[0, 763]             3            0.128            FlatMap
+[0, 764]             5            0.235            ArrangeBySelf
+[0, 765]             3            0.137            FlatMap
+[0, 766]             6            0.059            ArrangeByKey
+[0, 767]             3            0.047            FlatMap
+[0, 768]             5            0.061            ArrangeByKey
+[0, 769]             1410         44.386           Iterative
+[0, 769, 1]          3            0.007            FlatMap
+[0, 769, 2]          3            0.044            Enter
+[0, 769, 3]          3            0.009            FlatMap
+[0, 769, 4]          3            0.004            FlatMap
+[0, 769, 5]          23           0.033            Feedback
+[0, 769, 6]          23           1.054            FlatMap
+[0, 769, 7]          70           1.744            ArrangeByKey
+[0, 769, 8]          39           0.961            Join
+[0, 769, 9]          62           1.284            ArrangeByKey
+[0, 769, 10]         23           0.255            AsCollection
+[0, 769, 11]         23           1.213            FlatMap
+[0, 769, 12]         47           1.342            Arrange: Threshold
+[0, 769, 13]         30           4.127            Threshold
+[0, 769, 14]         21           0.190            AsCollection
+[0, 769, 15]         35           0.884            Join
+[0, 769, 16]         11           0.285            FlatMap
+[0, 769, 17]         36           0.154            Arrange: Threshold
+[0, 769, 18]         24           0.247            Threshold
+[0, 769, 19]         13           0.022            AsCollection
+[0, 769, 20]         13           0.047            FlatMap
+[0, 769, 21]         23           0.029            Concatenate
+[0, 769, 22]         23           0.126            FlatMap
+[0, 769, 23]         23           1.034            FlatMap
+[0, 769, 24]         62           1.361            Arrange: Threshold
+[0, 769, 25]         30           3.275            Threshold
+[0, 769, 26]         21           0.124            AsCollection
+[0, 769, 27]         39           0.612            Join
+[0, 769, 28]         27           0.106            ArrangeByKey
+[0, 769, 29]         9            0.016            AsCollection
+[0, 769, 30]         9            0.210            FlatMap
+[0, 769, 31]         33           0.113            Arrange: Threshold
+[0, 769, 32]         19           0.152            Threshold
+[0, 769, 33]         7            0.012            AsCollection
+[0, 769, 34]         24           0.154            Join
+[0, 769, 35]         7            0.118            FlatMap
+[0, 769, 36]         25           0.080            Arrange: Threshold
+[0, 769, 37]         20           0.129            Threshold
+[0, 769, 38]         7            0.011            AsCollection
+[0, 769, 39]         7            0.010            FlatMap
+[0, 769, 40]         8            0.013            Concatenate
+[0, 769, 41]         8            0.015            FlatMap
+[0, 769, 42]         8            0.169            FlatMap
+[0, 769, 43]         36           0.107            Arrange: Threshold
+[0, 769, 44]         21           0.127            Threshold
+[0, 769, 45]         9            0.013            AsCollection
+[0, 769, 46]         24           0.030            Concatenate
+[0, 769, 47]         26           0.029            Concatenate
+[0, 769, 48]         26           0.625            FlatMap
+[0, 769, 49]         83           0.862            Arrange: Threshold
+[0, 769, 50]         30           4.672            Threshold
+[0, 769, 51]         23           0.204            AsCollection
+[0, 769, 52]         23           0.039            ResultsIn
+[0, 770]             31           0.153            Leave
+[0, 771]             3            0.012            FlatMap
+[0, 772]             3            0.023            FlatMap
+[0, 773]             11           0.023            ArrangeBySelf
+[0, 774]             3            0.045            FlatMap
+[0, 775]             5            0.023            ArrangeByKey
+[0, 776]             7            0.087            Join
+[0, 777]             6            0.014            ArrangeByKey
+[0, 778]             3            0.074            FlatMap
+[0, 779]             5            0.028            ArrangeByKey
+[0, 780]             7            0.050            Join
+[0, 781]             6            0.035            ArrangeByKey
+[0, 782]             293          5.468            Iterative
+[0, 782, 1]          3            0.013            FlatMap
+[0, 782, 2]          3            0.007            FlatMap
+[0, 782, 3]          3            0.015            Enter
+[0, 782, 4]          3            0.013            FlatMap
+[0, 782, 5]          5            0.009            Feedback
+[0, 782, 6]          5            0.145            FlatMap
+[0, 782, 7]          15           0.177            ArrangeByKey
+[0, 782, 8]          13           0.295            Join
+[0, 782, 9]          18           0.131            ArrangeByKey
+[0, 782, 10]         12           0.317            Join
+[0, 782, 11]         17           0.161            ArrangeByKey
+[0, 782, 12]         12           0.147            Join
+[0, 782, 13]         11           0.028            ArrangeByKey
+[0, 782, 14]         9            0.057            Join
+[0, 782, 15]         5            0.007            Concatenate
+[0, 782, 16]         5            0.108            FlatMap
+[0, 782, 17]         35           0.122            Arrange: Threshold
+[0, 782, 18]         7            0.319            Threshold
+[0, 782, 19]         5            0.035            AsCollection
+[0, 782, 20]         5            0.007            ResultsIn
+[0, 783]             7            0.020            Leave
+[0, 784]             5            0.018            FlatMap
+[0, 785]             5            0.015            FlatMap
+[0, 786]             5            0.136            FlatMap
+[0, 787]             9            0.153            Arrange: Threshold
+[0, 788]             4            0.338            Threshold
+[0, 789]             3            0.028            AsCollection
+[0, 790]             5            0.074            FlatMap
+[0, 791]             11           0.053            Arrange: Threshold
+[0, 792]             4            0.162            Threshold
+[0, 793]             3            0.014            AsCollection
+[0, 794]             3            0.094            FlatMap
+[0, 795]             5            0.050            ArrangeByKey
+[0, 796]             3            0.049            FlatMap
+[0, 797]             5            0.036            ArrangeByKey
+[0, 798]             3            0.123            FlatMap
+[0, 799]             7            0.157            ArrangeByKey
+[0, 800]             3            0.165            FlatMap
+[0, 801]             6            0.216            ArrangeByKey
+[0, 802]             3            0.043            FlatMap
+[0, 803]             5            0.028            ArrangeByKey
+[0, 804]             3            0.014            FlatMap
+[0, 805]             3            0.044            FlatMap
+[0, 806]             4            0.070            ArrangeBySelf
+[0, 807]             3            0.078            FlatMap
+[0, 808]             7            0.106            ArrangeByKey
+[0, 809]             3            0.670            FlatMap
+[0, 810]             6            2.574            ArrangeByKey
+[0, 811]             3            0.269            FlatMap
+[0, 812]             7            1.214            ArrangeByKey
+[0, 813]             3            0.173            FlatMap
+[0, 814]             5            0.410            ArrangeByKey
+[0, 815]             3            0.548            FlatMap
+[0, 816]             7            3.251            ArrangeByKey
+[0, 817]             3            0.115            FlatMap
+[0, 818]             6            0.188            ArrangeByKey
+[0, 819]             3            0.261            FlatMap
+[0, 820]             6            0.687            ArrangeByKey
+[0, 821]             3            0.077            FlatMap
+[0, 822]             21           0.189            ArrangeByKey
+[0, 823]             3            0.179            FlatMap
+[0, 824]             6            0.471            ArrangeByKey
+[0, 825]             3            0.165            FlatMap
+[0, 826]             6            0.477            ArrangeByKey
+[0, 827]             3            0.155            FlatMap
+[0, 828]             6            0.424            ArrangeByKey
+[0, 829]             23           1.047            FlatMap
+[0, 830]             61           1.696            ArrangeByKey
+[0, 831]             3            0.111            FlatMap
+[0, 832]             6            0.357            ArrangeByKey
+[0, 833]             3            0.105            FlatMap
+[0, 834]             7            0.905            ArrangeByKey
+[0, 835]             3            0.138            FlatMap
+[0, 836]             6            0.172            ArrangeByKey
+[0, 837]             3            0.089            FlatMap
+[0, 838]             5            0.086            ArrangeByKey
+[0, 839]             3            0.101            FlatMap
+[0, 840]             8            0.093            ArrangeByKey
+[0, 841]             3            0.012            FlatMap
+[0, 842]             3            0.094            FlatMap
+[0, 843]             22           0.178            ArrangeBySelf
+[0, 844]             3            0.146            FlatMap
+[0, 845]             9            0.150            ArrangeByKey
+[0, 846]             3            0.140            FlatMap
+[0, 847]             11           0.430            ArrangeByKey
+[0, 848]             3            0.135            FlatMap
+[0, 849]             7            0.174            ArrangeByKey
+[0, 850]             3            0.138            FlatMap
+[0, 851]             7            0.219            ArrangeByKey
+[0, 852]             3            0.063            FlatMap
+[0, 853]             10           0.050            ArrangeByKey
+[0, 854]             3            0.095            FlatMap
+[0, 855]             6            0.101            ArrangeByKey
+[0, 856]             3            0.109            FlatMap
+[0, 857]             6            0.127            ArrangeByKey
+[0, 858]             3            0.093            FlatMap
+[0, 859]             7            0.105            ArrangeByKey
+[0, 860]             3            0.073            FlatMap
+[0, 861]             11           0.056            ArrangeByKey
+[0, 862]             3            0.077            FlatMap
+[0, 863]             10           0.054            ArrangeByKey
+[0, 864]             3            0.133            FlatMap
+[0, 865]             7            0.308            ArrangeByKey
+[0, 866]             3            0.112            FlatMap
+[0, 867]             8            0.139            ArrangeByKey
+[0, 868]             3            0.011            FlatMap
+[0, 869]             3            0.028            FlatMap
+[0, 870]             6            0.037            ArrangeBySelf
+[0, 871]             3            0.178            FlatMap
+[0, 872]             6            0.727            ArrangeByKey
+[0, 873]             7            0.160            Join
+[0, 874]             8            0.059            ArrangeByKey
+[0, 875]             3            0.108            FlatMap
+[0, 876]             7            0.217            ArrangeByKey
+[0, 877]             223528       7662.132         Iterative
+[0, 877, 1]          3            0.007            FlatMap
+[0, 877, 2]          3            0.005            FlatMap
+[0, 877, 3]          3            0.008            FlatMap
+[0, 877, 4]          3            0.006            FlatMap
+[0, 877, 5]          3            0.005            FlatMap
+[0, 877, 6]          1            0.009            Enter
+[0, 877, 7]          3            0.005            FlatMap
+[0, 877, 8]          3            0.007            FlatMap
+[0, 877, 9]          3            0.007            FlatMap
+[0, 877, 10]         3            0.006            FlatMap
+[0, 877, 11]         3            0.006            FlatMap
+[0, 877, 12]         3            0.005            FlatMap
+[0, 877, 13]         3            0.006            FlatMap
+[0, 877, 14]         3            0.005            FlatMap
+[0, 877, 15]         3            0.005            FlatMap
+[0, 877, 16]         3            0.004            FlatMap
+[0, 877, 17]         3            0.005            FlatMap
+[0, 877, 18]         3            0.009            FlatMap
+[0, 877, 19]         3            0.006            FlatMap
+[0, 877, 20]         3            0.009            FlatMap
+[0, 877, 21]         3            0.005            FlatMap
+[0, 877, 22]         3            0.004            FlatMap
+[0, 877, 23]         3            0.008            FlatMap
+[0, 877, 24]         3            0.005            FlatMap
+[0, 877, 25]         3            0.012            FlatMap
+[0, 877, 26]         3            0.005            FlatMap
+[0, 877, 27]         3            0.005            FlatMap
+[0, 877, 28]         1            0.001            Enter
+[0, 877, 29]         3            0.006            FlatMap
+[0, 877, 30]         3            0.005            FlatMap
+[0, 877, 31]         3            0.005            FlatMap
+[0, 877, 32]         3            0.004            FlatMap
+[0, 877, 33]         3            0.006            FlatMap
+[0, 877, 34]         3            0.008            FlatMap
+[0, 877, 35]         3            0.004            FlatMap
+[0, 877, 36]         3            0.005            FlatMap
+[0, 877, 37]         3            0.005            FlatMap
+[0, 877, 38]         3            0.010            FlatMap
+[0, 877, 39]         3            0.006            FlatMap
+[0, 877, 40]         3            0.005            FlatMap
+[0, 877, 41]         3            0.005            FlatMap
+[0, 877, 42]         223          0.382            Feedback
+[0, 877, 43]         413          0.840            Feedback
+[0, 877, 44]         213          0.526            Feedback
+[0, 877, 45]         303          0.386            Feedback
+[0, 877, 46]         329          0.427            Feedback
+[0, 877, 47]         449          7.508            Feedback
+[0, 877, 48]         341          0.410            Feedback
+[0, 877, 49]         81           0.119            Feedback
+[0, 877, 50]         81           0.147            FlatMap
+[0, 877, 51]         81           1.382            FlatMap
+[0, 877, 52]         988          1.384            ArrangeBySelf
+[0, 877, 53]         330          1.524            Join
+[0, 877, 54]         330          1.060            Join
+[0, 877, 55]         223          0.359            FlatMap
+[0, 877, 56]         223          4.731            FlatMap
+[0, 877, 57]         930          2.068            ArrangeBySelf
+[0, 877, 58]         465          2.682            Join
+[0, 877, 59]         517          1.657            ArrangeByKey
+[0, 877, 60]         449          42.566           FlatMap
+[0, 877, 61]         2785         108.463          ArrangeByKey
+[0, 877, 62]         911          5.344            Join
+[0, 877, 63]         530          2.146            ArrangeByKey
+[0, 877, 64]         962          30.392           Join
+[0, 877, 65]         1132         8.972            ArrangeByKey
+[0, 877, 66]         582          18.116           Join
+[0, 877, 67]         1045         3.734            ArrangeByKey
+[0, 877, 68]         481          7.782            Join
+[0, 877, 69]         1237         1.635            ArrangeByKey
+[0, 877, 70]         260          1.801            Join
+[0, 877, 71]         1188         7.490            ArrangeByKey
+[0, 877, 72]         547          12.633           Join
+[0, 877, 73]         465          2.373            Join
+[0, 877, 74]         589          1.194            ArrangeByKey
+[0, 877, 75]         950          4.972            Join
+[0, 877, 76]         514          1.339            ArrangeByKey
+[0, 877, 77]         341          9.380            FlatMap
+[0, 877, 78]         1667         3.473            ArrangeByKey
+[0, 877, 79]         781          6.513            Join
+[0, 877, 80]         1597         24.087           ArrangeByKey
+[0, 877, 81]         587          55.964           Join
+[0, 877, 82]         1291         2.014            ArrangeByKey
+[0, 877, 83]         336          3.224            Join
+[0, 877, 84]         1449         1.639            ArrangeByKey
+[0, 877, 85]         254          1.546            Join
+[0, 877, 86]         756          1.503            ArrangeByKey
+[0, 877, 87]         273          1.925            Join
+[0, 877, 88]         465          6.511            Join
+[0, 877, 89]         1188         2.390            ArrangeByKey
+[0, 877, 90]         1013         17.976           Join
+[0, 877, 91]         465          4.373            Join
+[0, 877, 92]         941          1.717            ArrangeByKey
+[0, 877, 93]         951          10.699           Join
+[0, 877, 94]         788          5.692            ArrangeByKey
+[0, 877, 95]         413          26.176           FlatMap
+[0, 877, 96]         2305         41.662           ArrangeByKey
+[0, 877, 97]         1207         76.823           Join
+[0, 877, 98]         465          2.452            Join
+[0, 877, 99]         223          7.165            FlatMap
+[0, 877, 100]        1317         4.041            ArrangeBySelf
+[0, 877, 101]        572          7.447            Join
+[0, 877, 102]        944          1.717            ArrangeByKey
+[0, 877, 103]        572          9.135            Join
+[0, 877, 104]        1030         1.462            ArrangeByKey
+[0, 877, 105]        1038         9.096            Join
+[0, 877, 106]        759          2.592            ArrangeByKey
+[0, 877, 107]        1006         14.391           Join
+[0, 877, 108]        936          3.627            ArrangeByKey
+[0, 877, 109]        528          3.680            Join
+[0, 877, 110]        572          8.821            Join
+[0, 877, 111]        1078         1.900            ArrangeByKey
+[0, 877, 112]        572          7.557            Join
+[0, 877, 113]        1020         1.307            ArrangeByKey
+[0, 877, 114]        572          6.933            Join
+[0, 877, 115]        1024         1.283            ArrangeByKey
+[0, 877, 116]        1068         32.624           Join
+[0, 877, 117]        993          26.015           ArrangeByKey
+[0, 877, 118]        633          31.107           Join
+[0, 877, 119]        1286         14.182           ArrangeByKey
+[0, 877, 120]        1175         20.394           Join
+[0, 877, 121]        1547         3.222            ArrangeByKey
+[0, 877, 122]        1174         25.140           Join
+[0, 877, 123]        1555         9.053            ArrangeByKey
+[0, 877, 124]        609          12.114           Join
+[0, 877, 125]        303          7.850            FlatMap
+[0, 877, 126]        1204         2.833            ArrangeByKey
+[0, 877, 127]        541          8.073            Join
+[0, 877, 128]        1429         2.778            ArrangeByKey
+[0, 877, 129]        539          4.798            Join
+[0, 877, 130]        329          8.542            FlatMap
+[0, 877, 131]        1943         3.473            ArrangeByKey
+[0, 877, 132]        1237         75.874           Join
+[0, 877, 133]        465          2.975            Join
+[0, 877, 134]        750          1.354            ArrangeByKey
+[0, 877, 135]        297          2.591            Join
+[0, 877, 136]        699          1.919            ArrangeByKey
+[0, 877, 137]        483          10.458           Join
+[0, 877, 138]        2079         27.112           ArrangeByKey
+[0, 877, 139]        449          6.462            FlatMap
+[0, 877, 140]        449          20.822           FlatMap
+[0, 877, 141]        2246         42.236           ArrangeBySelf
+[0, 877, 142]        1193         421.355          Join
+[0, 877, 143]        633          66.651           Join
+[0, 877, 144]        1626         34.987           ArrangeByKey
+[0, 877, 145]        1177         63.589           Join
+[0, 877, 146]        2125         18.322           ArrangeByKey
+[0, 877, 147]        1176         87.169           Join
+[0, 877, 148]        2172         20.347           ArrangeByKey
+[0, 877, 149]        612          29.619           Join
+[0, 877, 150]        1537         12.829           ArrangeByKey
+[0, 877, 151]        616          20.571           Join
+[0, 877, 152]        449          7.690            FlatMap
+[0, 877, 153]        449          33.812           FlatMap
+[0, 877, 154]        3394         31.077           ArrangeBySelf
+[0, 877, 155]        572          8.930            Join
+[0, 877, 156]        1571         2.169            ArrangeByKey
+[0, 877, 157]        1026         10.042           Join
+[0, 877, 158]        269          4.153            FlatMap
+[0, 877, 159]        1382         2.668            ArrangeBySelf
+[0, 877, 160]        519          7.427            Join
+[0, 877, 161]        1286         2.341            ArrangeByKey
+[0, 877, 162]        876          4.277            Join
+[0, 877, 163]        541          9.408            Join
+[0, 877, 164]        1668         2.493            ArrangeByKey
+[0, 877, 165]        557          3.925            Join
+[0, 877, 166]        465          3.365            Join
+[0, 877, 167]        871          1.576            ArrangeByKey
+[0, 877, 168]        977          7.718            Join
+[0, 877, 169]        1081         5.333            ArrangeByKey
+[0, 877, 170]        1197         15.245           Join
+[0, 877, 171]        1174         12.589           Join
+[0, 877, 172]        433          16.399           FlatMap
+[0, 877, 173]        2470         8.312            ArrangeBySelf
+[0, 877, 174]        607          5.963            Join
+[0, 877, 175]        465          1.736            Join
+[0, 877, 176]        119          2.101            FlatMap
+[0, 877, 177]        963          1.498            ArrangeBySelf
+[0, 877, 178]        428          2.257            Join
+[0, 877, 179]        330          1.483            Join
+[0, 877, 180]        465          1.648            Join
+[0, 877, 181]        61           0.874            FlatMap
+[0, 877, 182]        684          1.092            ArrangeBySelf
+[0, 877, 183]        341          1.688            Join
+[0, 877, 184]        465          2.516            Join
+[0, 877, 185]        692          1.130            ArrangeByKey
+[0, 877, 186]        213          4.200            FlatMap
+[0, 877, 187]        1572         2.620            ArrangeByKey
+[0, 877, 188]        762          4.597            Join
+[0, 877, 189]        876          4.877            Join
+[0, 877, 190]        465          1.695            Join
+[0, 877, 191]        480          1.050            ArrangeByKey
+[0, 877, 192]        934          124.311          Join
+[0, 877, 193]        465          1.476            Join
+[0, 877, 194]        15           0.237            FlatMap
+[0, 877, 195]        479          0.952            ArrangeBySelf
+[0, 877, 196]        304          1.325            Join
+[0, 877, 197]        223          0.352            FlatMap
+[0, 877, 198]        223          4.673            FlatMap
+[0, 877, 199]        973          1.306            ArrangeBySelf
+[0, 877, 200]        465          2.268            Join
+[0, 877, 201]        465          1.528            Join
+[0, 877, 202]        465          1.127            Join
+[0, 877, 203]        465          8.289            Join
+[0, 877, 204]        1549         4.020            ArrangeByKey
+[0, 877, 205]        568          4.900            Join
+[0, 877, 206]        147          1.981            FlatMap
+[0, 877, 207]        1029         1.532            ArrangeBySelf
+[0, 877, 208]        398          2.179            Join
+[0, 877, 209]        147          2.184            FlatMap
+[0, 877, 210]        998          1.446            ArrangeBySelf
+[0, 877, 211]        365          1.941            Join
+[0, 877, 212]        388          0.553            Concatenate
+[0, 877, 213]        708          0.706            Concatenate
+[0, 877, 214]        796          0.634            Concatenate
+[0, 877, 215]        796          0.585            Concatenate
+[0, 877, 216]        796          22.112           FlatMap
+[0, 877, 217]        3339         6.999            Arrange: Threshold
+[0, 877, 218]        624          7.506            Threshold
+[0, 877, 219]        395          0.565            AsCollection
+[0, 877, 220]        415          0.561            Concatenate
+[0, 877, 221]        415          9.265            FlatMap
+[0, 877, 222]        2473         4.037            Arrange: Threshold
+[0, 877, 223]        569          7.209            Threshold
+[0, 877, 224]        329          0.740            AsCollection
+[0, 877, 225]        211          4.239            FlatMap
+[0, 877, 226]        1179         2.026            Arrange: Threshold
+[0, 877, 227]        454          3.962            Threshold
+[0, 877, 228]        213          0.476            AsCollection
+[0, 877, 229]        689          0.737            Concatenate
+[0, 877, 230]        777          0.601            Concatenate
+[0, 877, 231]        777          24.415           FlatMap
+[0, 877, 232]        3386         9.860            Arrange: Threshold
+[0, 877, 233]        652          21.325           Threshold
+[0, 877, 234]        429          0.683            AsCollection
+[0, 877, 235]        525          21.132           FlatMap
+[0, 877, 236]        3597         44.428           Arrange: Threshold
+[0, 877, 237]        645          330.564          Threshold
+[0, 877, 238]        413          8.288            AsCollection
+[0, 877, 239]        243          0.326            Concatenate
+[0, 877, 240]        247          0.282            Concatenate
+[0, 877, 241]        301          0.320            Concatenate
+[0, 877, 242]        314          0.331            Concatenate
+[0, 877, 243]        430          0.423            Concatenate
+[0, 877, 244]        430          0.373            Concatenate
+[0, 877, 245]        430          6.648            FlatMap
+[0, 877, 246]        3127         2.186            Arrange: Threshold
+[0, 877, 247]        444          2.931            Threshold
+[0, 877, 248]        195          0.258            AsCollection
+[0, 877, 249]        297          14.087           FlatMap
+[0, 877, 250]        1469         4.104            Arrange: Threshold
+[0, 877, 251]        587          13.593           Threshold
+[0, 877, 252]        357          0.774            AsCollection
+[0, 877, 253]        493          0.791            Concatenate
+[0, 877, 254]        1185         1.341            Concatenate
+[0, 877, 255]        1440         1.284            Concatenate
+[0, 877, 256]        1608         1.938            Concatenate
+[0, 877, 257]        1845         1.908            Concatenate
+[0, 877, 258]        2217         2.078            Concatenate
+[0, 877, 259]        2345         1.909            Concatenate
+[0, 877, 260]        2450         1.882            Concatenate
+[0, 877, 261]        2450         150.465          FlatMap
+[0, 877, 262]        14664        282.032          Arrange: Threshold
+[0, 877, 263]        667          1458.318         Threshold
+[0, 877, 264]        461          14.639           AsCollection
+[0, 877, 265]        223          0.266            ResultsIn
+[0, 877, 266]        413          2.413            ResultsIn
+[0, 877, 267]        341          0.365            ResultsIn
+[0, 877, 268]        81           0.097            ResultsIn
+[0, 877, 269]        213          0.286            ResultsIn
+[0, 877, 270]        449          2.040            ResultsIn
+[0, 877, 271]        303          0.321            ResultsIn
+[0, 877, 272]        329          0.367            ResultsIn
+[0, 878]             550          0.506            Leave
+[0, 879]             1149         1.629            Leave
+[0, 880]             869          0.598            Leave
+[0, 881]             636          0.509            Leave
+[0, 882]             1151         0.683            Leave
+[0, 883]             1572         3.070            Leave
+[0, 884]             960          0.580            Leave
+[0, 885]             544          0.347            Leave
+[0, 886]             23           0.481            FlatMap
+[0, 887]             57           1.145            Arrange: Threshold
+[0, 888]             4            2.075            Threshold
+[0, 889]             3            0.119            AsCollection
+[0, 890]             3            0.052            FlatMap
+[0, 891]             3            0.044            FlatMap
+[0, 892]             3            0.099            FlatMap
+[0, 893]             11           0.010            Consolidate
+[0, 894]             1            0.002            AsCollection
+[0, 895]             2            0.004            InspectBatch
+[0, 896]             2            0.002            Probe
+[0, 897]             3            0.076            FlatMap
+[0, 898]             4            0.128            Arrange: Threshold
+[0, 899]             4            0.416            Threshold
+[0, 900]             3            0.024            AsCollection
+[0, 901]             3            0.011            FlatMap
+[0, 902]             3            0.011            FlatMap
+[0, 903]             3            0.052            FlatMap
+[0, 904]             5            0.009            Consolidate
+[0, 905]             1            0.001            AsCollection
+[0, 906]             2            0.004            InspectBatch
+[0, 907]             2            0.003            Probe
+[0, 908]             3            0.030            FlatMap
+[0, 909]             16           0.040            Arrange: Threshold
+[0, 910]             4            0.054            Threshold
+[0, 911]             3            0.008            AsCollection
+[0, 912]             3            0.008            FlatMap
+[0, 913]             3            0.007            FlatMap
+[0, 914]             3            0.026            FlatMap
+[0, 915]             21           0.018            Consolidate
+[0, 916]             1            0.001            AsCollection
+[0, 917]             2            0.003            InspectBatch
+[0, 918]             2            0.001            Probe
+[0, 919]             21           0.300            FlatMap
+[0, 920]             42           0.078            Arrange: Threshold
+[0, 921]             4            0.105            Threshold
+[0, 922]             3            0.011            AsCollection
+[0, 923]             3            0.005            FlatMap
+[0, 924]             3            0.006            FlatMap
+[0, 925]             3            0.035            FlatMap
+[0, 926]             7            0.007            Consolidate
+[0, 927]             1            0.001            AsCollection
+[0, 928]             2            0.003            InspectBatch
+[0, 929]             2            0.002            Probe
+[0, 930]             3            0.040            FlatMap
+[0, 931]             9            0.030            Arrange: Threshold
+[0, 932]             4            0.097            Threshold
+[0, 933]             3            0.007            AsCollection
+[0, 934]             3            0.006            FlatMap
+[0, 935]             3            0.004            FlatMap
+[0, 936]             3            0.032            FlatMap
+[0, 937]             4            0.006            Consolidate
+[0, 938]             1            0.001            AsCollection
+[0, 939]             2            0.003            InspectBatch
+[0, 940]             2            0.002            Probe
+[0, 941]             21           0.301            FlatMap
+[0, 942]             47           0.061            Arrange: Threshold
+[0, 943]             4            0.085            Threshold
+[0, 944]             3            0.009            AsCollection
+[0, 945]             3            0.007            FlatMap
+[0, 946]             3            0.012            FlatMap
+[0, 947]             3            0.027            FlatMap
+[0, 948]             6            0.008            Consolidate
+[0, 949]             1            0.001            AsCollection
+[0, 950]             2            0.003            InspectBatch
+[0, 951]             2            0.001            Probe
+[0, 952]             5            0.070            FlatMap
+[0, 953]             12           0.125            Arrange: Threshold
+[0, 954]             4            0.307            Threshold
+[0, 955]             3            0.017            AsCollection
+[0, 956]             3            0.010            FlatMap
+[0, 957]             3            0.011            FlatMap
+[0, 958]             3            0.033            FlatMap
+[0, 959]             7            0.008            Consolidate
+[0, 960]             1            0.001            AsCollection
+[0, 961]             2            0.002            InspectBatch
+[0, 962]             2            0.001            Probe
+[0, 963]             3            0.039            FlatMap
+[0, 964]             7            0.085            Arrange: Threshold
+[0, 965]             4            0.334            Threshold
+[0, 966]             3            0.022            AsCollection
+[0, 967]             3            0.011            FlatMap
+[0, 968]             3            0.010            FlatMap
+[0, 969]             3            0.043            FlatMap
+[0, 970]             6            0.005            Consolidate
+[0, 971]             1            0.001            AsCollection
+[0, 972]             2            0.004            InspectBatch
+[0, 973]             2            0.001            Probe
+[0, 974]             3            0.029            FlatMap
+[0, 975]             7            0.036            Arrange: Threshold
+[0, 976]             4            0.157            Threshold
+[0, 977]             3            0.010            AsCollection
+[0, 978]             3            0.005            FlatMap
+[0, 979]             3            0.008            FlatMap
+[0, 980]             3            0.032            FlatMap
+[0, 981]             7            0.005            Consolidate
+[0, 982]             1            0.001            AsCollection
+[0, 983]             2            0.003            InspectBatch
+[0, 984]             2            0.001            Probe
+[0, 985]             1            0.001            FlatMap
+[0, 986]             3            0.055            Arrange: Threshold
+[0, 987]             2            0.005            Threshold
+[0, 988]             1            0.001            AsCollection
+[0, 989]             1            0.001            FlatMap
+[0, 990]             1            0.001            FlatMap
+[0, 991]             1            0.000            FlatMap
+[0, 992]             3            0.007            Consolidate
+[0, 993]             1            0.001            AsCollection
+[0, 994]             2            0.002            InspectBatch
+[0, 995]             2            0.001            Probe
+[0, 996]             3            0.030            FlatMap
+[0, 997]             4            0.034            Arrange: Threshold
+[0, 998]             4            0.021            Threshold
+[0, 999]             3            0.005            AsCollection
+[0, 1000]            3            0.004            FlatMap
+[0, 1001]            3            0.003            FlatMap
+[0, 1002]            3            0.033            FlatMap
+[0, 1003]            6            0.009            Consolidate
+[0, 1004]            1            0.002            AsCollection
+[0, 1005]            2            0.003            InspectBatch
+[0, 1006]            2            0.001            Probe
+[0, 1007]            81           1.175            FlatMap
+[0, 1008]            817          0.527            Arrange: Threshold
+[0, 1009]            4            0.051            Threshold
+[0, 1010]            3            0.007            AsCollection
+[0, 1011]            3            0.006            FlatMap
+[0, 1012]            3            0.005            FlatMap
+[0, 1013]            3            0.030            FlatMap
+[0, 1014]            4            0.009            Consolidate
+[0, 1015]            1            0.001            AsCollection
+[0, 1016]            2            0.005            InspectBatch
+[0, 1017]            2            0.001            Probe
+[0, 1018]            329          6.106            FlatMap
+[0, 1019]            1640         1.133            Arrange: Threshold
+[0, 1020]            4            0.361            Threshold
+[0, 1021]            3            0.029            AsCollection
+[0, 1022]            3            0.014            FlatMap
+[0, 1023]            3            0.013            FlatMap
+[0, 1024]            3            0.057            FlatMap
+[0, 1025]            4            0.005            Consolidate
+[0, 1026]            1            0.000            AsCollection
+[0, 1027]            2            0.003            InspectBatch
+[0, 1028]            2            0.001            Probe
+[0, 1029]            449          19.910           FlatMap
+[0, 1030]            2541         116.928          Arrange: Threshold
+[0, 1031]            4            124.952          Threshold
+[0, 1032]            3            9.190            AsCollection
+[0, 1033]            3            12.567           FlatMap
+[0, 1034]            3            3.147            FlatMap
+[0, 1035]            3            5.214            FlatMap
+[0, 1036]            4            0.009            Consolidate
+[0, 1037]            1            0.001            AsCollection
+[0, 1038]            2            0.003            InspectBatch
+[0, 1039]            2            0.057            Probe
+[0, 1040]            413          12.831           FlatMap
+[0, 1041]            1958         47.152           Arrange: Threshold
+[0, 1042]            4            48.617           Threshold
+[0, 1043]            3            5.453            AsCollection
+[0, 1044]            3            2.277            FlatMap
+[0, 1045]            3            1.070            FlatMap
+[0, 1046]            3            1.762            FlatMap
+[0, 1047]            5            0.009            Consolidate
+[0, 1048]            1            0.001            AsCollection
+[0, 1049]            2            0.005            InspectBatch
+[0, 1050]            2            0.001            Probe
+[0, 1051]            213          3.423            FlatMap
+[0, 1052]            1409         0.808            Arrange: Threshold
+[0, 1053]            4            0.168            Threshold
+[0, 1054]            3            0.028            AsCollection
+[0, 1055]            3            0.012            FlatMap
+[0, 1056]            3            0.008            FlatMap
+[0, 1057]            3            0.025            FlatMap
+[0, 1058]            5            0.004            Consolidate
+[0, 1059]            1            0.001            AsCollection
+[0, 1060]            2            0.002            InspectBatch
+[0, 1061]            2            0.001            Probe
+[0, 1062]            303          6.532            FlatMap
+[0, 1063]            1098         0.829            Arrange: Threshold
+[0, 1064]            4            0.237            Threshold
+[0, 1065]            3            0.026            AsCollection
+[0, 1066]            3            0.008            FlatMap
+[0, 1067]            3            0.008            FlatMap
+[0, 1068]            3            0.033            FlatMap
+[0, 1069]            5            0.005            Consolidate
+[0, 1070]            1            0.001            AsCollection
+[0, 1071]            2            0.002            InspectBatch
+[0, 1072]            2            0.043            Probe
+[0, 1073]            341          7.400            FlatMap
+[0, 1074]            1504         1.288            Arrange: Threshold
+[0, 1075]            4            0.746            Threshold
+[0, 1076]            3            0.054            AsCollection
+[0, 1077]            3            0.035            FlatMap
+[0, 1078]            3            0.022            FlatMap
+[0, 1079]            3            0.055            FlatMap
+[0, 1080]            5            2.376            Consolidate
+[0, 1081]            1            0.001            AsCollection
+[0, 1082]            2            0.002            InspectBatch
+[0, 1083]            2            0.001            Probe
+[0, 1084]            223          5.015            FlatMap
+[0, 1085]            888          0.653            Arrange: Threshold
+[0, 1086]            4            0.064            Threshold
+[0, 1087]            3            0.006            AsCollection
+[0, 1088]            3            0.005            FlatMap
+[0, 1089]            3            0.009            FlatMap
+[0, 1090]            3            0.029            FlatMap
+[0, 1091]            5            0.004            Consolidate
+[0, 1092]            1            0.001            AsCollection
+[0, 1093]            2            0.027            InspectBatch
+[0, 1094]            2            0.001            Probe
