@@ -4,39 +4,188 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlowLog Profile Viz</title>
+  <title>FlowLog Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Maple Mono';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/gh/subframe7536/Maple-font@latest/woff2/var/MapleMono%5Bwght%5D-VF.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Maple Mono';
+      font-style: italic;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/gh/subframe7536/Maple-font@latest/woff2/var/MapleMono-Italic%5Bwght%5D-VF.woff2') format('woff2');
+    }
+    :root {
+      --c-accent: #2563eb;
+      --c-accent-light: #eff6ff;
+      --c-bg: #fafbfc;
+      --c-surface: #ffffff;
+      --c-border: #e5e7eb;
+      --c-border-light: #f3f4f6;
+      --c-text: #1a1a1a;
+      --c-text-secondary: #4b5563;
+      --c-text-muted: #9ca3af;
+      --c-selected: #eff6ff;
+      --c-selected-border: #bfdbfe;
+      --radius: 8px;
+      --radius-sm: 5px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --transition: 150ms ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       margin: 0;
-      background: #fff;
+      background: var(--c-bg);
+      color: var(--c-text);
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
+    /* ── Header ── */
     header {
-      padding: 12px 16px;
-      border-bottom: 1px solid #ddd;
+      background: var(--c-surface);
+      padding: 0 20px;
+      height: 44px;
+      border-bottom: 1px solid var(--c-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
 
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+
+    .header-brand img {
+      height: 22px;
+      width: auto;
+      display: block;
+    }
+
+    .header-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--c-text);
+      letter-spacing: -0.3px;
+    }
+
+    .header-title span {
+      font-weight: 600;
+      color: var(--c-text);
+      margin-left: 3px;
+    }
+
+    .header-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--c-border);
+      flex-shrink: 0;
+    }
+
+    .summary {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 2px 9px;
+      border: 1px solid var(--c-border);
+      border-radius: 999px;
+      background: var(--c-bg);
+      color: var(--c-text-secondary);
+      font-size: 11px;
+      white-space: nowrap;
+      transition: background var(--transition);
+    }
+
+    .pill:hover { background: var(--c-border-light); }
+
+    .pill b {
+      color: var(--c-text);
+      font-weight: 600;
+    }
+
+    /* ── Layout ── */
     .container {
       display: flex;
-      height: calc(100vh - 58px);
+      flex: 1;
+      min-height: 0;
     }
 
     .sidebar {
-      width: 450px;
-      border-right: 1px solid #e8eaed;
+      width: 460px;
+      min-width: 200px;
+      max-width: 80vw;
+      border-right: none;
       padding: 12px;
       overflow: auto;
-      background: #fff;
+      background: var(--c-surface);
+      flex-shrink: 0;
+    }
+
+    .split-handle {
+      width: 5px;
+      cursor: col-resize;
+      background: var(--c-border);
+      flex-shrink: 0;
+      position: relative;
+      transition: background 150ms ease;
+    }
+
+    .split-handle:hover,
+    .split-handle.dragging {
+      background: var(--c-accent);
+    }
+
+    .split-handle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 3px;
+      height: 32px;
+      border-radius: 2px;
+      background: inherit;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    .split-handle:hover::after {
+      opacity: 0.5;
     }
 
     .main {
       flex: 1;
-      padding: 12px;
+      padding: 16px 20px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      background: var(--c-bg);
     }
 
     #detailPane {
@@ -45,27 +194,13 @@
       min-height: 0;
     }
 
-    .summary {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .pill {
-      padding: 4px 8px;
-      border: 1px solid #ddd;
-      border-radius: 999px;
-      background: #fafafa;
-    }
-
+    /* ── Legend ── */
     .legend {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       align-items: center;
-      font-size: 13px;
-      color: #444;
+      font-size: 12px;
+      color: var(--c-text-secondary);
       flex-wrap: wrap;
       margin-bottom: 6px;
     }
@@ -78,34 +213,37 @@
 
     .legend-swatch {
       width: 160px;
-      height: 14px;
-      border-radius: 4px;
+      height: 12px;
+      border-radius: 6px;
       border: 1px solid #ccd3e0;
-      background: linear-gradient(90deg, rgb(233, 242, 255) 0%, rgb(91, 141, 239) 100%);
+      background: linear-gradient(90deg, #e9f2ff 0%, #5b8def 100%);
     }
 
     .legend-swatch-red {
       width: 160px;
-      height: 14px;
-      border-radius: 4px;
+      height: 12px;
+      border-radius: 6px;
       border: 1px solid #e0ccd0;
-      background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(220, 30, 30) 100%);
+      background: linear-gradient(90deg, #fff 0%, #dc1e1e 100%);
     }
 
+    /* ── Tree nodes ── */
     .tree-node {
       cursor: pointer;
       user-select: none;
-      padding: 2px 4px;
-      border-radius: 4px;
+      padding: 3px 6px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+      border: 1px solid transparent;
     }
 
     .tree-node:hover {
-      background: #f3f3f3;
+      background: var(--c-border-light);
     }
 
     .tree-node.selected {
-      background: #e9f2ff;
-      border: 1px solid #cfe3ff;
+      background: var(--c-selected);
+      border-color: var(--c-selected-border);
     }
 
     .indent {
@@ -117,93 +255,118 @@
       display: inline-block;
       width: 16px;
       text-align: center;
-      color: #666;
+      color: var(--c-text-muted);
     }
 
     .muted {
-      color: #777;
+      color: var(--c-text-muted);
       font-size: 12px;
     }
 
+    /* ── Rules ── */
     #rulePicker {
       margin: 8px 0 10px;
-      font-size: 16px;
-      line-height: 1.4;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .rule-list {
       margin-top: 6px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .rule-item {
       text-align: left;
-      padding: 6px 10px;
-      border: 1px solid #ddd;
-      background: #fafafa;
-      border-radius: 6px;
+      padding: 7px 12px;
+      border: 1px solid var(--c-border);
+      background: var(--c-surface);
+      border-radius: var(--radius);
       cursor: pointer;
-      font-size: 15px;
+      font-family: "Maple Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      transition: all var(--transition);
+    }
+
+    .rule-item:hover {
+      border-color: var(--c-selected-border);
+      background: var(--c-accent-light);
     }
 
     .rule-item.active {
-      background: #e9f2ff;
-      border-color: #cfe3ff;
+      background: var(--c-selected);
+      border-color: var(--c-selected-border);
       font-weight: 600;
     }
 
+    /* ── Tabs ── */
     .tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 8px;
     }
 
     .tab {
-      padding: 6px 10px;
-      border: 1px solid #ddd;
-      background: #f8f8f8;
-      border-radius: 6px;
+      padding: 5px 12px;
+      border: 1px solid var(--c-border);
+      background: var(--c-surface);
+      border-radius: var(--radius);
       cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--c-text-secondary);
+      transition: all var(--transition);
+    }
+
+    .tab:hover {
+      border-color: var(--c-selected-border);
     }
 
     .tab.active {
-      background: #e9f2ff;
-      border-color: #cfe3ff;
+      background: var(--c-selected);
+      border-color: var(--c-selected-border);
+      color: var(--c-accent);
     }
 
+    /* ── Top-list ── */
     .toplist {
-      margin: 10px 0 14px;
-      padding: 8px;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background: #fafafa;
+      margin: 8px 0 14px;
+      padding: 10px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      background: var(--c-bg);
     }
 
     .toplist-title {
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 600;
-      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--c-text-muted);
+      margin-bottom: 8px;
     }
 
     .toplist-item {
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      padding: 4px 6px;
-      border-radius: 6px;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
+      transition: background var(--transition);
+      border: 1px solid transparent;
     }
 
     .toplist-item:hover {
-      background: #f0f4ff;
+      background: var(--c-accent-light);
     }
 
     .toplist-item.active {
-      background: #e9f2ff;
-      border: 1px solid #cfe3ff;
+      background: var(--c-selected);
+      border-color: var(--c-selected-border);
     }
 
     .toplist-name {
@@ -216,9 +379,11 @@
 
     .toplist-ms {
       font-variant-numeric: tabular-nums;
-      color: #333;
+      color: var(--c-text-secondary);
+      font-weight: 500;
     }
 
+    /* ── Graph ── */
     #graphPane {
       flex: 1;
       display: flex;
@@ -230,27 +395,15 @@
       width: 100%;
       height: 100%;
       min-height: 420px;
-      border: 1px solid #eee;
-      border-radius: 8px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
       overflow: auto;
+      background: var(--c-surface);
     }
 
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    #graphView svg {
-      cursor: grab;
-    }
-
-    #graphView svg:active {
-      cursor: grabbing;
-    }
-
-    #graphView svg {
-      will-change: transform;
-    }
+    svg { width: 100%; height: 100%; }
+    #graphView svg { cursor: grab; will-change: transform; }
+    #graphView svg:active { cursor: grabbing; }
 
     .g-edge {
       stroke: #8fa3c7;
@@ -260,64 +413,46 @@
       opacity: 0.8;
     }
 
-    .g-edge.dim {
-      opacity: 0.15;
-    }
+    .g-edge.dim { opacity: 0.12; }
 
     .g-edge.highlight {
-      stroke: #2f5bd3;
+      stroke: var(--c-accent);
       stroke-width: 2;
       opacity: 1;
     }
 
-    /* Memory-mode colours (red tones) */
-    .memory-mode .g-edge {
-      stroke: #c78f8f;
-    }
-
-    .memory-mode .g-edge.highlight {
-      stroke: #d32f2f;
-    }
-
-    .memory-mode .g-block rect {
-      stroke: #ffc9c9;
-      fill: rgba(255, 248, 248, 0.6);
-    }
-
-    .memory-mode .g-node rect {
-      stroke: #d45555;
-    }
+    /* Memory-mode red tones */
+    .memory-mode .g-edge { stroke: #c78f8f; }
+    .memory-mode .g-edge.highlight { stroke: #d32f2f; }
+    .memory-mode .g-block rect { stroke: #ffc9c9; fill: rgba(255,248,248,0.6); }
+    .memory-mode .g-node rect { stroke: #d45555; }
 
     .g-block rect {
-      fill: rgba(248, 250, 255, 0.6);
+      fill: rgba(248,250,255,0.6);
       stroke: #c9d7ff;
       stroke-width: 1;
       stroke-dasharray: 6 4;
-      rx: 10;
-      ry: 10;
+      rx: 10; ry: 10;
     }
 
     .g-node rect {
-      rx: 6;
-      ry: 6;
+      rx: 6; ry: 6;
       stroke: #5570d4;
       stroke-width: 1;
     }
 
     .g-node text {
       font-size: 12px;
-      fill: #111;
+      fill: var(--c-text);
       pointer-events: none;
     }
 
     .g-node.selected rect {
-      stroke: #111;
+      stroke: var(--c-text);
       stroke-width: 2;
     }
 
-    .g-node.dim {
-      opacity: 0.2;
-    }
+    .g-node.dim { opacity: 0.18; }
 
     .g-node-label {
       display: flex;
@@ -328,14 +463,23 @@
       box-sizing: border-box;
     }
 
+    /* ── Rule headers ── */
     .rule-header {
-      padding: 6px 4px 3px 4px;
-      margin-top: 4px;
-      font-size: 15px;
+      padding: 6px 8px 5px;
+      margin-top: 6px;
+      font-family: "Maple Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11.5px;
       font-weight: 500;
-      color: #0550ae;
+      color: var(--c-accent);
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+      letter-spacing: -0.3px;
+      line-height: 1.6;
+    }
+
+    .rule-header:hover {
+      background: var(--c-accent-light);
     }
 
     .rule-header.active {
@@ -343,25 +487,30 @@
       border: 1px solid #93c5fd;
     }
 
+    /* ── Tables ── */
     table {
       border-collapse: collapse;
       width: 100%;
       margin-top: 8px;
     }
 
-    th,
-    td {
-      border-bottom: 1px solid #eee;
-      padding: 6px 8px;
+    th, td {
+      border-bottom: 1px solid var(--c-border-light);
+      padding: 7px 10px;
       text-align: left;
-      font-size: 14px;
+      font-size: 12px;
     }
 
     th {
       position: sticky;
       top: 0;
-      background: white;
-      border-bottom: 1px solid #ddd;
+      background: var(--c-surface);
+      border-bottom: 1px solid var(--c-border);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--c-text-muted);
     }
 
     .num {
@@ -370,53 +519,53 @@
     }
 
     code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
+      font-family: "Maple Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
     }
 
-    /* Stats bar inline chart */
+    /* ── Stats bars ── */
     .stats-cell {
       min-width: 160px;
       padding: 4px 0;
     }
 
     .stats-value {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
-      color: #222;
+      color: var(--c-text);
       margin-bottom: 2px;
     }
 
     .stats-bar-wrap {
       position: relative;
-      height: 14px;
-      border-radius: 3px;
-      background: #f3f4f6;
+      height: 12px;
+      border-radius: 6px;
+      background: var(--c-border-light);
       overflow: hidden;
     }
 
     .stats-range {
       position: absolute;
-      top: 2px;
+      top: 1px;
       height: 10px;
-      border-radius: 2px;
-      opacity: 0.35;
+      border-radius: 5px;
+      opacity: 0.3;
     }
 
     .stats-sigma {
       position: absolute;
-      top: 1px;
+      top: 0;
       height: 12px;
-      border-radius: 2px;
-      opacity: 0.7;
+      border-radius: 6px;
+      opacity: 0.6;
     }
 
     .stats-mean {
       position: absolute;
       top: 0;
       width: 2px;
-      height: 14px;
+      height: 12px;
       border-radius: 1px;
     }
 
@@ -424,60 +573,65 @@
       display: flex;
       justify-content: space-between;
       font-size: 10px;
-      color: #999;
+      color: var(--c-text-muted);
       margin-top: 1px;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Node detail stat cards */
+    /* ── Stat cards ── */
     .detail-stats {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin: 10px 0;
+      margin: 12px 0;
     }
 
     .stat-card {
       flex: 1;
       min-width: 140px;
       max-width: 220px;
-      padding: 10px 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      background: #fafbfc;
+      padding: 12px 14px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      background: var(--c-surface);
+      box-shadow: var(--shadow-sm);
     }
 
     .stat-card-label {
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #6b7280;
+      letter-spacing: 0.6px;
+      color: var(--c-text-muted);
       margin-bottom: 4px;
+      font-weight: 500;
     }
 
     .stat-card-value {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #111;
+      color: var(--c-text);
       font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
     }
 
     .stat-card-sub {
       font-size: 11px;
-      color: #9ca3af;
+      color: var(--c-text-muted);
       margin-top: 2px;
       font-variant-numeric: tabular-nums;
     }
-    /* Snapshot slider */
+
+    /* ── Snapshot slider ── */
     .snapshot-slider-wrap {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 6px 16px;
-      background: #f0f4ff;
-      border-bottom: 1px solid #d0d8e8;
-      font-size: 13px;
-      color: #333;
+      padding: 6px 20px;
+      background: var(--c-accent-light);
+      border-bottom: 1px solid var(--c-selected-border);
+      font-size: 12px;
+      color: var(--c-text-secondary);
+      flex-shrink: 0;
     }
 
     .snapshot-slider-wrap label {
@@ -488,14 +642,28 @@
     .snapshot-slider-wrap input[type="range"] {
       flex: 1;
       max-width: 400px;
-      accent-color: #2563eb;
+      accent-color: var(--c-accent);
     }
 
     .snapshot-label {
       font-weight: 700;
-      color: #2563eb;
+      color: var(--c-accent);
       min-width: 40px;
     }
+
+    /* ── Detail pane headings ── */
+    #title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--c-text);
+    }
+
+    /* ── Scrollbar (webkit) ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
   </style>
 </head>
 
@@ -506,16 +674,22 @@
     <span class="snapshot-label" id="snapshotLabel">—</span>
   </div>
   <header>
+    <div class="header-brand">
+      <img src="https://www.flowlog-rs.com/img/flowlog.png" alt="FlowLog">
+      <div class="header-title">FlowLog<span>Profiler</span></div>
+    </div>
+    <div class="header-sep"></div>
     <div class="summary" id="summary"></div>
   </header>
 
   <div class="container">
     <div class="sidebar">
-      <div style="display:flex; gap: 8px; margin-bottom: 8px;">
-        <input id="search" placeholder="Search name..."
-          style="flex:1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px;">
-        <button id="expandAll" style="padding: 6px 10px;">Expand</button>
-        <button id="collapseAll" style="padding: 6px 10px;">Collapse</button>
+      <div style="display:flex; gap: 6px; margin-bottom: 10px;">
+        <input id="search" placeholder="Search operators..."
+          style="flex:1; padding: 7px 12px; border: 1px solid var(--c-border); border-radius: 999px; background: var(--c-bg); font-size: 12px; outline: none; transition: border-color 150ms ease; color: var(--c-text);"
+          onfocus="this.style.borderColor='var(--c-accent)'" onblur="this.style.borderColor='var(--c-border)'">
+        <button id="expandAll" style="padding: 5px 12px; border: 1px solid var(--c-border); border-radius: var(--radius); background: var(--c-surface); font-size: 11px; cursor: pointer; color: var(--c-text-secondary);">Expand</button>
+        <button id="collapseAll" style="padding: 5px 12px; border: 1px solid var(--c-border); border-radius: var(--radius); background: var(--c-surface); font-size: 11px; cursor: pointer; color: var(--c-text-secondary);">Collapse</button>
       </div>
       <div class="toplist">
         <div class="toplist-title">Top 10 Operators</div>
@@ -524,6 +698,8 @@
       <div id="tree"></div>
     </div>
 
+    <div class="split-handle" id="splitHandle"></div>
+
     <div class="main">
       <div class="tabs" style="justify-content:space-between;">
         <div style="display:flex;gap:8px;">
@@ -531,7 +707,7 @@
           <button class="tab" id="tabGraph">Graph</button>
         </div>
         <div id="modeToggle" style="display:none;gap:4px;align-items:center;">
-          <span style="font-size:13px;color:#555;">Show:</span>
+          <span style="font-size:11px;color:var(--c-text-muted);">Show:</span>
           <button class="tab active" id="modeTime">Time</button>
           <button class="tab" id="modeMemory">Memory</button>
         </div>
@@ -594,7 +770,7 @@
       minW: 140,
       maxW: 360,
       minH: 36,
-      font: "12px system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+      font: '12px "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     };
 
     const _measureCanvas = document.createElement("canvas");
@@ -719,19 +895,12 @@
         .replaceAll("'", "&#39;");
     }
 
-    const KVF_COLORS = {
-      K: { bg: "#dbeafe", fg: "#1e40af" },  // blue
-      V: { bg: "#dcfce7", fg: "#166534" },  // green
-      F: { bg: "#fef3c7", fg: "#92400e" },  // amber
-    };
-
-    /** Colorize K, V, F letters with background + border, remove the ":" after them. */
+    /** Render K, V, F as subtle muted inline type hints — no badge, just dimmed text. */
     function colorizeHtml(label) {
       return escapeHtml(label).replace(
         /\b([KVF]):\(/g,
         (_, letter) => {
-          const c = KVF_COLORS[letter];
-          return `<span style="background:${c.bg};color:${c.fg};border:1px solid ${c.fg};border-radius:3px;padding:0 3px;font-size:0.8em">${letter}</span> (`;
+          return `<span style="color:#9ca3af;font-size:0.85em;font-weight:500;letter-spacing:0.2px">${letter}</span>(`;
         }
       );
     }
@@ -741,12 +910,9 @@
       return _measureCtx.measureText(String(s)).width;
     }
 
-    // colorizeHtml() wraps each `K:(`, `V:(`, `F:(` in a styled <span> badge
-    // (border 1px*2 + padding 3px*2 ≈ 8px) so the rendered width exceeds the
-    // raw-text width measureTextPx returns. Account for that everywhere we
-    // size or wrap a label, otherwise the box is just barely too small and
-    // the browser word-wraps the V/F group onto a second visual row.
-    const BADGE_EXTRA_PX = 8;
+    // colorizeHtml() no longer adds padding/border, just a styled span with
+    // no dimensional change, so no extra compensation needed.
+    const BADGE_EXTRA_PX = 0;
     function measureLabelPx(s) {
       const badgeCount = (String(s).match(/\b[KVF]:\(/g) || []).length;
       return measureTextPx(s) + badgeCount * BADGE_EXTRA_PX;
@@ -1000,16 +1166,40 @@
         const row = document.createElement("div");
         row.className = "tree-node" + (state.selected === name ? " selected" : "");
         row.dataset.name = name;
-        row.style.paddingLeft = `${12 + depth * 16}px`;
+        const indent = '<span class="indent"></span>'.repeat(depth);
+        const spacer = '<span class="toggle"></span>';
+        row.innerHTML = `${indent}${spacer}${colorizeHtml(node.label)}`;
         row.onclick = () => selectNode(name);
-        row.innerHTML = `${colorizeHtml(node.label)}`;
         root.appendChild(row);
       }
 
       function renderRuleHeader(title) {
+        const key = `rule-fold::${title}`;
+        const collapsed = state._ruleCollapsed || (state._ruleCollapsed = new Set());
+        const isCollapsed = collapsed.has(key);
+
         const hdr = document.createElement("div");
         hdr.className = "rule-header" + (state.highlightedRule === title ? " active" : "");
-        hdr.textContent = title;
+
+        const arrow = document.createElement("span");
+        arrow.className = "toggle";
+        arrow.textContent = isCollapsed ? "▶" : "▼";
+        arrow.style.marginRight = "4px";
+        arrow.style.fontSize = "10px";
+        hdr.appendChild(arrow);
+
+        const label = document.createElement("span");
+        label.textContent = title;
+        hdr.appendChild(label);
+
+        // Toggle fold on arrow click
+        arrow.onclick = (e) => {
+          e.stopPropagation();
+          if (collapsed.has(key)) collapsed.delete(key); else collapsed.add(key);
+          renderTree();
+        };
+
+        // Highlight rule on header click (existing behavior)
         hdr.onclick = (e) => {
           e.stopPropagation();
           if (state.highlightedRule === title) {
@@ -1023,6 +1213,14 @@
           renderGraph();
         };
         root.appendChild(hdr);
+
+        // Create a container for children; hide if collapsed
+        const body = document.createElement("div");
+        body.style.display = isCollapsed ? "none" : "block";
+        root.appendChild(body);
+
+        // Return the body so callers can append children into it
+        return body;
       }
 
       const planMatchMemo = new Map();
@@ -1182,16 +1380,23 @@
           for (const rule of rules) {
             if (!rulesForBlock.has(rule.text)) continue;
 
-            renderRuleHeader(rule.text);
+            const ruleBody = renderRuleHeader(rule.text);
+            const prevRoot = root;
+            root = ruleBody;
 
             if (rule.root && rule.nodes?.[rule.root]) {
               renderPlanNode(rule, rule.root, 0);
             }
+
+            root = prevRoot;
           }
 
           if (runtimeNodes.length) {
-            renderRuleHeader("runtime");
+            const runtimeBody = renderRuleHeader("runtime");
+            const prevRoot = root;
+            root = runtimeBody;
             runtimeNodes.sort(cmpById).forEach((n) => renderNodeRow(n));
+            root = prevRoot;
           }
         } else {
           names.sort(cmpById).forEach((n) => renderNodeRow(n));
@@ -2178,6 +2383,38 @@
     document.getElementById("modeToggle").style.display = "flex";
 
     if (DATA.roots.length) selectNode(DATA.roots[0]);
+
+    // ── Resizable split pane ──
+    (function() {
+      const handle = document.getElementById('splitHandle');
+      const sidebar = document.querySelector('.sidebar');
+      const container = document.querySelector('.container');
+      let dragging = false;
+
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dragging = true;
+        handle.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!dragging) return;
+        const rect = container.getBoundingClientRect();
+        let newWidth = e.clientX - rect.left;
+        newWidth = Math.max(200, Math.min(newWidth, rect.width * 0.8));
+        sidebar.style.width = newWidth + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      });
+    })();
   </script>
 </body>
 
