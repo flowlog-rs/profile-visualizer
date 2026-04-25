@@ -741,6 +741,17 @@
       return _measureCtx.measureText(String(s)).width;
     }
 
+    // colorizeHtml() wraps each `K:(`, `V:(`, `F:(` in a styled <span> badge
+    // (border 1px*2 + padding 3px*2 ≈ 8px) so the rendered width exceeds the
+    // raw-text width measureTextPx returns. Account for that everywhere we
+    // size or wrap a label, otherwise the box is just barely too small and
+    // the browser word-wraps the V/F group onto a second visual row.
+    const BADGE_EXTRA_PX = 8;
+    function measureLabelPx(s) {
+      const badgeCount = (String(s).match(/\b[KVF]:\(/g) || []).length;
+      return measureTextPx(s) + badgeCount * BADGE_EXTRA_PX;
+    }
+
     function wrapLines(text, maxContentW) {
       const words = String(text).split(/\s+/).filter(Boolean);
       if (!words.length) return [""];
@@ -750,7 +761,7 @@
 
       for (let i = 1; i < words.length; i++) {
         const next = `${cur} ${words[i]}`;
-        if (measureTextPx(next) <= maxContentW) {
+        if (measureLabelPx(next) <= maxContentW) {
           cur = next;
         } else {
           lines.push(cur);
@@ -767,7 +778,7 @@
 
       const contentW = Math.min(
         maxContentW,
-        arrayMax(lines.map(measureTextPx), 0)
+        arrayMax(lines.map(measureLabelPx), 0)
       );
 
       const w = Math.max(NODE.minW, Math.min(NODE.maxW, contentW + 2 * NODE.padX));
